@@ -1,0 +1,4 @@
+:root{--red:#ef476f;--yellow:#ffd166;--green:#06d6a0;--blue:#118ab2;--dark-gray:#073b4c;--light-gray:#e8ebee}.container.svelte-ao939z{height:100%;width:100%}@media(min-width: 640px){}
+#detector.svelte-1tnj305{--default-color:var(--light-gray);--active-color:var(--green);height:100%;width:100%}.hidden.svelte-1tnj305{display:none}button.block.selected.svelte-1tnj305{background-color:var(--yellow)}button.deactivated.svelte-1tnj305{pointer-events:none}
+
+/*# sourceMappingURL=bundle.css.map */
