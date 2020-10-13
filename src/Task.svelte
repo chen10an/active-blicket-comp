@@ -13,9 +13,12 @@
 
 <script>    
     // Props
-    export let activation = (A, B) => A && B;  // default toy causal relationship
-    export let max_combos = 1;  // default max number of unique ways to cause the activation
-    export let time_limit_seconds = 30;  // default time limit of 30s
+    export let activation // = (A, B) => A && B;  // default toy causal relationship
+    export let max_combos // = 1;  // default max number of unique ways to cause the activation
+    export let time_limit_seconds // = 30;  // default time limit of 30s
+
+    // Import components
+    import TaskEnd from "./TaskEnd.svelte";
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
@@ -71,6 +74,7 @@
 
             if (unique_combos.size == max_combos) {
                 // the participant has found all ways to produce the activation --> end the task (see the markup)
+                clearInterval(count_down_interval);
                 found_all_combos = true;
             }
         }
@@ -114,6 +118,13 @@
     <!-- Let the participant know how many unique activation combinations they have discovered -->
     <p>Your number of unique activations: {unique_combos.size}</p>
 </div>
+
+<!-- Show the TaskEnd component when the time limit is reached or when the participant finds all combinations. -->
+<!-- And forward the continue event upward. -->
+<div class:hidden={(!time_up) && (!found_all_combos)}>
+    <TaskEnd time_up={time_up} found_all_combos={found_all_combos} num_found_combos={unique_combos.size} on:continue/>
+</div>
+
 
 <style>
     #detector {
