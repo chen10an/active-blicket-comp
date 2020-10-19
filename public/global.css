@@ -1,5 +1,6 @@
 :root {
 	--dark-gray: #959594ff;
+	--medium-gray: #d2d2d2;
 	--light-gray: #e8ebee;
 
 	--active-color: #7dd420b0;
@@ -15,7 +16,12 @@
 	--color6: #7754f8ff;
 	--color7: #654321ff;
 	--color8: #3a3a3a;
+
+	/* containers have rounded corners and shadow */
+	--container-border-radius: 0.5rem;
+	--container-box-shadow: 0px 0px 7px 1px var(--medium-gray);
 }
+/* TODO: consider moving all block/detector-related colors to Task.svelte */
 
 html, body {
 	width: 100%;
@@ -30,7 +36,7 @@ body {
 /* TODO: change root font size for different device sizes */
 
 button {
-	width: 7rem;
+	min-width: 7rem;
 	margin: 1rem;
 	padding: 0.5rem;
 	border: none;

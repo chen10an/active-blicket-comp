@@ -3,10 +3,10 @@
 	import Quiz from "./Quiz.svelte";
 
 	let task_quiz_sequence = {
-		"Task_0": {activation: (A, B, C) => A && C, max_combos: 2, time_limit_seconds: 30},  // conjunctive
-		"Task_1": {activation: (A, B, C) => A, max_combos: 4, time_limit_seconds: 30},  // disjunctive
+		"Task_0": {activation: (A, B, C) => A && C, time_limit_seconds: 60},  // conjunctive
+		"Task_1": {activation: (A, B, C) => A, time_limit_seconds: 60},  // disjunctive
 		// showing that we can get as complex as we want:
-		"Task_2": {activation: (A, B, C, D, E, F, G, H, I) => A, max_combos: 16, time_limit_seconds: 30}
+		"Task_2": {activation: (A, B, C, D, E, F, G, H, I) => A, time_limit_seconds: 60}
 	}
 
 	let task_quiz_keys = Object.keys(task_quiz_sequence);
@@ -25,7 +25,7 @@
 
 {#key current_task_quiz}
 	<!-- Determine whether a task or quiz should be the next component shown to the participant -->
-	{#if JSON.stringify(Object.keys(current_task_quiz)) == JSON.stringify(["activation", "max_combos", "time_limit_seconds"])}
+	{#if JSON.stringify(Object.keys(current_task_quiz)) == JSON.stringify(["activation", "time_limit_seconds"])}
 		<Task {...current_task_quiz} on:continue={handleContinue}/>
 	{:else}
 		<Quiz {...current_task_quiz}/>
