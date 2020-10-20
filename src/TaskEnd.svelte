@@ -1,4 +1,5 @@
 <script>
+    export let block_arr;  // array of block objects that were initialized for the current task
     export let num_combos;  // number of unique block combinations (active or not) that the participant has tried
 
     // Event dispatcher for communicating with parent components
@@ -8,7 +9,7 @@
     // Click handler
     function cont() {
         // Tell parent components to move on to the next task/quiz
-        dispatch("continue", {});
+        dispatch("continue", {block_arr: block_arr});
     }
 </script>
 

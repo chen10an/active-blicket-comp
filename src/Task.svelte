@@ -11,11 +11,14 @@
 -->
 
 <!-- TODO: update description -->
+<!-- TODO: label detector on UI -->
 
 <script>    
     // Props
     export let activation = (A, B) => A && B;  // default toy causal relationship
     export let time_limit_seconds = 30;  // default time limit of 30s
+    export let randomize_arg_order = true;
+    export let noise = 0;
     
     // Import svelte transitions and animations
     import { quintOut } from 'svelte/easing';
@@ -62,11 +65,17 @@
     let available_colors = [...Array(NUM_BLOCK_COLORS).keys()];  // available block colors in the range [0, NUM_BLOCK_COLORS]
     let blocks = [];  // list of block objects, which are initialized below
     for (let i=0; i < num_blocks; i++) {
-        // randomly assign ids without replacement
-        // this id corresponds to the argument position for `activation`
-        let id_dex = Math.floor(Math.random() * available_ids.length);
-        let id = available_ids[id_dex];
-        available_ids = available_ids.filter(x => x !== id);  // remove the selected id
+        let id;
+        if (randomize_arg_order) {
+            // randomly assign ids without replacement
+            // this id corresponds to the argument position for `activation`
+            let id_dex = Math.floor(Math.random() * available_ids.length);
+            id = available_ids[id_dex];
+            available_ids = available_ids.filter(x => x !== id);  // remove the selected id
+        } else {
+            // the arguments to `activation` are shown in their original order on the UI
+            id = i;
+        }
 
         // randomly assign colors without replacement
         let color_dex = Math.floor(Math.random() * available_colors.length);
@@ -80,6 +89,9 @@
             letter: ALPHABET.charAt(i)  // determined by order of initialization
         });
     }
+
+    // TODO: remove
+    console.log(blocks);
 
     let count_down_interval = setInterval(count_down_seconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
     let time_up = false;  // whether the time limit has been reached
@@ -112,16 +124,21 @@
         // the randomly assigned id then becomes the argument position in `activation`
         let block_states = blocks_copy.map(block => block.state)
         if (activation(...block_states)) {
-            // change the detector's background color and turn off button interactions
-            detector_is_active = true;
-            disable_all = true;
+            // TODO: different color backgrounds should be different combos --> both are shown to the participant as past attempts
+            // don't change the color of the detector with probability noise
+            let rand = Math.random();
+            if (rand >= noise) {
+                // change the detector's background color and turn off button interactions
+                detector_is_active = true;
+                disable_all = true;
 
-            // wait before returning everything to their default state
-            await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
+                // wait before returning everything to their default state
+                await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
 
-            // revert to the default detector background color and enable button interactions
-            detector_is_active = false;
-            disable_all = false;
+                // revert to the default detector background color and enable button interactions
+                detector_is_active = false;
+                disable_all = false;
+            }
         }
 
         // create the bit string representation of the current block states
@@ -239,8 +256,10 @@
         <!-- Show the TaskEnd component when the time limit is reached. -->
         <!-- And forward the continue event upward. -->
         <div class="col-container" class:hidden="{!time_up}">
-            <TaskEnd num_combos={unique_bit_combos.length} on:continue/>
+            <TaskEnd block_arr={blocks} num_combos={unique_bit_combos.length} on:continue/>
         </div>
+
+        <!-- TODO: use if else time_up rather than hidden -->
     </div>
 </body>
 
