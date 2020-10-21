@@ -84,9 +84,9 @@
     let time_up = false;  // whether the time limit has been reached
     let detector_is_active = false;  // state of the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
-    // unique combinations of blocks that cause the activation; use arrays to maintain order
-    let unique_bit_combos = [];  // list of bit strings
-    let unique_block_combos = [];  // list of lists of block objects
+    // all block combinations that the participant has tried; use arrays to maintain order
+    let all_bit_combos = [];  // list of bit strings
+    let all_block_combos = [];  // list of lists of block objects
 
     // Click handler functions
     function click_block(id) {
@@ -137,19 +137,17 @@
                 bit_combo = bit_combo.concat("0");
             }
         }
-        // store all unique bit string representations
-        if (!unique_bit_combos.includes(bit_combo)) {
-            unique_bit_combos = [bit_combo, ...unique_bit_combos];  // add to front
+        // store all bit string representations
+        all_bit_combos = [bit_combo, ...all_bit_combos];  // add to front
 
-            // copy and append the current block objects to `unique_block_combos`
-            // note that the copied blocks in `block_combo` are ordered by their id because blocks_copy was sorted by id
-            let block_combo = [];
-            for (let i=0; i < blocks_copy.length; i++) {
-                let obj_copy = Object.assign({}, blocks_copy[i]);
-                block_combo.push(obj_copy);
-            }
-            unique_block_combos = [block_combo, ...unique_block_combos];  // add to front
+        // copy and append the current block objects to `all_block_combos`
+        // note that the copied blocks in `block_combo` are ordered by their id because blocks_copy was sorted by id
+        let block_combo = [];
+        for (let i=0; i < blocks_copy.length; i++) {
+            let obj_copy = Object.assign({}, blocks_copy[i]);
+            block_combo.push(obj_copy);
         }
+        all_block_combos = [block_combo, ...all_block_combos];  // add to front
 
         // return all block states back to false
         for (let i=0; i < blocks.length; i++) {
@@ -218,12 +216,13 @@
             <button id="test-button" disabled="{disable_all}" on:click={test}>Test</button>
 
             <!-- Show all previously attempted block combinations -->
-            <h2>Your unique attempts:</h2>
+            <h2>Your past attempts:</h2>
             <div class="col-container">
-                <div id="unique-combos">
-                    {#each unique_block_combos as block_arr, i (unique_bit_combos[i])}
+                <div id="all-combos">
+                    <!-- Use `all_block_combos.length - i` as the key because we are adding new block combos to the front of the array -->
+                    {#each all_block_combos as block_arr, i (all_block_combos.length - i)}  
                         <div class="block-inner-grid mini" class:active-detector="{activation(...block_arr.map(block => block.state))}"
-                        in:receive="{{key: unique_bit_combos[i]}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
+                        in:receive="{{key: all_block_combos.length - i}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
                             {#each block_arr as block}
                                 {#if block.state}
                                     <div class="block mini disabled" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};">
@@ -243,7 +242,7 @@
         <!-- Show the TaskEnd component when the time limit is reached. -->
         <!-- And forward the continue event upward. -->
         <div class="col-container" class:hidden="{!time_up}">
-            <TaskEnd num_combos={unique_bit_combos.length} on:continue/>
+            <TaskEnd num_combos={all_bit_combos.length} on:continue/>
         </div>
 
         <!-- TODO: use if else time_up rather than hidden -->
@@ -305,7 +304,7 @@
         align-items: center;
     }
 
-    #unique-combos {
+    #all-combos {
         height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)) + 1rem);
         max-width: calc(2*var(--block-outer-length) + 2*var(--block-outer-margin));
         margin: var(--block-outer-margin);
