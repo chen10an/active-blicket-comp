@@ -17,36 +17,14 @@
     // Props
     export let activation = (A, B) => A && B;  // default toy causal relationship
     export let time_limit_seconds = 30;  // default time limit of 30s
-    export let randomize_arg_order = true;
     export let noise = 0;
-    
-    // Import svelte transitions and animations
-    import { quintOut } from 'svelte/easing';
-    import { crossfade } from 'svelte/transition';
-    import { flip } from 'svelte/animate';
 
-    // The following function is from: https://svelte.dev/tutorial/deferred-transitions
-    const [send, receive] = crossfade({
-		duration: d => Math.sqrt(d * 500),
-
-		fallback(node, params) {
-			const style = getComputedStyle(node);
-			const transform = style.transform === 'none' ? '' : style.transform;
-
-			return {
-				duration: 600,
-				easing: quintOut,
-				css: t => `
-					transform: ${transform} scale(${t});
-					opacity: ${t}
-				`
-			};
-		}
-	});
-
-    // Import components and stores
+    // Imports
+    import BlockGrid from "./BlockGrid.svelte"
     import TaskEnd from "./TaskEnd.svelte";
-    import { blocks_features_arr, num_task_blocks } from './experiment_stores.js';
+    import { features, task_blocks } from './experiment_stores.js';
+    import { flip } from 'svelte/animate';
+    import { receive } from './crossfade.js';
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
@@ -54,31 +32,33 @@
     const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
 
     // Check that the number of arguments to `activation` is supported by the available colors
-    if (activation.length > Math.floor($blocks_features_arr.length/2)) {
+    if (activation.length > Math.floor($features.length/2)) {
         throw "The task causal function has too many arguments/blocks! We don't have enough distinct colors.";
     }
 
     // Initialize variables
-    // get a slice (shallow copy) of `blocks_features_arr`
-    // note that a shallow copy means that the block objects **within** the store array can be changed by this component
-    let blocks = $blocks_features_arr.slice(0, activation.length);
-    num_task_blocks.set(blocks.length);  // tell experiment_stores how many blocks are being used by this task
-
-    // initialize id and state properties for the block objects
-    let available_ids = [...Array(blocks.length).keys()];  // available block ids in the range [0, activation.length]
-    for (let i=0; i < blocks.length; i++) {
+    let blocks = [];
+    // initialize an array of block objects
+    let available_ids = [...Array(activation.length).keys()];  // available block ids in the range [0, activation.length]
+    for (let i=0; i < activation.length; i++) {
         // randomly assign ids without replacement
         // this id corresponds to the argument position for the `activation` function
         let id_dex = Math.floor(Math.random() * available_ids.length);
         let id = available_ids[id_dex];
         available_ids = available_ids.filter(x => x !== id);  // remove the selected id
 
-        blocks[i].id = id;  // random
-        blocks[i].state = false;  // init to false
+        blocks.push({
+            id: id,  // random
+            state: false,  // init to false
+            // get surface features from `experiment_store.js`
+            color_num: $features[i].color_num,
+            letter: $features[i].letter
+        });
     }
-
+    task_blocks.set(blocks);
+    
     // TODO: remove
-    console.log(blocks);
+    console.log($task_blocks);
 
     let count_down_interval = setInterval(count_down_seconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
     let time_up = false;  // whether the time limit has been reached
@@ -89,23 +69,11 @@
     let all_block_combos = [];  // list of lists of block objects
 
     // Click handler functions
-    function click_block(id) {
-        // When a block is clicked by the participant, reverse its state (true to false; false to true)
-        let current_block = blocks.find(block => block.id === id);
-        current_block.state = !current_block.state;
-        blocks = blocks;  // explicit assignment to trigger svelte's reactivity
-        
-        // REMOVED: maintain the original block order so that the participant won't think order matters for activation
-        // Move the ith block to the end of the array so that it will display as the last block in its container
-        // blocks = blocks.filter(block => block !== block_i);
-		// blocks = blocks.concat(block_i);
-    }
-
     async function test() {
         // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
 
         // copy the array of block objects and sort by the randomly assigned id
-        let blocks_copy = [...blocks];
+        let blocks_copy = [...$task_blocks];
         blocks_copy.sort((a, b) => a.id - b.id);
 
         // the randomly assigned id then becomes the argument position in `activation`
@@ -150,8 +118,8 @@
         all_block_combos = [block_combo, ...all_block_combos];  // add to front
 
         // return all block states back to false
-        for (let i=0; i < blocks.length; i++) {
-            blocks[i].state = false;
+        for (let i=0; i < $task_blocks.length; i++) {
+            $task_blocks[i].state = false;
         }
     }
 
@@ -181,16 +149,8 @@
 
             <div class="col-container">
                 <div class="block-outer-flex">
-                    <div class="block-inner-grid">
-                        <!-- In this non-detector container, display a block only if its state is false -->
-                        {#each blocks.filter(block => !block.state) as block (block.id)}
-                            <div class="block" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};"
-                            in:receive="{{key: block.id}}" out:send="{{key: block.id}}" animate:flip="{{duration: FLIP_DURATION_MS}}"
-                            class:disabled="{disable_all}" on:click={() => click_block(block.id)}>
-                                <b>{block.letter}</b>
-                            </div>
-                        {/each}
-                    </div>
+                    <!-- In this non-detector grid, display a block only if its state is false -->
+                    <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}/>
                 </div>
                 
                 <!-- 
@@ -198,17 +158,9 @@
                     Hide the detector (i.e. end the task) when the time limit has been reached or 
                     the participant has found all block combinations that produce the activation.
                 -->
-                <div class="block-outer-flex" id="detector" class:active-detector="{detector_is_active}">
-                    <div class="block-inner-grid">
-                        <!-- Within the detector, display a block only if its state is true -->
-                        {#each blocks.filter(block => block.state) as block (block.id)}
-                            <div class="block" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};"
-                            in:receive="{{key: block.id}}" out:send="{{key: block.id}}" animate:flip="{{duration: FLIP_DURATION_MS}}"
-                            class:disabled="{disable_all}" on:click={() => click_block(block.id)}>
-                                <b>{block.letter}</b>
-                            </div>
-                        {/each}
-                    </div>
+                <div class="block-outer-flex" class:active-detector="{detector_is_active}">
+                    <!-- Within the detector, display a block only if its state is true -->
+                    <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}/>
                 </div>     
             </div>
 
@@ -219,17 +171,12 @@
             <h2>Your past attempts:</h2>
             <div class="col-container">
                 <div id="all-combos">
-                    <!-- Use `all_block_combos.length - i` as the key because we are adding new block combos to the front of the array -->
-                    {#each all_block_combos as block_arr, i (all_block_combos.length - i)}  
-                        <div class="block-inner-grid mini" class:active-detector="{activation(...block_arr.map(block => block.state))}"
-                        in:receive="{{key: all_block_combos.length - i}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
-                            {#each block_arr as block}
-                                {#if block.state}
-                                    <div class="block mini disabled" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};">
-                                        <b>{block.letter}</b>
-                                    </div>
-                                {/if}
-                            {/each}
+                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                    {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
+                        <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
+                        class:active-detector="{activation(...block_arr.map(block => block.state))}"
+                        in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
+                            <BlockGrid is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr}/>
                         </div>
                     {/each}
                 </div>
@@ -250,18 +197,6 @@
 </body>
 
 <style>
-    :root {
-        /* blocks are squares specified by one length variable */
-        --block-length: 5rem;
-        --block-margin: 0.5rem;
-        --mini-block-length: 2rem;
-        --mini-block-margin: 0.2rem;
-
-        /* block containers are also squares specified by one length variable */
-        --block-outer-length: 20rem;
-        --block-outer-margin: 1rem;
-    }
-
     .centering-container {
         width: 100%;
         min-height: 100%;
@@ -320,62 +255,6 @@
         align-items: center;
 
         overflow: auto;
-    }
-    
-    .block-inner-grid {
-        /* enough space for 3x3 blocks */
-        max-width: calc(3*(var(--block-length) + 2*var(--block-margin)));
-        height: calc(3*(var(--block-length) + 2*var(--block-margin)));
-
-        /* 3x3 grid that blocks can be placed into according to their letter label */
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        grid-template-areas: 
-        "A B C"
-        "D E F"
-        "G H I";
-    }
-
-    .block-inner-grid.mini {
-        /* enough space for 3x3 mini blocks */
-        width: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
-        height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
-        margin-right: 0.5rem;
-
-        border: solid;
-        border-color: var(--light-gray);
-        border-radius: var(--container-border-radius);
-        
-        flex-shrink: 0;
-    }
-
-    .block {
-        width: var(--block-length);
-        height: var(--block-length);
-        margin: var(--block-margin);
-        border-radius: var(--block-margin);
-
-        cursor: pointer;
-
-        color: var(--background-color);
-        font-size: 2rem;
-        /* center text */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .block.mini {
-        width: var(--mini-block-length);
-        height: var(--mini-block-length);
-        margin: var(--mini-block-margin);
-        border-radius: var(--block-margin);
-        font-size: 1rem;
-    }
-
-    .block.disabled {
-        pointer-events: none;
     }
 
     .active-detector {

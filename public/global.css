@@ -17,7 +17,17 @@
 	--color7: #654321ff;
 	--color8: #3a3a3a;
 
-	/* containers have rounded corners and shadow */
+	/* blocks are squares specified by one length variable */
+	--block-length: 5rem;
+	--block-margin: 0.5rem;
+	--mini-block-length: 2rem;
+	--mini-block-margin: 0.2rem;
+
+	/* block containers are also squares specified by one length variable */
+	--block-outer-length: 20rem;
+	--block-outer-margin: 1rem;
+
+	/* general containers have rounded corners and shadow */
 	--container-border-radius: 0.5rem;
 	--container-box-shadow: 0px 0px 7px 1px var(--medium-gray);
 }
