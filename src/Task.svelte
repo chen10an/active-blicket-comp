@@ -44,50 +44,37 @@
 		}
 	});
 
-    // Import components
+    // Import components and stores
     import TaskEnd from "./TaskEnd.svelte";
+    import { blocks_features_arr, num_task_blocks } from './experiment_stores.js';
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
     const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
-    const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // letters used for labeling blocks
-    const NUM_BLOCK_COLORS = 9; // number of distinct block colors in public/global.css
 
     // Check that the number of arguments to `activation` is supported by the available colors
-    if (activation.length > NUM_BLOCK_COLORS) {
-        throw "The causal function has too many arguments/blocks! We don't have enough distinct colors to represent each block.";
+    if (activation.length > Math.floor($blocks_features_arr.length/2)) {
+        throw "The task causal function has too many arguments/blocks! We don't have enough distinct colors.";
     }
 
     // Initialize variables
-    let num_blocks = activation.length;  // number of blocks that are prospective causes
-    let available_ids = [...Array(num_blocks).keys()];  // available block ids in the range [0, num_blocks]
-    let available_colors = [...Array(NUM_BLOCK_COLORS).keys()];  // available block colors in the range [0, NUM_BLOCK_COLORS]
-    let blocks = [];  // list of block objects, which are initialized below
-    for (let i=0; i < num_blocks; i++) {
-        let id;
-        if (randomize_arg_order) {
-            // randomly assign ids without replacement
-            // this id corresponds to the argument position for `activation`
-            let id_dex = Math.floor(Math.random() * available_ids.length);
-            id = available_ids[id_dex];
-            available_ids = available_ids.filter(x => x !== id);  // remove the selected id
-        } else {
-            // the arguments to `activation` are shown in their original order on the UI
-            id = i;
-        }
+    // get a slice (shallow copy) of `blocks_features_arr`
+    // note that a shallow copy means that the block objects **within** the store array can be changed by this component
+    let blocks = $blocks_features_arr.slice(0, activation.length);
+    num_task_blocks.set(blocks.length);  // tell experiment_stores how many blocks are being used by this task
 
-        // randomly assign colors without replacement
-        let color_dex = Math.floor(Math.random() * available_colors.length);
-        let color_num = available_colors[color_dex];
-        available_colors = available_colors.filter(c => c !== color_num);  // remove the selected color
+    // initialize id and state properties for the block objects
+    let available_ids = [...Array(blocks.length).keys()];  // available block ids in the range [0, activation.length]
+    for (let i=0; i < blocks.length; i++) {
+        // randomly assign ids without replacement
+        // this id corresponds to the argument position for the `activation` function
+        let id_dex = Math.floor(Math.random() * available_ids.length);
+        let id = available_ids[id_dex];
+        available_ids = available_ids.filter(x => x !== id);  // remove the selected id
 
-        blocks.push({
-            id: id,  // random
-            color_num: color_num,  // random
-            state: false,  // starts as false
-            letter: ALPHABET.charAt(i)  // determined by order of initialization
-        });
+        blocks[i].id = id;  // random
+        blocks[i].state = false;  // init to false
     }
 
     // TODO: remove
@@ -256,7 +243,7 @@
         <!-- Show the TaskEnd component when the time limit is reached. -->
         <!-- And forward the continue event upward. -->
         <div class="col-container" class:hidden="{!time_up}">
-            <TaskEnd block_arr={blocks} num_combos={unique_bit_combos.length} on:continue/>
+            <TaskEnd num_combos={unique_bit_combos.length} on:continue/>
         </div>
 
         <!-- TODO: use if else time_up rather than hidden -->
