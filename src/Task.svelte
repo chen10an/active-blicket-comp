@@ -25,6 +25,7 @@
     import { features, task_blocks } from './experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive } from './crossfade.js';
+    import { fade } from 'svelte/transition';
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
@@ -56,9 +57,6 @@
         });
     }
     task_blocks.set(blocks);
-    
-    // TODO: remove
-    console.log($task_blocks);
 
     let count_down_interval = setInterval(count_down_seconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
     let time_up = false;  // whether the time limit has been reached
@@ -142,70 +140,60 @@
     }
 </script>
 
-<body>
-    <div class="centering-container">
-        <div class="row-container" class:hidden={time_up}>
-            <h2>Remaining time: {time_limit_seconds}</h2>
+{#if !time_up}
+    <body transition:fade="{{duration: FLIP_DURATION_MS}}">
+        <div class="centering-container">
+            <div class="row-container">
+                <h2>Remaining time: {time_limit_seconds}</h2>
 
-            <div class="col-container">
-                <div class="block-outer-flex">
-                    <!-- In this non-detector grid, display a block only if its state is false -->
-                    <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}/>
+                <div class="col-container">
+                    <div class="block-outer-flex">
+                        <!-- In this non-detector grid, display a block only if its state is false -->
+                        <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state} key_prefix="interactive"/>
+                    </div>
+                    
+                    <!-- 
+                        The detector changes color when activation=true.
+                        Hide the detector (i.e. end the task) when the time limit has been reached or 
+                        the participant has found all block combinations that produce the activation.
+                    -->
+                    <div class="block-outer-flex" class:active-detector="{detector_is_active}">
+                        <!-- Within the detector, display a block only if its state is true -->
+                        <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state} key_prefix="interactive"/>
+                    </div>     
                 </div>
-                
-                <!-- 
-                    The detector changes color when activation=true.
-                    Hide the detector (i.e. end the task) when the time limit has been reached or 
-                    the participant has found all block combinations that produce the activation.
-                -->
-                <div class="block-outer-flex" class:active-detector="{detector_is_active}">
-                    <!-- Within the detector, display a block only if its state is true -->
-                    <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}/>
-                </div>     
-            </div>
 
-             <!-- Button for testing the detector -->
-            <button id="test-button" disabled="{disable_all}" on:click={test}>Test</button>
+                <!-- Button for testing the detector -->
+                <button id="test-button" disabled="{disable_all}" on:click={test}>Test</button>
 
-            <!-- Show all previously attempted block combinations -->
-            <h2>Your past attempts:</h2>
-            <div class="col-container">
-                <div id="all-combos">
-                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                    {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
-                        <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
-                        class:active-detector="{activation(...block_arr.map(block => block.state))}"
-                        in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
-                            <BlockGrid is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr}/>
-                        </div>
-                    {/each}
+                <!-- Show all previously attempted block combinations -->
+                <h2>Your past attempts:</h2>
+                <div class="col-container">
+                    <div id="all-combos">
+                        <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                        {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
+                            <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
+                            class:active-detector="{activation(...block_arr.map(block => block.state))}"
+                            in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
+                                <BlockGrid is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr} key_prefix="prev_combos"/>
+                            </div>
+                        {/each}
+                    </div>
                 </div>
+
+                <!-- TODO: remove this button for prod -->
+                <button on:click={skip}>dev: skip to the next part</button>
             </div>
-
-             <!-- TODO: remove this button for prod -->
-             <button on:click={skip}>dev: skip to the next part</button>
         </div>
+    </body>
+{:else}
+    <!-- Show the TaskEnd component when the time limit is reached. -->
+    <!-- And forward the continue event upward. -->
+    <TaskEnd num_combos={all_bit_combos.length} on:continue/>
+{/if}
 
-        <!-- Show the TaskEnd component when the time limit is reached. -->
-        <!-- And forward the continue event upward. -->
-        <div class="col-container" class:hidden="{!time_up}">
-            <TaskEnd num_combos={all_bit_combos.length} on:continue/>
-        </div>
-
-        <!-- TODO: use if else time_up rather than hidden -->
-    </div>
-</body>
 
 <style>
-    .centering-container {
-        width: 100%;
-        min-height: 100%;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    
     .row-container {
         min-width: 75%;
 
@@ -259,9 +247,5 @@
 
     .active-detector {
         background-color: var(--active-color);
-    }
-    
-    .hidden {
-        display: none;
     }
 </style>

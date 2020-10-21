@@ -1,6 +1,8 @@
 <script>
     export let num_combos;  // number of unique block combinations (active or not) that the participant has tried
 
+    import { fade } from 'svelte/transition';
+
     // Event dispatcher for communicating with parent components
     import {createEventDispatcher} from "svelte";
     const dispatch = createEventDispatcher();
@@ -12,10 +14,14 @@
     }
 </script>
 
-<div class="col-container">
-    <p>Time's up! You have made a total of {num_combos} unique {num_combos === 1 ? 'attempt' : 'attempts'}.</p>
-    <button on:click={cont}>Click to continue</button>
-</div>
+<body transition:fade="{{duration: 300}}">
+    <div class="centering-container">
+        <div class="col-container">
+            <p>Time's up! You have made a total of {num_combos} unique {num_combos === 1 ? 'attempt' : 'attempts'}.</p>
+            <button on:click={cont}>Click to continue</button>
+        </div>
+    </div>
+</body>
 
 <style>
     .col-container {

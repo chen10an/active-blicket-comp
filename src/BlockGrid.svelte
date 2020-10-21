@@ -4,6 +4,7 @@
     export let is_disabled = false;  // whether to disable clicking on the blocks
     export let block_filter_func = block => !block.state;  // which blocks to show on the grid
     export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `task_blocks` from `experiment_stores.js`
+    export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
     // Imports
     import { task_blocks } from './experiment_stores.js';
@@ -33,7 +34,7 @@
     {#each grid_blocks.filter(block_filter_func) as block (block.id)}
         <div class="block" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};"
         class:mini="{is_mini}" class:disabled="{is_disabled}"
-        in:receive="{{key: ((is_mini) ? String(block.id).concat("mini") : block.id)}}" out:send="{{key: ((is_mini) ? String(block.id).concat("mini") : block.id)}}"
+        in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
         on:click={() => click_block(block.id)}>
             <b>{block.letter}</b>
         </div>

@@ -45,6 +45,15 @@ body {
 /* TODO: change font */
 /* TODO: change root font size for different device sizes */
 
+.centering-container {
+	width: 100%;
+	min-height: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 button {
 	min-width: 7rem;
 	margin: 1rem;
