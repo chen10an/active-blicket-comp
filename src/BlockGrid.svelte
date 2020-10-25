@@ -1,14 +1,14 @@
 <script>
     // Props
-    export let is_mini = false;  // whether to show a mini, non-interactive grid
-    export let is_disabled = false;  // whether to disable clicking on the blocks
-    export let block_filter_func = block => !block.state;  // which blocks to show on the grid
+    export let is_mini;  // boolean, whether to show a mini, non-interactive grid
+    export let is_disabled;  // boolean, whether to disable clicking on the blocks
+    export let block_filter_func;  // lambda function that determines which blocks to show on the grid, e.g. block => !block.state
     export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `task_blocks` from `experiment_stores.js`
     export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
     // Imports
-    import { task_blocks } from './experiment_stores.js';
-    import { send, receive } from './crossfade.js';
+    import { task_blocks } from './modules/experiment_stores.js';
+    import { send, receive } from './modules/crossfade.js';
 
     // Initialize variables
     let grid_blocks;  // blocks to display on the grid

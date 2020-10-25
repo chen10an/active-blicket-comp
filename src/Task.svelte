@@ -15,16 +15,16 @@
 
 <script>    
     // Props
-    export let activation = (A, B) => A && B;  // default toy causal relationship
-    export let time_limit_seconds = 30;  // default time limit of 30s
-    export let noise = 0;
+    export let activation;  // lambda function that represents the causal relationship
+    export let time_limit_seconds;  // time limit in seconds
+    export let noise = 0;  // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true
 
     // Imports
     import BlockGrid from "./BlockGrid.svelte"
     import TaskEnd from "./TaskEnd.svelte";
-    import { features, task_blocks } from './experiment_stores.js';
+    import { features, task_blocks } from './modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
-    import { receive } from './crossfade.js';
+    import { receive } from './modules/crossfade.js';
     import { fade } from 'svelte/transition';
 
     // Constants
@@ -141,12 +141,12 @@
 </script>
 
 {#if !time_up}
-    <body transition:fade="{{duration: FLIP_DURATION_MS}}">
+    <body in:fade="{{duration: FLIP_DURATION_MS, delay: 700}}" out:fade="{{duration: FLIP_DURATION_MS}}">
         <div class="centering-container">
-            <div class="row-container">
-                <h2>Remaining time: {time_limit_seconds}</h2>
+            <div class="col-container">
+                <h2>Remaining time: {time_limit_seconds}s</h2>
 
-                <div class="col-container">
+                <div class="row-container">
                     <div class="block-outer-flex">
                         <!-- In this non-detector grid, display a block only if its state is false -->
                         <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state} key_prefix="interactive"/>
@@ -168,7 +168,7 @@
 
                 <!-- Show all previously attempted block combinations -->
                 <h2>Your past attempts:</h2>
-                <div class="col-container">
+                <div class="row-container">
                     <div id="all-combos">
                         <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                         {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
@@ -194,7 +194,7 @@
 
 
 <style>
-    .row-container {
+    .col-container {
         min-width: 75%;
 
         display: flex;
@@ -203,7 +203,7 @@
         align-items: center;
     }
 
-    .col-container {
+    .row-container {
         width: 100%;
         
         display: flex;

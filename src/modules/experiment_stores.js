@@ -6,10 +6,15 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // letters used for labeling blo
 const NUM_BLOCK_COLORS = 9; // number of distinct block colors in public/global.css
 
 // Write-able array of blocks used in the experiment's Task
-export const task_blocks = writable([]);
+export const task_blocks = writable([
+    {id: 2, state: false, color_num: 1, letter: "A"},
+    {id: 0, state: false, color_num: 5, letter: "B"},
+    {id: 1, state: false, color_num: 7, letter: "C"}
+]);  // use a default value for development and testing purposes
+// TODO: maybe generalize task_blocks to a dict after seeing how the demo task will work
 
 // Read-only array of objects surface feature properties (letter and color)
-export const features = readable([], function start(set) {
+export const features = readable(null, function start(set) {
     // Initialize blocks for the experiment
     let available_colors = [...Array(NUM_BLOCK_COLORS).keys()];  // available block colors in the range [0, NUM_BLOCK_COLORS]
     let arr = [];  // array of feature objects, which are initialized below
@@ -29,4 +34,12 @@ export const features = readable([], function start(set) {
 
 	return function stop() {};
 });
+
+// Writeable dictionary/object of experiment data
+export const data_dict = writable({}, function start() {return stop()});
+// TODO: store experiment data here and send to server using stop()
+// TODO: combo list
+// TODO: quiz answers, distinguish between train vs test
+
+// TODO: time between combos
 
