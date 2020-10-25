@@ -17,7 +17,7 @@
 <body transition:fade="{{duration: 300}}">
     <div class="centering-container">
         <div class="col-container">
-            <p>Time's up! You have made a total of {num_combos} unique {num_combos === 1 ? 'attempt' : 'attempts'}.</p>
+            <p>Time's up! You have made a total of {num_combos} {num_combos === 1 ? 'attempt' : 'attempts'}.</p>
             <button on:click={cont}>Click to continue</button>
         </div>
     </div>
@@ -28,6 +28,7 @@
         max-width: 30rem;
         min-height: 15rem;
         margin: 1rem;
+        padding: 1rem;
 
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);
