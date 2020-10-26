@@ -222,20 +222,18 @@
                 <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
 
                 <div class="row-container">
-                    <div class="block-outer-flex">
-                        <!-- In this non-detector grid, display a block only if its state is false -->
-                        <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state} key_prefix="interactive"/>
-                    </div>
+                    <!-- In this non-detector grid, display a block only if its state is false -->
+                    <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
+                        key_prefix="interactive" is_detector={false} is_active={false}/>
                     
                     <!-- 
                         The detector changes color when activation=true.
                         Hide the detector (i.e. end the task) when the time limit has been reached or 
                         the participant has found all block combinations that produce the activation.
                     -->
-                    <div class="block-outer-flex" class:active-detector="{detector_is_active}">
-                        <!-- Within the detector, display a block only if its state is true -->
-                        <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state} key_prefix="interactive"/>
-                    </div>     
+                    <!-- Within the detector, display a block only if its state is true -->
+                    <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}
+                        key_prefix="interactive" is_detector={true} is_active={detector_is_active}/>
                 </div>
 
                 <!-- Button for testing the detector -->
@@ -248,9 +246,9 @@
                         <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                         {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
                             <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
-                            class:active-detector="{activation(...block_arr.map(block => block.state))}"
                             in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
-                                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr} key_prefix="prev_combos"/>
+                                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
+                                    copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} is_active={activation(...block_arr.map(block => block.state))}/>
                             </div>
                         {/each}
                     </div>
@@ -287,21 +285,6 @@
         justify-content: center;
     }
 
-    .block-outer-flex {
-        min-height: var(--block-outer-length);
-        margin: var(--block-outer-margin);
-
-        flex-basis: var(--block-outer-length);
-        
-        border-radius: var(--container-border-radius);
-        box-shadow: var(--container-box-shadow);
-
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-    }
-
     #all-combos {
         height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)) + 1rem);
         max-width: calc(2*var(--block-outer-length) + 2*var(--block-outer-margin));
@@ -318,9 +301,5 @@
         align-items: center;
 
         overflow: auto;
-    }
-
-    .active-detector {
-        background-color: var(--active-color);
     }
 </style>

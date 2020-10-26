@@ -19,6 +19,7 @@
 		"Quiz_test": {collection_id: "test", quiz_bit_combos: ["001", "100", "011"], activation: (arg0, arg1, arg2) => arg2},
 	}
 	// TODO: implement noisy conditions
+	// TODO: <div>Icons made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 	let task_quiz_keys = Object.keys(task_quiz_sequence);
 	let task_quiz_dex = 0;

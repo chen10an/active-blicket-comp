@@ -115,7 +115,8 @@
         <div class="col-container">
             <h3>Will the following blicket machines activate?</h3>
             {#each quiz_block_combos as arr, i}
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} key_prefix="quiz"/>
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
+                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
                 <div class="answer-options">
                     {#each ACTIVATION_ANSWER_OPTIONS as option}
                         <label>
