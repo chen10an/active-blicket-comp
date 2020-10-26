@@ -10,7 +10,8 @@
     import { task_blocks } from "./modules/experiment_stores.js";
     import { data_dict } from "./modules/experiment_stores.js"
     import { fade } from 'svelte/transition';
-    import {createEventDispatcher} from "svelte";
+    import { createEventDispatcher } from "svelte";
+    import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
@@ -35,7 +36,9 @@
 
     // copy the blocks that were used by the preceding task
     let blocks = [...$task_blocks];
-    blocks.sort((a, b) => a.id - b.id);  // IMPORTANT: sort by id
+    
+    // TODO: test then remove
+    // blocks.sort((a, b) => a.id - b.id);  // IMPORTANT: sort by id
 
     // Store participant answers
     data_dict.update(dict => {
@@ -79,22 +82,12 @@
     }
 
     // derive block combinations and correct activation answers from quiz_bit_combos
-    let quiz_block_combos = [];  // array of arrays of (copied) block objects
+    let quiz_block_combos = getBlockCombos(quiz_bit_combos, blocks);
+    // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
+
     let correct_activation_answers = [];  // array of correct answers (true or false) for the activation questions
-    for (let i=0; i < quiz_bit_combos.length; i++) {
-        let bit_combo = quiz_bit_combos[i];
-        let block_combo = [];
-        for (let j=0; j < bit_combo.length; j++) {
-            let block_obj_copy = Object.assign({}, blocks[j]);
-            if (bit_combo[j] === "1") {
-                block_obj_copy.state = true;
-            } else {
-                block_obj_copy.state = false;
-            }
-            block_combo.push(block_obj_copy);
-        }
-        quiz_block_combos.push(block_combo)
-        let block_states = block_combo.map(block => block.state);
+    for (let i=0; i < quiz_block_combos.length; i++) {
+        let block_states = quiz_block_combos[i].map(block => block.state);
         let correct_ans = activation(...block_states);
         correct_activation_answers.push(correct_ans);
     }
@@ -201,10 +194,6 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-    }
-
-    .hide {
-        display: none;
     }
 
     #checkmark {

@@ -91,3 +91,7 @@ button:active, button:disabled {
 	background-color: var(--light-gray);
 	color: var(--dark-gray)
 }
+
+.hide {
+	display: none;
+}

@@ -3,7 +3,10 @@
 import { writable, readable } from 'svelte/store';
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // letters used for labeling blocks
-const NUM_BLOCK_COLORS = 9; // number of distinct block colors in public/global.css
+const NUM_BLOCK_COLORS = 9;  // number of distinct block colors in public/global.css
+
+// Read-only (but not a store) duration of the crossfade transition defined in crossfade.js
+export const CROSSFADE_DURATION_MS = 500;
 
 // Write-able array of blocks used in the experiment's Task
 export const task_blocks = writable([

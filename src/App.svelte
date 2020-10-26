@@ -4,12 +4,11 @@
 	import TaskVid from "./TaskVid.svelte"
   
 	let task_quiz_sequence = {
-		// "Video_0": {},
-		// "Task_dev": {activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: 60, randomize_arg_order: false},  // conjunctive
-		// "Quiz_dev": {quiz_id: "training_quiz", quiz_bit_combos: ["001", "100", "011"], activation: (arg0, arg1, arg2) => arg0},
-		"Task_0": {activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: 60, noise:0},  // conjunctive
+		"Task_dev": {activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: 60, replay_sequence: ["100", "100", "100", "010", "101", "101"]},
+		"Quiz_dev": {quiz_id: "training_quiz", quiz_bit_combos: ["001", "100", "011"], activation: (arg0, arg1, arg2) => arg0},
+		"Task_0": {activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: 60},  // deterministic conjunctive
 		"Quiz_0": {quiz_id: "training_quiz", quiz_bit_combos: ["101", "100", "011"], activation: (arg0, arg1, arg2) => arg0},
-		"Task_1": {activation: (arg0, arg1, arg2) => arg0, time_limit_seconds: 60, noise:0},  // deterministic disjunctive
+		"Task_1": {activation: (arg0, arg1, arg2) => arg0, time_limit_seconds: 60},  // deterministic disjunctive
 		"Task_1_noisy": {activation: (arg0, arg1, arg2) => arg0, time_limit_seconds: 60, noise:0.5},  // noisy disjunctive
 		// showing that we can get complex:
 		"Task_2": {activation: (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0, time_limit_seconds: 60, noise:0}

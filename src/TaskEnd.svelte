@@ -17,7 +17,7 @@
 <body transition:fade="{{duration: 300}}">
     <div class="centering-container">
         <div class="col-container">
-            <p>Time's up! You have made a total of {num_combos} {num_combos === 1 ? 'attempt' : 'attempts'}.</p>
+            <h3 style="text-align: center;">Time's up! You have made a total of {num_combos} {num_combos === 1 ? 'attempt' : 'attempts'}.</h3>
             <button on:click={cont}>Click to continue</button>
         </div>
     </div>

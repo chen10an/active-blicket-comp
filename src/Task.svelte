@@ -17,7 +17,14 @@
     // Props
     export let activation;  // lambda function that represents the causal relationship
     export let time_limit_seconds;  // time limit in seconds
-    export let noise = 0;  // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true
+    
+    // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true,
+    // defaults to 0
+    export let noise = 0;
+    
+    // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
+    // defaults to null
+    export let replay_sequence = null;
 
     // Imports
     import BlockGrid from "./BlockGrid.svelte"
@@ -26,10 +33,13 @@
     import { flip } from 'svelte/animate';
     import { receive } from './modules/crossfade.js';
     import { fade } from 'svelte/transition';
+    import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
+    import { CROSSFADE_DURATION_MS } from "./modules/experiment_stores.js";
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
+    const ANIMATION_INTERVAL_MS = 750;  // milliseconds passed to setInterval, used for replaying block animations
     const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
 
     // Check that the number of arguments to `activation` is supported by the available colors
@@ -58,7 +68,7 @@
     }
     task_blocks.set(blocks);
 
-    let count_down_interval = setInterval(count_down_seconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
+    let count_down_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
     let time_up = false;  // whether the time limit has been reached
     let detector_is_active = false;  // state of the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
@@ -88,9 +98,13 @@
                 // wait before returning everything to their default state
                 await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
 
-                // revert to the default detector background color and enable button interactions
+                if (!replay_sequence) {  // not a non-interactive replay of block animations
+                    // enable button interactions
+                    disable_all = false;
+                }
+
+                // revert to the default detector background color
                 detector_is_active = false;
-                disable_all = false;
             }
         }
 
@@ -128,7 +142,7 @@
     }
 
     // Count down timer
-    function count_down_seconds() {
+    function countDownSeconds() {
         // Count down in seconds until 0, at which time the task ends
         if (time_limit_seconds == 0) {
             // the time limit has been reached --> end the task (see the markup)
@@ -138,13 +152,65 @@
         
         time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
     }
+
+    // If given a replay_sequence array, let the participant watch a non-interactive replay of block animations
+    if (replay_sequence) {
+        clearInterval(count_down_interval);
+        disable_all = true;
+
+        // derive block combinations from the bit strings in replay_sequence
+        var replay_block_combos = getBlockCombos(replay_sequence, blocks);
+        // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
+
+        // filter each nested array to only contain blocks with state=true
+        for (let i=0; i < replay_block_combos.length; i++) {
+            replay_block_combos[i] = replay_block_combos[i].filter(block => block.state);
+        }
+        
+        // initializing variables for indexing replay_block_combos
+        var outer_dex = 0;
+        var inner_dex = 0;
+
+        var animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
+    }
+
+    async function animateReplay() {
+        // Animate the blocks and the detector by changing their states and calling the test() function at regular intervals
+
+        if (outer_dex >= replay_block_combos.length) {  // outer_dex out of bound
+            clearInterval(animation_interval);
+        } else if (inner_dex >= replay_block_combos[outer_dex].length) {  // inner_dex out of bound
+            clearInterval(animation_interval);  // clear interval to wait for the async timeout within test()
+            test();
+            // wait for the crossfade transition animation to finish and then wait another animation interval
+            await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS + ANIMATION_INTERVAL_MS));
+            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // resume the interval
+
+            inner_dex = 0;
+            outer_dex += 1;
+        } else {
+            // change the block state to true for the current inner and outer indices
+            let replay_block = replay_block_combos[outer_dex][inner_dex];
+            task_blocks.update(task_blocks => {
+                for (let i=0; i < task_blocks.length; i++) {
+                    if (task_blocks[i].id == replay_block.id) {
+                        task_blocks[i].state = replay_block.state;
+                    }
+                }
+                return task_blocks;
+            })
+
+            inner_dex += 1;
+        }
+    }
+
 </script>
 
 {#if !time_up}
-    <body in:fade="{{duration: FLIP_DURATION_MS, delay: 700}}" out:fade="{{duration: FLIP_DURATION_MS}}">
+    <body in:fade="{{duration: 300, delay: 700}}" out:fade="{{duration: 300}}">
         <div class="centering-container">
             <div class="col-container">
-                <h2>Remaining time: {time_limit_seconds}s</h2>
+                <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
 
                 <div class="row-container">
                     <div class="block-outer-flex">
@@ -164,10 +230,10 @@
                 </div>
 
                 <!-- Button for testing the detector -->
-                <button id="test-button" disabled="{disable_all}" on:click={test}>Test</button>
+                <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test</button>
 
                 <!-- Show all previously attempted block combinations -->
-                <h2>Your past attempts:</h2>
+                <h2>{replay_sequence ? "Their" : "Your"} past attempts:</h2>
                 <div class="row-container">
                     <div id="all-combos">
                         <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
