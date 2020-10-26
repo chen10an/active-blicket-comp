@@ -1,23 +1,20 @@
 // This file contains variables that need to be consistent between all variables within a single experiment
 
-import { writable, readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // letters used for labeling blocks
 const NUM_BLOCK_COLORS = 9;  // number of distinct block colors in public/global.css
 
-// Read-only (but not a store) duration of the crossfade transition defined in crossfade.js
-export const CROSSFADE_DURATION_MS = 500;
-
-// Write-able array of blocks used in the experiment's Task
-export const task_blocks = writable([
-    {id: 2, state: false, color_num: 1, letter: "A"},
+// Write-able dictionary/object of blocks used throughout the experiment, keyed by task IDs
+export const block_dict = writable({dev:
+    [{id: 2, state: false, color_num: 1, letter: "A"},
     {id: 0, state: false, color_num: 5, letter: "B"},
-    {id: 1, state: false, color_num: 7, letter: "C"}
-]);  // use a default value for development and testing purposes
-// TODO: maybe generalize task_blocks to a dict after seeing how the demo task will work
+    {id: 1, state: false, color_num: 7, letter: "C"}]
+});  // use a default value for development and testing purposes
+// TODO: send on stop
 
-// Read-only array of objects surface feature properties (letter and color)
-export const features = readable(null, function start(set) {
+// Write-able array of availale surface feature properties (letter and color)
+export const available_features = writable(null, function start(set) {
     // Initialize blocks for the experiment
     let available_colors = [...Array(NUM_BLOCK_COLORS).keys()];  // available block colors in the range [0, NUM_BLOCK_COLORS]
     let arr = [];  // array of feature objects, which are initialized below
@@ -38,11 +35,13 @@ export const features = readable(null, function start(set) {
 	return function stop() {};
 });
 
-// Writeable dictionary/object of experiment data
-export const data_dict = writable({}, function start() {return stop()});
-// TODO: store experiment data here and send to server using stop()
-// TODO: combo list
-// TODO: quiz answers, distinguish between train vs test
+// Write-able array of sorted, available blocks ids
+export const available_ids = writable([...Array(NUM_BLOCK_COLORS).keys()]);
 
-// TODO: time between combos
+// Writeable dictionary/object of experiment data collected from the Quiz component, keyed by quiz IDs
+export const quiz_data_dict = writable({}, function start() {return stop()});
+// TODO: send to server using stop()
+
+// TODO: store and send participant's combo list
+// TODO: store time between combos
 

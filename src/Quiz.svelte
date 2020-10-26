@@ -1,14 +1,14 @@
 <script>
     // Props
-    export let quiz_id;  // string used for identifying the quiz data when writing to experiment_stores.js
+    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     // quiz examples are specified using bit strings, where the ith index in the string corresponds to the block with id=i
     export let quiz_bit_combos = ["101", "100"];
     export let activation; // lambda function that represents the causal relationship
 
     // Imports
     import BlockGrid from "./BlockGrid.svelte"
-    import { task_blocks } from "./modules/experiment_stores.js";
-    import { data_dict } from "./modules/experiment_stores.js"
+    import { block_dict } from "./modules/experiment_stores.js";
+    import { quiz_data_dict } from "./modules/experiment_stores.js"
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from "svelte";
     import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
@@ -35,26 +35,23 @@
     let scrollY = 0;
 
     // copy the blocks that were used by the preceding task
-    let blocks = [...$task_blocks];
-    
-    // TODO: test then remove
-    // blocks.sort((a, b) => a.id - b.id);  // IMPORTANT: sort by id
+    let blocks = [...$block_dict[collection_id]];
 
     // Store participant answers
-    data_dict.update(dict => {
-        dict[quiz_id] = {
+    quiz_data_dict.update(dict => {
+        dict[collection_id] = {
             activation_answer_groups: [],
             blicket_answer_groups: [],
             free_response_answer: ""
         }
 
         return dict
-    })
+    });
 
     // initialize the stored answers
     for (let i=0; i < quiz_bit_combos.length; i++) {
-        $data_dict[quiz_id].activation_answer_groups.push(null);
-        $data_dict[quiz_id].blicket_answer_groups.push(-1);  // corresponds to the "unselected" option
+        $quiz_data_dict[collection_id].activation_answer_groups.push(null);
+        $quiz_data_dict[collection_id].blicket_answer_groups.push(-1);  // corresponds to the "unselected" option
     }
 
     // check whether the participant has given an answer to all problems
@@ -62,18 +59,18 @@
     $: {
         answered_all_questions = true;  // start with true then flip to false depending on the checks below
 
-        if ($data_dict[quiz_id].free_response_answer.length === 0) {  // free response is empty
+        if ($quiz_data_dict[collection_id].free_response_answer.length === 0) {  // free response is empty
             answered_all_questions = false;
         }
 
-        let activation_answer_groups = $data_dict[quiz_id].activation_answer_groups;
+        let activation_answer_groups = $quiz_data_dict[collection_id].activation_answer_groups;
         for (let i=0; i < activation_answer_groups.length; i++) {
             if (activation_answer_groups[i] === null) {  // one of the activation radio questions have not been answered
                 answered_all_questions = false;
             }
         }
 
-        let blicket_answer_groups = $data_dict[quiz_id].blicket_answer_groups;
+        let blicket_answer_groups = $quiz_data_dict[collection_id].blicket_answer_groups;
         for (let i=0; i < blicket_answer_groups.length; i++) {
             if (blicket_answer_groups[i] === -1) {  // one of the blicket dropdowns have not been answered
                 answered_all_questions = false;
@@ -118,11 +115,11 @@
         <div class="col-container">
             <h3>Will the following blicket machines activate?</h3>
             {#each quiz_block_combos as arr, i}
-                <BlockGrid is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} key_prefix="quiz"/>
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} key_prefix="quiz"/>
                 <div class="answer-options">
                     {#each ACTIVATION_ANSWER_OPTIONS as option}
                         <label>
-                            <input type=radio bind:group={$data_dict[quiz_id].activation_answer_groups[i]}
+                            <input type=radio bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
                             value={option == "Yes" ? true : false}
                             disabled="{!hide_correct_answers}"> {option}
                         </label>
@@ -130,7 +127,7 @@
 
                     <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
                     <div class:hide="{hide_correct_answers}">
-                        {#if $data_dict[quiz_id].activation_answer_groups[i] === correct_activation_answers[i]}
+                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
                             <span id="checkmark">&nbsp;&#10004</span>
                         {:else}
                             <span id="cross">&nbsp;&#10008</span>
@@ -139,13 +136,13 @@
                 </div>
             {/each}
             <h3>Do you think that each of the following blocks is a blicket?</h3>
-            <!-- Iterate over $task_blocks, which orders blocks alphabetically -->
-            {#each $task_blocks as block, i}
+            <!-- Iterate over $block_dict, which orders blocks alphabetically -->
+            {#each $block_dict[collection_id] as block, i}
                 <div class="block" style="background-color: var(--color{block.color_num})">
                     <b>{block.letter}</b>
                 </div>
                 <div class="answer-options">
-                    <select bind:value={$data_dict[quiz_id].blicket_answer_groups[i]}>
+                    <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]}>
                         {#each BLICKET_ANSWER_OPTIONS as option}
                             <option value={option.id}>
                                 {option.text}
@@ -156,7 +153,7 @@
             {/each}
 
             <h3>Please describe how you think the blicket machine works.</h3>
-            <textarea bind:value={$data_dict[quiz_id].free_response_answer}></textarea>
+            <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer}></textarea>
             <div class:hide="{hide_correct_answers}" style="text-align: center;">
                 <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
             </div>

@@ -15,6 +15,7 @@
 
 <script>    
     // Props
+    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation;  // lambda function that represents the causal relationship
     export let time_limit_seconds;  // time limit in seconds
     
@@ -29,44 +30,51 @@
     // Imports
     import BlockGrid from "./BlockGrid.svelte"
     import TaskEnd from "./TaskEnd.svelte";
-    import { features, task_blocks } from './modules/experiment_stores.js';
+    import { available_features, block_dict, available_ids } from './modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive } from './modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
-    import { CROSSFADE_DURATION_MS } from "./modules/experiment_stores.js";
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
-    const ANIMATION_INTERVAL_MS = 750;  // milliseconds passed to setInterval, used for replaying block animations
     const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
 
+    // milliseconds passed to setInterval, used for replaying block animations,
+    // make sure this is sufficiently larger than the crossfade duration
+    const ANIMATION_INTERVAL_MS = 750;
+
     // Check that the number of arguments to `activation` is supported by the available colors
-    if (activation.length > Math.floor($features.length/2)) {
+    if (activation.length > Math.floor($available_features.length/2)) {
         throw "The task causal function has too many arguments/blocks! We don't have enough distinct colors.";
     }
 
     // Initialize variables
-    let blocks = [];
-    // initialize an array of block objects
-    let available_ids = [...Array(activation.length).keys()];  // available block ids in the range [0, activation.length]
+    let blocks = [];  // initialize an array of block objects
+    // get the first n available block ids, where n=activation.length and remove these block ids from available_ids
+    let id_arr = $available_ids.splice(0, activation.length);
     for (let i=0; i < activation.length; i++) {
         // randomly assign ids without replacement
         // this id corresponds to the argument position for the `activation` function
-        let id_dex = Math.floor(Math.random() * available_ids.length);
-        let id = available_ids[id_dex];
-        available_ids = available_ids.filter(x => x !== id);  // remove the selected id
+        let id_dex = Math.floor(Math.random() * id_arr.length);
+        let id = id_arr[id_dex];
+        id_arr = id_arr.filter(x => x !== id);  // remove the selected id
 
         blocks.push({
             id: id,  // random
             state: false,  // init to false
             // get surface features from `experiment_store.js`
-            color_num: $features[i].color_num,
-            letter: $features[i].letter
+            color_num: $available_features[i].color_num,
+            letter: $available_features[i].letter
         });
     }
-    task_blocks.set(blocks);
+    $available_features.splice(0, activation.length);  // remove the used features
+
+    block_dict.update(dict => {
+        dict[collection_id] = blocks;
+        return dict;
+    });
 
     let count_down_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
     let time_up = false;  // whether the time limit has been reached
@@ -81,7 +89,7 @@
         // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
 
         // copy the array of block objects and sort by the randomly assigned id
-        let blocks_copy = [...$task_blocks];
+        let blocks_copy = [...$block_dict[collection_id]];
         blocks_copy.sort((a, b) => a.id - b.id);
 
         // the randomly assigned id then becomes the argument position in `activation`
@@ -130,14 +138,15 @@
         all_block_combos = [block_combo, ...all_block_combos];  // add to front
 
         // return all block states back to false
-        for (let i=0; i < $task_blocks.length; i++) {
-            $task_blocks[i].state = false;
+        for (let i=0; i < $block_dict[collection_id].length; i++) {
+            $block_dict[collection_id][i].state = false;
         }
     }
 
     // TODO: remove for prod
     function skip() {
         clearInterval(count_down_interval);
+        clearInterval(animation_interval);
         time_up = true;
     }
 
@@ -182,22 +191,22 @@
         } else if (inner_dex >= replay_block_combos[outer_dex].length) {  // inner_dex out of bound
             clearInterval(animation_interval);  // clear interval to wait for the async timeout within test()
             test();
-            // wait for the crossfade transition animation to finish and then wait another animation interval
-            await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS + ANIMATION_INTERVAL_MS));
-            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // resume the interval
+            // wait another animation interval before resuming the interval
+            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
+            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
 
             inner_dex = 0;
             outer_dex += 1;
         } else {
             // change the block state to true for the current inner and outer indices
             let replay_block = replay_block_combos[outer_dex][inner_dex];
-            task_blocks.update(task_blocks => {
-                for (let i=0; i < task_blocks.length; i++) {
-                    if (task_blocks[i].id == replay_block.id) {
-                        task_blocks[i].state = replay_block.state;
+            block_dict.update(dict => {
+                for (let i=0; i < dict[collection_id].length; i++) {
+                    if (dict[collection_id][i].id == replay_block.id) {
+                        dict[collection_id][i].state = replay_block.state;
                     }
                 }
-                return task_blocks;
+                return dict;
             })
 
             inner_dex += 1;
@@ -215,7 +224,7 @@
                 <div class="row-container">
                     <div class="block-outer-flex">
                         <!-- In this non-detector grid, display a block only if its state is false -->
-                        <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state} key_prefix="interactive"/>
+                        <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state} key_prefix="interactive"/>
                     </div>
                     
                     <!-- 
@@ -225,7 +234,7 @@
                     -->
                     <div class="block-outer-flex" class:active-detector="{detector_is_active}">
                         <!-- Within the detector, display a block only if its state is true -->
-                        <BlockGrid is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state} key_prefix="interactive"/>
+                        <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state} key_prefix="interactive"/>
                     </div>     
                 </div>
 
@@ -241,7 +250,7 @@
                             <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
                             class:active-detector="{activation(...block_arr.map(block => block.state))}"
                             in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
-                                <BlockGrid is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr} key_prefix="prev_combos"/>
+                                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={block_arr} key_prefix="prev_combos"/>
                             </div>
                         {/each}
                     </div>

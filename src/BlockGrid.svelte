@@ -1,13 +1,14 @@
 <script>
     // Props
+    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let is_mini;  // boolean, whether to show a mini, non-interactive grid
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
     export let block_filter_func;  // lambda function that determines which blocks to show on the grid, e.g. block => !block.state
-    export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `task_blocks` from `experiment_stores.js`
+    export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `block_dict[collection_id]` from `experiment_stores.js`
     export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
     // Imports
-    import { task_blocks } from './modules/experiment_stores.js';
+    import { block_dict } from './modules/experiment_stores.js';
     import { send, receive } from './modules/crossfade.js';
 
     // Initialize variables
@@ -16,7 +17,7 @@
         if (copied_blocks_arr) {  // if not null
             grid_blocks = copied_blocks_arr;
         } else {
-            grid_blocks = $task_blocks;  // cross-component (using $) reference to the blocks in `experiment_stores.js`
+            grid_blocks = $block_dict[collection_id];  // cross-component (using $) reference to the blocks in `experiment_stores.js`
         }
     }
 
@@ -26,7 +27,10 @@
         let current_block = grid_blocks.find(block => block.id === id);
         current_block.state = !current_block.state;
 
-        task_blocks.set(grid_blocks);  // explicit assignment to trigger svelte's reactivity
+        block_dict.update(dict => {
+            dict[collection_id] = grid_blocks;
+            return dict;
+        });  // explicit update to trigger svelte's reactivity
     }
 </script>
 
