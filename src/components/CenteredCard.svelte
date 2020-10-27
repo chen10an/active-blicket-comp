@@ -6,7 +6,7 @@
     import { fade } from 'svelte/transition';
 
     // Event dispatcher for communicating with parent components
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher} from 'svelte';
     const dispatch = createEventDispatcher();
     
     // Click handler

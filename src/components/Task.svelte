@@ -28,13 +28,13 @@
     export let replay_sequence = null;
 
     // Imports
-    import BlockGrid from "./BlockGrid.svelte"
-    import CenteredCard from "./CenteredCard.svelte";
-    import { available_features, block_dict, available_ids } from './modules/experiment_stores.js';
+    import BlockGrid from './BlockGrid.svelte';
+    import CenteredCard from './CenteredCard.svelte';
+    import { available_features, block_dict, available_ids } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
-    import { receive } from './modules/crossfade.js';
+    import { receive } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
-    import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
+    import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
@@ -46,7 +46,7 @@
     const ANIMATION_INTERVAL_MS = 750;
 
     // Check that the number of arguments to `activation` is supported by the available colors
-    if (activation.length > Math.floor($available_features.length/2)) {
+    if (activation.length > Math.floor($available_features.length)) {
         throw "The task causal function has too many arguments/blocks! We don't have enough distinct colors.";
     }
 

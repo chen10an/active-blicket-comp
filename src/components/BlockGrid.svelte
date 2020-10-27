@@ -10,8 +10,8 @@
     export let is_active = false;  // boolean, whether the grid, which should be a detector, is active
 
     // Imports
-    import { block_dict } from './modules/experiment_stores.js';
-    import { send, receive } from './modules/crossfade.js';
+    import { block_dict } from '../modules/experiment_stores.js';
+    import { send, receive } from '../modules/crossfade.js';
 
     // Initialize variables
     let grid_blocks;  // blocks to display on the grid

@@ -6,13 +6,13 @@
     export let activation; // lambda function that represents the causal relationship
 
     // Imports
-    import BlockGrid from "./BlockGrid.svelte";
-    import CenteredCard from "./CenteredCard.svelte";
-    import { block_dict } from "./modules/experiment_stores.js";
-    import { quiz_data_dict } from "./modules/experiment_stores.js";
+    import BlockGrid from './BlockGrid.svelte';
+    import CenteredCard from './CenteredCard.svelte';
+    import { block_dict } from '../modules/experiment_stores.js';
+    import { quiz_data_dict } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
-    import { createEventDispatcher } from "svelte";
-    import { getBlockCombos } from "./modules/bitstring_to_blocks.js";
+    import { createEventDispatcher } from 'svelte';
+    import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];

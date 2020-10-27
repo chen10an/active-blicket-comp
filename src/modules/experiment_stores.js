@@ -7,13 +7,13 @@ const NUM_BLOCK_COLORS = 9;  // number of distinct block colors in public/global
 
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by task IDs
 export const block_dict = writable({intro:
-    [{id: 2, state: false, color_num: 0, letter: "A"},
-    {id: 0, state: false, color_num: 1, letter: "B"},
-    {id: 1, state: false, color_num: 5, letter: "C"}]
+    [{id: -3, state: false, color_num: 0, letter: "A"},
+    {id: -2, state: false, color_num: 1, letter: "B"},
+    {id: -1, state: false, color_num: 5, letter: "C"}]
 });  // use a default value for the blocks used in the introduction instructions
 // TODO: send on stop
 
-// Write-able array of availale surface feature properties (letter and color)
+// Write-able array of available surface feature properties (letter and color)
 export const available_features = writable(null, function start(set) {
     // Initialize blocks for the experiment
     let available_colors = [...Array(NUM_BLOCK_COLORS).keys()];  // available block colors in the range [0, NUM_BLOCK_COLORS]
@@ -36,7 +36,10 @@ export const available_features = writable(null, function start(set) {
 });
 
 // Write-able array of sorted, available blocks ids
-export const available_ids = writable([...Array(NUM_BLOCK_COLORS).keys()]);
+export const available_ids = writable([], function start(set) {
+    set([...Array(NUM_BLOCK_COLORS).keys()]);
+    return function stop() {};
+});
 
 // Writeable dictionary/object of experiment data collected from the Quiz component, keyed by quiz IDs
 export const quiz_data_dict = writable({}, function start() {return stop()});

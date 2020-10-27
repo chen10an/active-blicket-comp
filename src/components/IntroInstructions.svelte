@@ -1,8 +1,8 @@
 <script>
     export let collection_id;
 
-    import CenteredCard from "./CenteredCard.svelte"
-    import BlockGrid from "./BlockGrid.svelte"
+    import CenteredCard from './CenteredCard.svelte';
+    import BlockGrid from './BlockGrid.svelte';
 </script>
 
 <CenteredCard is_large={true} button_text="Click to continue to the first quiz" on:continue>
