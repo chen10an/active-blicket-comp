@@ -6,11 +6,11 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";  // letters used for labeling blo
 const NUM_BLOCK_COLORS = 9;  // number of distinct block colors in public/global.css
 
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by task IDs
-export const block_dict = writable({dev:
-    [{id: 2, state: false, color_num: 1, letter: "A"},
-    {id: 0, state: false, color_num: 5, letter: "B"},
-    {id: 1, state: false, color_num: 7, letter: "C"}]
-});  // use a default value for development and testing purposes
+export const block_dict = writable({intro:
+    [{id: 2, state: false, color_num: 0, letter: "A"},
+    {id: 0, state: false, color_num: 1, letter: "B"},
+    {id: 1, state: false, color_num: 5, letter: "C"}]
+});  // use a default value for the blocks used in the introduction instructions
 // TODO: send on stop
 
 // Write-able array of availale surface feature properties (letter and color)

@@ -29,7 +29,7 @@
 
     // Imports
     import BlockGrid from "./BlockGrid.svelte"
-    import TaskEnd from "./TaskEnd.svelte";
+    import CenteredCard from "./CenteredCard.svelte";
     import { available_features, block_dict, available_ids } from './modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive } from './modules/crossfade.js';
@@ -237,10 +237,10 @@
                 </div>
 
                 <!-- Button for testing the detector -->
-                <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test</button>
+                <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test the blicket machine</button>
 
                 <!-- Show all previously attempted block combinations -->
-                <h2>{replay_sequence ? "Their" : "Your"} past attempts:</h2>
+                <h2>{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h2>
                 <div class="row-container">
                     <div id="all-combos">
                         <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
@@ -260,9 +260,14 @@
         </div>
     </body>
 {:else}
-    <!-- Show the TaskEnd component when the time limit is reached. -->
-    <!-- And forward the continue event upward. -->
-    <TaskEnd num_combos={all_bit_combos.length} on:continue/>
+    <!-- Show when the time limit is reached and forward the continue event upward. -->
+    <CenteredCard on:continue>
+        {#if replay_sequence}
+            <h3 style="text-align: center;">Based on the replay you just watched, the next part is a quiz about blickets and the blicket machine.</h3>
+        {:else}
+            <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just encountered.</h3>
+        {/if}
+    </CenteredCard>
 {/if}
 
 
@@ -301,5 +306,9 @@
         align-items: center;
 
         overflow: auto;
+    }
+
+    h2 {
+	    margin: 0;
     }
 </style>

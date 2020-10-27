@@ -6,12 +6,13 @@
     export let activation; // lambda function that represents the causal relationship
 
     // Imports
-    import BlockGrid from "./BlockGrid.svelte"
+    import BlockGrid from "./BlockGrid.svelte";
+    import CenteredCard from "./CenteredCard.svelte";
     import { block_dict } from "./modules/experiment_stores.js";
-    import { quiz_data_dict } from "./modules/experiment_stores.js"
+    import { quiz_data_dict } from "./modules/experiment_stores.js";
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from "svelte";
-    import { getBlockCombos } from "./modules/bitstring_to_blocks.js"
+    import { getBlockCombos } from "./modules/bitstring_to_blocks.js";
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
@@ -111,81 +112,63 @@
 <svelte:window bind:scrollY={scrollY}/>
 
 <body in:fade="{{duration: 300}}" out:fade="{{duration: 0}}">
-    <div class="centering-container">
-        <div class="col-container">
-            <h3>Will the following blicket machines activate?</h3>
-            {#each quiz_block_combos as arr, i}
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
-                <div class="answer-options">
-                    {#each ACTIVATION_ANSWER_OPTIONS as option}
-                        <label>
-                            <input type=radio bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
-                            value={option == "Yes" ? true : false}
-                            disabled="{!hide_correct_answers}"> {option}
-                        </label>
-                    {/each}
+    <CenteredCard is_large={true} has_button={false}>
+        <h2>Quiz about Blickets and the Blicket Machine</h2>
+        <h3>Will the following blicket machines activate (light up with a green color)?</h3>
+        {#each quiz_block_combos as arr, i}
+            <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
+                copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
+            <div class="answer-options">
+                {#each ACTIVATION_ANSWER_OPTIONS as option}
+                    <label>
+                        <input type=radio bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
+                        value={option == "Yes" ? true : false}
+                        disabled="{!hide_correct_answers}"> {option}
+                    </label>
+                {/each}
 
-                    <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
-                    <div class:hide="{hide_correct_answers}">
-                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
-                            <span id="checkmark">&nbsp;&#10004</span>
-                        {:else}
-                            <span id="cross">&nbsp;&#10008</span>
-                        {/if}
-                    </div>
+                <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
+                <div class:hide="{hide_correct_answers}">
+                    {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
+                        <span id="checkmark">&nbsp;&#10004</span>
+                    {:else}
+                        <span id="cross">&nbsp;&#10008</span>
+                    {/if}
                 </div>
-            {/each}
-            <h3>Do you think that each of the following blocks is a blicket?</h3>
-            <!-- Iterate over $block_dict, which orders blocks alphabetically -->
-            {#each $block_dict[collection_id] as block, i}
-                <div class="block" style="background-color: var(--color{block.color_num})">
-                    <b>{block.letter}</b>
-                </div>
-                <div class="answer-options">
-                    <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]}>
-                        {#each BLICKET_ANSWER_OPTIONS as option}
-                            <option value={option.id}>
-                                {option.text}
-                            </option>
-                        {/each}
-                    </select>
-                </div>
-            {/each}
-
-            <h3>Please describe how you think the blicket machine works.</h3>
-            <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer}></textarea>
-            <div class:hide="{hide_correct_answers}" style="text-align: center;">
-                <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
             </div>
+        {/each}
+        <h3>Do you think that each of the following blocks is a blicket?</h3>
+        <!-- Iterate over $block_dict, which orders blocks alphabetically -->
+        {#each $block_dict[collection_id] as block, i}
+            <div class="block" style="background-color: var(--color{block.color_num})">
+                <b>{block.letter}</b>
+            </div>
+            <div class="answer-options">
+                <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]}>
+                    {#each BLICKET_ANSWER_OPTIONS as option}
+                        <option value={option.id}>
+                            {option.text}
+                        </option>
+                    {/each}
+                </select>
+            </div>
+        {/each}
 
-            <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">Click to submit your answers and receive feedback</button>
-            <button on:click="{cont}" class:hide="{hide_correct_answers}">Click to continue</button>
-
-            <!-- TODO: remove this button for prod -->
-            <button on:click={skip}>dev: skip form validation</button>
+        <h3>Please describe how you think the blicket machine works.</h3>
+        <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer}></textarea>
+        <div class:hide="{hide_correct_answers}" style="text-align: center;">
+            <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
         </div>
-    </div>
+
+        <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">Click to submit your answers and receive feedback</button>
+        <button on:click="{cont}" class:hide="{hide_correct_answers}">Click to continue</button>
+
+        <!-- TODO: remove this button for prod -->
+        <button on:click={skip}>dev: skip form validation</button>
+    </CenteredCard>
 </body>
 
 <style>
-    .col-container {
-        max-width: 50rem;
-        margin: 1rem;
-        padding: 1rem;
-
-        border-radius: var(--container-border-radius);
-        box-shadow: var(--container-box-shadow);
-
-        /* note that the parent element of this component should be a flexbox */
-        flex-grow: 1;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
     .answer-options {
         margin: 0.5rem;
 

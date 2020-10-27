@@ -1,5 +1,7 @@
 <script>
-    export let num_combos;  // number of unique block combinations (active or not) that the participant has tried
+    export let is_large = false;  // whether to show a larger card
+    export let has_button = true;  // whether to include a button that dispatches the continue event
+    export let button_text = "Click to continue";  // text to show on the button
 
     import { fade } from 'svelte/transition';
 
@@ -16,9 +18,11 @@
 
 <body transition:fade="{{duration: 300}}">
     <div class="centering-container">
-        <div class="col-container">
-            <h3 style="text-align: center;">Time's up! You have made a total of {num_combos} {num_combos === 1 ? 'attempt' : 'attempts'}.</h3>
-            <button on:click={cont}>Click to continue</button>
+        <div class="col-container" class:large="{is_large}">
+            <slot></slot>
+            {#if has_button}
+                <button on:click={cont}>{button_text}</button>
+            {/if}
         </div>
     </div>
 </body>
@@ -28,7 +32,7 @@
         max-width: 30rem;
         min-height: 15rem;
         margin: 1rem;
-        padding: 1rem;
+        padding: 2rem;
 
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);
@@ -40,5 +44,10 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+
+    .large {
+        max-width: 50rem !important;
+        min-height: 30rem !important;
     }
 </style>
