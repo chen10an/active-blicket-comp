@@ -122,7 +122,7 @@
     }
 
     .detector {
-        background-image: url("/images/cogwheel.svg");
+        background-image: url("../images/cogwheel.svg");
         background-repeat: no-repeat;
         background-position: center;
         background-size: 80%;
