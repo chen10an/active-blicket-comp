@@ -65,7 +65,7 @@
             id: id,  // random
             state: false,  // init to false
             // get surface features from `experiment_store.js`
-            color_num: $available_features[i].color_num,
+            color: $available_features[i].color,
             letter: $available_features[i].letter
         });
     }
@@ -245,7 +245,7 @@
                     <div id="all-combos">
                         <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                         {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
-                            <div style="margin-right: 0.5rem; border-radius: var(--container-border-radius);"
+                            <div style="margin-right: 0.5rem;"
                             in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
                                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
                                     copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} is_active={activation(...block_arr.map(block => block.state))}/>

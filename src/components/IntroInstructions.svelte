@@ -3,9 +3,12 @@
 
     import CenteredCard from './CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';
+    import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
+
+    // TODO: maybe delete the section about "these properties don't matter" because they might be confusing; it might be sufficient to implicitly show this info when the letters, color and positions are completely different in the test conditon
 </script>
 
-<CenteredCard is_large={true} button_text="Click to continue to the first quiz" on:continue>
+<CenteredCard is_large={true} has_button={false}>
     <div>
         <h2>Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. A page reload will terminate this study and you will not be able to complete the HIT.</b></p>
@@ -59,6 +62,8 @@
         <!-- TODO: compensation and bonus -->
         <!-- TODO: confidentiality and data protection-->
     </div>
+
+    <CoolWarmCaptcha on:continue/>
 </CenteredCard>
 
 <style>

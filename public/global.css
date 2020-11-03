@@ -19,6 +19,28 @@
 	--color7: #654321ff;
 	--color8: #3a3a3a;
 
+	/* cool colors for the semantic captcha */
+	--cool0: #03045eff;
+	--cool1: #023e8aff;
+	--cool2: #0077b6ff;
+	--cool3: #0096c7ff;
+	--cool4: #00b4d8ff;
+	--cool5: #48cae4ff;
+	--cool6: #90e0efff;
+	--cool7: #ade8f4ff;
+	--cool8: #caf0f8ff;
+
+	/* warm colors for the semantic captcha */
+	--warm0: #ff4800ff;
+	--warm1: #ff5400ff;
+	--warm2: #ff6000ff;
+	--warm3: #ff6d00ff;
+	--warm4: #ff7900ff;
+	--warm5: #ff8500ff;
+	--warm6: #ff9100ff;
+	--warm7: #ff9e00ff;
+	--warm8: #ffaa00ff;
+
 	/* blocks are squares specified by one length variable */
 	--block-length: 5rem;
 	--block-margin: 0.5rem;

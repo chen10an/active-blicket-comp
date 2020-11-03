@@ -1,9 +1,9 @@
 <script>
     // Props
-    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
+    export let collection_id = "intro";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     // quiz examples are specified using bit strings, where the ith index in the string corresponds to the block with id=i
-    export let quiz_bit_combos = ["101", "100"];
-    export let activation; // lambda function that represents the causal relationship
+    export let quiz_bit_combos = ["100", "010", "001"];
+    export let activation = (arg0, arg1, arg2) => arg0; // lambda function that represents the causal relationship
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
@@ -140,7 +140,7 @@
         <h3>Do you think that each of the following blocks is a blicket?</h3>
         <!-- Iterate over $block_dict, which orders blocks alphabetically -->
         {#each $block_dict[collection_id] as block, i}
-            <div class="block" style="background-color: var(--color{block.color_num})">
+            <div class="block" style="background-color: var(--{block.color})">
                 <b>{block.letter}</b>
             </div>
             <div class="answer-options">

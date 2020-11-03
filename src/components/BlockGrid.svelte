@@ -40,7 +40,7 @@
 <div class:outer-flex="{!is_mini}" class:detector="{is_detector && !is_mini}" class:active="{is_active && !is_mini}">
     <div class="inner-grid" class:mini="{is_mini}" class:detector="{is_detector && is_mini}" class:active="{is_active && is_mini}">
         {#each grid_blocks.filter(block_filter_func) as block (block.id)}
-            <div class="block" style="background-color: var(--color{block.color_num}); grid-area: {block.letter};"
+            <div class="block" style="background-color: var(--{block.color}); grid-area: {block.letter};"
             class:mini="{is_mini}" class:disabled="{is_disabled}"
             in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
             on:click={() => click_block(block.id)}>
