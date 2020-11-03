@@ -16,16 +16,15 @@
     }
 </script>
 
-<body transition:fade="{{duration: 300}}">
-    <div class="centering-container">
-        <div class="col-container" class:large="{is_large}">
-            <slot></slot>
-            {#if has_button}
-                <button on:click={cont}>{button_text}</button>
-            {/if}
-        </div>
+
+<div class="centering-container" transition:fade="{{duration: 300}}">
+    <div class="col-container" class:large="{is_large}">
+        <slot></slot>
+        {#if has_button}
+            <button on:click={cont}>{button_text}</button>
+        {/if}
     </div>
-</body>
+</div>
 
 <style>
     .col-container {

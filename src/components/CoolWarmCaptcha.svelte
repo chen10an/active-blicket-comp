@@ -30,7 +30,7 @@
 </script>
 
 <p>To practice what you have learned in the instructions, <b>please move only the blocks with warm colors onto the blicket machine.</b>
-    Once this is done, the “continue” button will take you to the next part of the study.</p>
+    Feel free to google the meaning of warm colors. Once this is done, the “continue” button will take you to the next part of the study.</p>
 <div class="row-container">
     <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => !block.state}
         key_prefix="captcha" is_detector={false} is_active={false}/>

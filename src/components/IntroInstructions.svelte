@@ -4,6 +4,7 @@
     import CenteredCard from './CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';
     import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
+    import WinnieThePooh from './WinnieThePooh.svelte';
 
     // TODO: maybe delete the section about "these properties don't matter" because they might be confusing; it might be sufficient to implicitly show this info when the letters, color and positions are completely different in the test conditon
 </script>
@@ -63,16 +64,13 @@
         <!-- TODO: confidentiality and data protection-->
     </div>
 
+    <!-- captcha and honeypot -->
     <CoolWarmCaptcha on:continue/>
+    <WinnieThePooh/>
 </CenteredCard>
 
 <style>
     h2 {
         margin: 0.5rem;
-    }
-
-    button {
-        margin: 0;
-        display: inline-block;
     }
 </style>

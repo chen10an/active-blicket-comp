@@ -41,6 +41,7 @@ export const block_dict = writable({}, function start(set) {
         {id: -3, state: false, color: "color5", letter: "C"}],
     };
 
+    // TODO: ensure at least one warm block and one cool block
     let captcha_blocks = init_block_features([...WARM_COLORS, ...COOL_COLORS], 9);
     for (let i=0; i < captcha_blocks.length; i++) {
         captcha_blocks[i].state = false;
