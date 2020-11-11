@@ -67,6 +67,7 @@
     <!-- captcha and honeypot -->
     <CoolWarmCaptcha on:continue/>
 </CenteredCard>
+<div class="attribution">Cog icon made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08" target="_blank">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a></div>
 <WinnieThePooh on:continue/>
 
 <style>

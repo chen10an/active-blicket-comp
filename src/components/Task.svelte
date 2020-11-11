@@ -222,7 +222,7 @@
 </script>
 
 {#if !time_up}
-    <body in:fade="{{duration: 300, delay: 700}}" out:fade="{{duration: 300}}">
+    <div in:fade="{{duration: 300, delay: 700}}" out:fade="{{duration: 300}}">
         <div class="centering-container">
             <div class="col-container">
                 <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
@@ -264,7 +264,7 @@
                 <button on:click={skip}>dev: skip to the next part</button>
             </div>
         </div>
-    </body>
+    </div>
 {:else}
     <!-- Show when the time limit is reached and forward the continue event upward. -->
     <CenteredCard on:continue>

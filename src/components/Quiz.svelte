@@ -111,7 +111,7 @@
 
 <svelte:window bind:scrollY={scrollY}/>
 
-<body in:fade="{{duration: 300}}" out:fade="{{duration: 0}}">
+<div in:fade="{{duration: 300}}" out:fade="{{duration: 0}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <h3>Will the following blicket machines activate (light up with a green color)?</h3>
@@ -166,7 +166,7 @@
         <!-- TODO: remove this button for prod -->
         <button on:click={skip}>dev: skip form validation</button>
     </CenteredCard>
-</body>
+</div>
 
 <style>
     .answer-options {

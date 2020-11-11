@@ -118,3 +118,12 @@ button:disabled {
 .hide {
 	display: none;
 }
+
+.attribution {
+	text-align: center;
+	color: var(--medium-gray);
+}
+
+.attribution a {
+	color: inherit;
+}
