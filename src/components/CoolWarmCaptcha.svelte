@@ -6,25 +6,29 @@
     import {createEventDispatcher} from 'svelte';
     const dispatch = createEventDispatcher();
 
+    const MAX_CLICKS = 50;  // number of clicks allowed before forcing the end of the experiment
+    let num_clicks = 0;  // track the number of clicks
+
     // Click handler
     function check() {
+        num_clicks += 1;
+        if (num_clicks >= MAX_CLICKS) {
+            dispatch("continue", {end: true});
+            return;
+        }
+
         let captcha_blocks = $block_dict["captcha"];
         for (let i=0; i < captcha_blocks.length; i++) {
             if (captcha_blocks[i].color.startsWith("warm") && !captcha_blocks[i].state) {
                 // not all warm blocks are on the blicket machine
-                // TODO: remove
-                console.log("don't continue because not all warm blocks are on the machine");
                 return;
             } else if (captcha_blocks[i].color.startsWith("cool") && captcha_blocks[i].state) {
                 // some cool blocks are on the blicket machine
-                // TODO: remove
-                console.log("don't continue because cool blocks are on the machine");
                 return;
             }
         }
-        // TODO: count how many times the continue button has been clicked, if over 50 send to "bot" page and send data to server
 
-        // after passing the checks above, tell parent components to move on to the next task/quiz
+        // after passing all the checks above, tell parent components to move on to the next task/quiz
         dispatch("continue");
     }
 </script>
@@ -39,7 +43,7 @@
         key_prefix="captcha" is_detector={true} is_active={false}/>
 </div>
 
-<button on:click={check}>Continue</button>
+<button on:click={check}>Continue to the first interactive task</button>
 
 <style>
     /* The following styling assumes that this CoolWarmCaptcha component is nested within a CenteredCard component */

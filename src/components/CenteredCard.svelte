@@ -16,8 +16,7 @@
     }
 </script>
 
-
-<div class="centering-container" transition:fade="{{duration: 300}}">
+<div class="centering-container" in:fade="{{delay: 500, duration: 300}}" out:fade="{{duration: 300}}">
     <div class="col-container" class:large="{is_large}">
         <slot></slot>
         {#if has_button}

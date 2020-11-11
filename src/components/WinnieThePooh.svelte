@@ -2,6 +2,10 @@
     import { dev_mode } from '../modules/experiment_stores.js';
     // $dev_mode = true;  // set dev_mode to true to see the hidden form elements
 
+    // Event dispatcher for communicating with parent components
+    import {createEventDispatcher} from 'svelte';
+    const dispatch = createEventDispatcher();
+
     let form_responses = {
         "christopher_robin": null,
         "piglet": null,
@@ -10,9 +14,27 @@
         "eeyore": null
     }
 
+    $: {
+        let num_filled = 0;
+        for (const key in form_responses) {
+            if (form_responses[key] !== null) {
+                num_filled += 1;
+            }
+        }
+
+        if (num_filled >= 2) {
+            // force the end of the experiment when 2 hidden elements are filled
+            dispatch("continue", {end: true});
+        }
+    }
+
     function submit() {
-        console.log("here")
-        // TODO: show end of experiment and send bot's responses and participant id to server
+        // force the end of the experiment when the hidden form is successfully submitted
+        dispatch("continue", {end: true});
+    }
+
+    function click() {
+        form_responses.eeyore = true;
     }
 </script>
 
@@ -36,7 +58,7 @@
         <label><input type="checkbox" name="tigger" bind:checked={form_responses.tigger_1} required>A bouncy tail</label>
     </fieldset>
 
-    <input type="submit" class:eeyore="{!$dev_mode}" value="Submit!" on:click={() => form_responses.eeyore = true}>
+    <input type="submit" class:eeyore="{!$dev_mode}" value="Submit!" on:click={click}>
 </form>
 
 <style>

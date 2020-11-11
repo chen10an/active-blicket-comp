@@ -35,6 +35,12 @@
     import { receive } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
+    import { onDestroy } from 'svelte';
+
+    onDestroy(() => {
+        clearInterval(count_down_interval);
+        clearInterval(animation_interval);
+    });
 
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
