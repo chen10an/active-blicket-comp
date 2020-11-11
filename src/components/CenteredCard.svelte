@@ -3,6 +3,7 @@
     export let has_button = true;  // whether to include a button that dispatches the continue event
     export let button_text = "Click to continue";  // text to show on the button
 
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
 
     // Event dispatcher for communicating with parent components
@@ -16,7 +17,7 @@
     }
 </script>
 
-<div class="centering-container" in:fade="{{delay: 500, duration: 300}}" out:fade="{{duration: 300}}">
+<div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <div class="col-container" class:large="{is_large}">
         <slot></slot>
         {#if has_button}

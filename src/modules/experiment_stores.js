@@ -5,6 +5,10 @@
 import { writable } from 'svelte/store';
 import { init_block_dict, init_available_features, init_available_ids } from './init_functions.js';
 
+// Read-only default fade duration and delay
+export const FADE_DURATION_MS = 300;
+export const FADE_IN_DELAY_MS = 500;
+
 // Write-able boolean indicating whether to view the app in dev mode
 export const dev_mode = writable(false);
 

@@ -8,8 +8,7 @@
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
-    import { block_dict } from '../modules/experiment_stores.js';
-    import { quiz_data_dict } from '../modules/experiment_stores.js';
+    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
@@ -111,7 +110,7 @@
 
 <svelte:window bind:scrollY={scrollY}/>
 
-<div in:fade="{{duration: 300}}" out:fade="{{duration: 0}}">
+<div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <h3>Will the following blicket machines activate (light up with a green color)?</h3>

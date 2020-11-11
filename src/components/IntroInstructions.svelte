@@ -5,6 +5,8 @@
     import BlockGrid from './BlockGrid.svelte';
     import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
     import WinnieThePooh from './WinnieThePooh.svelte';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { fade } from 'svelte/transition';
 
     // TODO: maybe delete the section about "these properties don't matter" because they might be confusing; it might be sufficient to implicitly show this info when the letters, color and positions are completely different in the test conditon
 </script>
@@ -67,7 +69,9 @@
     <!-- captcha and honeypot -->
     <CoolWarmCaptcha on:continue/>
 </CenteredCard>
-<div class="attribution">Cog icon made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08" target="_blank">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a></div>
+<div class="attribution" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
+    Cog icon made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08" target="_blank">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a>
+</div>
 <WinnieThePooh on:continue/>
 
 <style>

@@ -30,7 +30,7 @@
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
-    import { available_features, block_dict, available_ids } from '../modules/experiment_stores.js';
+    import { available_features, block_dict, available_ids, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -222,47 +222,45 @@
 </script>
 
 {#if !time_up}
-    <div in:fade="{{duration: 300, delay: 700}}" out:fade="{{duration: 300}}">
-        <div class="centering-container">
-            <div class="col-container">
-                <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
+    <div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
+        <div class="col-container">
+            <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
 
-                <div class="row-container">
-                    <!-- In this non-detector grid, display a block only if its state is false -->
-                    <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
-                        key_prefix="interactive" is_detector={false} is_active={false}/>
-                    
-                    <!-- 
-                        The detector changes color when activation=true.
-                        Hide the detector (i.e. end the task) when the time limit has been reached or 
-                        the participant has found all block combinations that produce the activation.
-                    -->
-                    <!-- Within the detector, display a block only if its state is true -->
-                    <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}
-                        key_prefix="interactive" is_detector={true} is_active={detector_is_active}/>
-                </div>
-
-                <!-- Button for testing the detector -->
-                <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test the blicket machine</button>
-
-                <!-- Show all previously attempted block combinations -->
-                <h2>{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h2>
-                <div class="row-container">
-                    <div id="all-combos">
-                        <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                        {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
-                            <div style="margin-right: 0.5rem;"
-                            in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
-                                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                    copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} is_active={activation(...block_arr.map(block => block.state))}/>
-                            </div>
-                        {/each}
-                    </div>
-                </div>
-
-                <!-- TODO: remove this button for prod -->
-                <button on:click={skip}>dev: skip to the next part</button>
+            <div class="row-container">
+                <!-- In this non-detector grid, display a block only if its state is false -->
+                <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
+                    key_prefix="interactive" is_detector={false} is_active={false}/>
+                
+                <!-- 
+                    The detector changes color when activation=true.
+                    Hide the detector (i.e. end the task) when the time limit has been reached or 
+                    the participant has found all block combinations that produce the activation.
+                -->
+                <!-- Within the detector, display a block only if its state is true -->
+                <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}
+                    key_prefix="interactive" is_detector={true} is_active={detector_is_active}/>
             </div>
+
+            <!-- Button for testing the detector -->
+            <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test the blicket machine</button>
+
+            <!-- Show all previously attempted block combinations -->
+            <h2>{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h2>
+            <div class="row-container">
+                <div id="all-combos">
+                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                    {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
+                        <div style="margin-right: 0.5rem;"
+                        in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
+                            <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
+                                copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} is_active={activation(...block_arr.map(block => block.state))}/>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- TODO: remove this button for prod -->
+            <button on:click={skip}>dev: skip to the next part</button>
         </div>
     </div>
 {:else}
