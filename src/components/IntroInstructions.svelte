@@ -66,8 +66,8 @@
 
     <!-- captcha and honeypot -->
     <CoolWarmCaptcha on:continue/>
-    <WinnieThePooh/>
 </CenteredCard>
+<WinnieThePooh/>
 
 <style>
     h2 {

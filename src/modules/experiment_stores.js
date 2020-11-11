@@ -31,6 +31,9 @@ function init_block_features(available_colors, num_blocks) {
     return arr;
 }
 
+// Write-able boolean indicating whether to view the app in dev mode
+export const dev_mode = writable(false);
+
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by collection IDs
 export const block_dict = writable({}, function start(set) {
     // Initialize with blocks for the introductory instructions page and for the captcha

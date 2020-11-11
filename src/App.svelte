@@ -22,6 +22,7 @@
 	// TODO: remove the body tag from all components because the app is rendered to the body!
 
 	// TODO: implement dev mode variable in stores
+	// TODO: implement different wrapper component for different platforms: reddit sample size, mturk and prolific
 </script>
 
 <Router {routes}/>
