@@ -205,7 +205,6 @@
         
         // initializing variables for indexing replay_block_combos
         var outer_dex = 0;
-        var inner_dex = 0;
         var animation_interval;
     }
 
@@ -214,28 +213,31 @@
 
         if (outer_dex >= replay_block_combos.length) {  // outer_dex out of bound
             clearInterval(animation_interval);
-        } else if (inner_dex >= replay_block_combos[outer_dex].length) {  // inner_dex out of bound
-            clearInterval(animation_interval);  // clear interval to wait for the async timeout within test()
-            test();
-            // wait another animation interval before resuming the interval
-            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
-            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
-
-            inner_dex = 0;
-            outer_dex += 1;
         } else {
-            // change the block state to true for the current inner and outer indices
-            let replay_block = replay_block_combos[outer_dex][inner_dex];
+            // simulataneously change all block states for one combo
+            let replay_combo = replay_block_combos[outer_dex];
             block_dict.update(dict => {
-                for (let i=0; i < dict[collection_id].length; i++) {
-                    if (dict[collection_id][i].id == replay_block.id) {
-                        dict[collection_id][i].state = replay_block.state;
+                for (let i=0; i < replay_combo.length; i++) {
+                    let replay_block = replay_combo[i];
+
+                    for (let j=0; j < dict[collection_id].length; j++) {
+                        if (dict[collection_id][j].id == replay_block.id) {
+                            dict[collection_id][j].state = replay_block.state;
+                        }
                     }
                 }
                 return dict;
             })
 
-            inner_dex += 1;
+            clearInterval(animation_interval);  // clear interval to wait for the following:
+            // wait another animation interval before testing the blicket machine
+            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
+            test();
+            // wait another animation interval before resuming the animation interval
+            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
+            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
+
+            outer_dex += 1;
         }
     }
 

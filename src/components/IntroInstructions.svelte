@@ -82,6 +82,7 @@
                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
                     is_detector={true} is_active={false} key_prefix="intro"/>
             </div>
+            <!-- TODO: test button -->
         </div>
             
         <p>Try clicking on the blocks (A, B and C) above! This allows you to move blocks on or off the blicket machine. Press the "Test the blicket machine" button to see how the blicket machine reacts to different combinations of blocks. the blicket machine will respond to blickets by "activating" with a green color.</p>
