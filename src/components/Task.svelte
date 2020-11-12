@@ -15,9 +15,10 @@
 
 <script>    
     // Props
-    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
-    export let activation;  // lambda function that represents the causal relationship
-    export let time_limit_seconds;  // time limit in seconds
+    export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
+    export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
+    export let time_limit_seconds = 30;  // time limit in seconds
+    export let instructions_seconds = 15;  // time in seconds to show the overlay instructions before the task starts
     
     // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true,
     // defaults to 0
@@ -30,6 +31,7 @@
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
+    import OverlayInstructions from './OverlayInstructions.svelte';
     import { available_features, block_dict, available_ids, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive } from '../modules/crossfade.js';
@@ -82,7 +84,9 @@
         return dict;
     });
 
-    let count_down_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the count down
+    let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
+    let show_instructions = true;
+    let count_down_interval;  // task count down
     let time_up = false;  // whether the time limit has been reached
     let detector_is_active = false;  // state of the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
@@ -158,19 +162,31 @@
 
     // Count down timer
     function countDownSeconds() {
-        // Count down in seconds until 0, at which time the task ends
-        if (time_limit_seconds == 0) {
-            // the time limit has been reached --> end the task (see the markup)
-            clearInterval(count_down_interval);
-            time_up = true;
+        if (instructions_seconds > 0) {
+            instructions_seconds = Math.max(instructions_seconds - 1, 0);
+        } else if (instructions_seconds == 0) {
+            clearInterval(instructions_interval);
+            show_instructions = false;
+            if (replay_sequence) {  // if not null
+                animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // start the animation
+            } else {
+                count_down_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the task count down
+            }
+            instructions_seconds = -1;
+        } else {
+            // Count down in seconds until 0, at which time the task ends
+            if (time_limit_seconds == 0) {
+                // the time limit has been reached --> end the task (see the markup)
+                clearInterval(count_down_interval);
+                time_up = true;
+            }
+
+            time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
         }
-        
-        time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
     }
 
     // If given a replay_sequence array, let the participant watch a non-interactive replay of block animations
     if (replay_sequence) {
-        clearInterval(count_down_interval);
         disable_all = true;
 
         // derive block combinations from the bit strings in replay_sequence
@@ -185,8 +201,7 @@
         // initializing variables for indexing replay_block_combos
         var outer_dex = 0;
         var inner_dex = 0;
-
-        var animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
+        var animation_interval;
     }
 
     async function animateReplay() {
@@ -222,6 +237,20 @@
 </script>
 
 {#if !time_up}
+    <OverlayInstructions show={show_instructions}>
+        <CenteredCard has_button={false}>
+            {#if replay_sequence}
+                <h3>A recording of someone else playing the blicket game will start in {instructions_seconds} seconds.</h3>
+                <p>Your goal is still to figure out which blocks (A, B, C) are blickets, but this time from a recording that you will not be able to interact with. Only the reaction of the blicket machine can help you find blickets.</p>
+                <p>Make sure to remember which blocks are blickets. You will again be quizzed about blickets and the blicket machine right after this recording.</p>
+            {:else}
+                <h3>The blicket game will start in {instructions_seconds} seconds.</h3>
+                <p>During the game, you will have a time limit of 30 seconds to figure out which blocks (A, B, C) are blickets. Only the blicket machine can help you find blickets.</p>
+                <p>Make sure to remember which blocks are blickets. You will be quizzed about blickets and the blicket machine right after this game.</p>
+            {/if}
+        </CenteredCard>
+    </OverlayInstructions>
+
     <div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
             <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
