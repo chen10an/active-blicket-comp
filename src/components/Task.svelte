@@ -18,7 +18,7 @@
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
     export let time_limit_seconds = 30;  // time limit in seconds
-    export let instructions_seconds = 15;  // time in seconds to show the overlay instructions before the task starts
+    export let instructions_seconds = 0;  // time in seconds to show the overlay instructions before the task starts
     
     // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true,
     // defaults to 0
@@ -26,7 +26,7 @@
     
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
     // defaults to null
-    export let replay_sequence = null;
+    export let replay_sequence = null;  // ["100", "100", "100", "010", "101", "101"];
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
@@ -88,7 +88,8 @@
     let show_instructions = true;
     let count_down_interval;  // task count down
     let time_up = false;  // whether the time limit has been reached
-    let detector_is_active = false;  // state of the detector
+    let show_positive_detector = false;  // whether to show a positive response from the detector
+    let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
     // all block combinations that the participant has tried; use arrays to maintain order
     let all_bit_combos = [];  // list of bit strings
@@ -104,26 +105,30 @@
 
         // the randomly assigned id then becomes the argument position in `activation`
         let block_states = blocks_copy.map(block => block.state)
-        if (activation(...block_states)) {
-            // TODO: different color backgrounds should be different combos --> both are shown to the participant as past attempts
-            // don't change the color of the detector with probability noise
-            let rand = Math.random();
-            if (rand >= noise) {
-                // change the detector's background color and turn off button interactions
-                detector_is_active = true;
-                disable_all = true;
-
-                // wait before returning everything to their default state
-                await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
-
-                if (!replay_sequence) {  // not a non-interactive replay of block animations
-                    // enable button interactions
-                    disable_all = false;
-                }
-
-                // revert to the default detector background color
-                detector_is_active = false;
+       
+        // TODO: different color backgrounds should be different combos --> both are shown to the participant as past attempts
+        // don't change the color of the detector with probability noise
+        let rand = Math.random();
+        if (rand >= noise) {
+            // change the detector's response and turn off button interactions
+            if (activation(...block_states)) {
+                show_positive_detector = true;
+            } else {
+                show_negative_detector = true;
             }
+            disable_all = true;
+
+            // wait before returning everything to their default state
+            await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
+
+            if (!replay_sequence) {  // not a non-interactive replay of block animations
+                // enable button interactions
+                disable_all = false;
+            }
+
+            // revert to the default detector background color
+            show_positive_detector = false;
+            show_negative_detector = false;
         }
 
         // create the bit string representation of the current block states
@@ -258,7 +263,7 @@
             <div class="row-container">
                 <!-- In this non-detector grid, display a block only if its state is false -->
                 <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
-                    key_prefix="interactive" is_detector={false} is_active={false}/>
+                    key_prefix="interactive" is_detector={false}/>
                 
                 <!-- 
                     The detector changes color when activation=true.
@@ -267,7 +272,8 @@
                 -->
                 <!-- Within the detector, display a block only if its state is true -->
                 <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}
-                    key_prefix="interactive" is_detector={true} is_active={detector_is_active}/>
+                    key_prefix="interactive" is_detector={true} show_positive={show_positive_detector} show_negative={show_negative_detector}
+                    use_overlay={true}/>
             </div>
 
             <!-- Button for testing the detector -->
@@ -282,7 +288,8 @@
                         <div style="margin-right: 0.5rem;"
                         in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} is_active={activation(...block_arr.map(block => block.state))}/>
+                                copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} 
+                                show_positive={activation(...block_arr.map(block => block.state))} show_negative={false}/>                                
                         </div>
                     {/each}
                 </div>
