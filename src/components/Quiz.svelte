@@ -2,8 +2,8 @@
     // Props
     export let collection_id = "intro";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     // quiz examples are specified using bit strings, where the ith index in the string corresponds to the block with id=i
-    export let quiz_bit_combos = ["100", "010", "001"];
-    export let activation = (arg0, arg1, arg2) => arg0; // lambda function that represents the causal relationship
+    export let quiz_bit_combos = ["100", "010", "001", "110", "101", "011", "111"];
+    export let activation = (arg0, arg1, arg2) => arg0 && arg2; // lambda function that represents the causal relationship
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
@@ -22,7 +22,7 @@
         {id: 8, text: "8 — Almost sure that this is a blicket."}, 
         {id: 7, text: "7"}, 
         {id: 6, text: "6"}, 
-        {id: 5, text: "5 — Unsure"}, 
+        {id: 5, text: "5 — Equally likely to be a blicket or not."}, 
         {id: 4, text: "4"},
         {id: 3, text: "3"},
         {id: 2, text: "2 — Almost sure that this is NOT a blicket."},
@@ -50,10 +50,14 @@
 
     // initialize the stored answers
     for (let i=0; i < quiz_bit_combos.length; i++) {
+        // one "does this activate" question for each bit-string
         $quiz_data_dict[collection_id].activation_answer_groups.push(null);
+    }
+    for (let i=0; i < quiz_bit_combos[0].length; i++) {
+        // one "is this a blicket" questions for each bit within a bit-string
         $quiz_data_dict[collection_id].blicket_answer_groups.push(-1);  // corresponds to the "unselected" option
     }
-
+    
     // check whether the participant has given an answer to all problems
     let answered_all_questions = false;
     $: {
@@ -113,54 +117,63 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
-        <h3>Will the following blicket machines activate (light up with a green color)?</h3>
+        <h3>Will the blicket machine activate?</h3>
         {#each quiz_block_combos as arr, i}
-            <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
-            <div class="answer-options">
-                {#each ACTIVATION_ANSWER_OPTIONS as option}
-                    <label>
-                        <input type="radio" bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
-                        value={option == "Yes" ? true : false}
-                        disabled="{!hide_correct_answers}"> {option}
-                    </label>
-                {/each}
-
-                <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
-                <div class:hide="{hide_correct_answers}">
-                    {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
-                        <span id="checkmark">&nbsp;&#10004</span>
-                    {:else}
-                        <span id="cross">&nbsp;&#10008</span>
-                    {/if}
+            <div class="qa">
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
+                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
+                <div class="answer-options">
+                    {#each ACTIVATION_ANSWER_OPTIONS as option}
+                        <label>
+                            <input type="radio" bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
+                            value={option == "Yes" ? true : false}
+                            disabled="{!hide_correct_answers}"> {option}
+                        </label>
+                    {/each}
+    
+                    <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
+                    <div class:hide="{hide_correct_answers}">
+                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
+                            <span id="checkmark">&nbsp;&#10004</span>
+                        {:else}
+                            <span id="cross">&nbsp;&#10008</span>
+                        {/if}
+                    </div>
                 </div>
             </div>
         {/each}
-        <h3>Do you think that each of the following blocks is a blicket?</h3>
+        <h3>Do you think that these blocks are blickets?</h3>
         <!-- Iterate over $block_dict, which orders blocks alphabetically -->
         {#each $block_dict[collection_id] as block, i}
-            <div class="block" style="background-color: var(--{block.color})">
-                <b>{block.letter}</b>
-            </div>
-            <div class="answer-options">
-                <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]}>
-                    {#each BLICKET_ANSWER_OPTIONS as option}
-                        <option value={option.id}>
-                            {option.text}
-                        </option>
-                    {/each}
-                </select>
+            <div class="qa">
+                <div class="block" style="background-color: var(--{block.color})">
+                    <b>{block.letter}</b>
+                </div>
+                <div class="answer-options">
+                    <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]} disabled="{!hide_correct_answers}">
+                        {#each BLICKET_ANSWER_OPTIONS as option}
+                            <option value={option.id}>
+                                {option.text}
+                            </option>
+                        {/each}
+                    </select>
+                </div>
             </div>
         {/each}
 
         <h3>Please describe how you think the blicket machine works.</h3>
-        <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer}></textarea>
-        <div class:hide="{hide_correct_answers}" style="text-align: center;">
-            <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
+        <div class="qa">
+            <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
+            <!-- TODO: uncomment for mturk/prolific -->
+            <!-- <div class:hide="{hide_correct_answers}" style="text-align: center;">
+                <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
+            </div> -->
         </div>
 
-        <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">Click to submit your answers and receive feedback</button>
-        <button on:click="{cont}" class:hide="{hide_correct_answers}">Click to continue</button>
+        <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
+            Submit your answers and receive feedback
+        </button>
+        <button on:click="{cont}" class:hide="{hide_correct_answers}">Continue</button>
 
         <!-- TODO: remove this button for prod -->
         <button on:click={skip}>dev: skip form validation</button>
@@ -168,8 +181,17 @@
 </div>
 
 <style>
+    .qa {
+        margin: 1rem 0;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .answer-options {
-        margin: 0.5rem;
+        margin-top: 0.1rem;
 
         display: flex;
         flex-direction: row;
@@ -201,8 +223,8 @@
     }
 
     textarea {
-        width: 75%;
-        height: 10rem;
+        width: 70%;
+        height: 2rem;
 
         flex-grow: 1;
     }
