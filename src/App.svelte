@@ -3,7 +3,7 @@
 	import {wrap} from 'svelte-spa-router/wrap'
 
 	import ExperimentController from './routes/ExperimentController.svelte';
-	import Task from './components/Task.svelte'  // TODO: remove
+	import Quiz from './components/Quiz.svelte'  // TODO: remove
 
 	// Deterministic conjunctive task and quiz sequence
 	let conj_sequence = {
@@ -42,7 +42,7 @@
 				component_sequence: disj_sequence
 			},
 		}),
-		"/testing": Task  // TODO: remove
+		"/testing": Quiz  // TODO: remove
 	}
 
 	// TODO: implement noisy conditions

@@ -1,40 +1,26 @@
 <script>
+    // the parent component needs to bind the following props:
+    export let passed = false;
+
     import BlockGrid from './BlockGrid.svelte';
     import { block_dict } from '../modules/experiment_stores.js';
 
-    // Event dispatcher for communicating with parent components
-    import {createEventDispatcher} from 'svelte';
-    const dispatch = createEventDispatcher();
-
-    const MAX_CLICKS = 50;  // number of clicks allowed before forcing the end of the experiment
-    let num_clicks = 0;  // track the number of clicks
-
-    // Click handler
-    function check() {
-        num_clicks += 1;
-        if (num_clicks >= MAX_CLICKS) {
-            dispatch("continue", {end: true});
-            return;
-        }
+    $: {
+        passed = true;  // start with true then flip to false depending on the checks below
 
         let captcha_blocks = $block_dict["captcha"];
         for (let i=0; i < captcha_blocks.length; i++) {
             if (captcha_blocks[i].color.startsWith("warm") && !captcha_blocks[i].state) {
                 // not all warm blocks are on the blicket machine
-                return;
+                passed = false;
             } else if (captcha_blocks[i].color.startsWith("cool") && captcha_blocks[i].state) {
                 // some cool blocks are on the blicket machine
-                return;
+                passed = false;
             }
         }
-
-        // after passing all the checks above, tell parent components to move on to the next task/quiz
-        dispatch("continue");
     }
 </script>
 
-<p>To practice what you have learned in the instructions, <b>please move only the blocks with warm colors onto the blicket machine.</b>
-    Feel free to google the meaning of warm colors. Once this is done, the “continue” button will take you to the next part of the study.</p>
 <div class="row-container">
     <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => !block.state}
         key_prefix="captcha" is_detector={false} is_active={false}/>
@@ -42,8 +28,6 @@
     <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
         key_prefix="captcha" is_detector={true} is_active={false}/>
 </div>
-
-<button on:click={check}>Continue to the first interactive task</button>
 
 <style>
     /* The following styling assumes that this CoolWarmCaptcha component is nested within a CenteredCard component */
@@ -55,10 +39,6 @@
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
-    }
-
-    p {
-        align-self: flex-start;
     }
 </style>
 

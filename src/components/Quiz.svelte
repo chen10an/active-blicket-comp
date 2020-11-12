@@ -120,7 +120,7 @@
             <div class="answer-options">
                 {#each ACTIVATION_ANSWER_OPTIONS as option}
                     <label>
-                        <input type=radio bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
+                        <input type="radio" bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
                         value={option == "Yes" ? true : false}
                         disabled="{!hide_correct_answers}"> {option}
                     </label>
