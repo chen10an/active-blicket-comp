@@ -162,13 +162,11 @@
         {/each}
 
         <h3>Please describe how you think the blicket machine works.</h3>
-        <div class="qa">
-            <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
-            <!-- TODO: uncomment for mturk/prolific -->
-            <!-- <div class:hide="{hide_correct_answers}" style="text-align: center;">
-                <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
-            </div> -->
-        </div>
+        <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
+        <!-- TODO: uncomment for mturk/prolific -->
+        <!-- <div class:hide="{hide_correct_answers}" style="text-align: center;">
+            <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
+        </div> -->
 
         <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
             Submit your answers and receive feedback
@@ -182,8 +180,10 @@
 
 <style>
     .qa {
-        margin: 1rem 0;
-        width: 100%;
+        border-radius: var(--container-border-radius);
+        box-shadow: var(--container-box-shadow);
+        margin: 0.5rem;
+        padding: 0.5rem;
 
         display: flex;
         flex-direction: column;
@@ -224,8 +224,10 @@
 
     textarea {
         width: 70%;
-        height: 2rem;
+        height: 3rem;
 
-        flex-grow: 1;
+        border: none;
+        border-radius: var(--container-border-radius);
+        box-shadow: var(--container-box-shadow);
     }
 </style>
