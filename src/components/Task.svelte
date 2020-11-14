@@ -91,6 +91,7 @@
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
+    let replay_test_button_normal = true;  // use for changing the appearance of the test button during replay
     // all block combinations that the participant has tried; use arrays to maintain order
     let all_bit_combos = [];  // list of bit strings
     let all_block_combos = [];  // list of lists of block objects
@@ -116,7 +117,11 @@
             } else {
                 show_negative_detector = true;
             }
-            disable_all = true;
+            if (!replay_sequence) {
+                disable_all = true;
+            } else {
+                replay_test_button_normal = false;
+            }
 
             // wait before returning everything to their default state
             await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
@@ -124,6 +129,8 @@
             if (!replay_sequence) {  // not a non-interactive replay of block animations
                 // enable button interactions
                 disable_all = false;
+            } else {
+                replay_test_button_normal = true;
             }
 
             // revert to the default detector background color
@@ -260,7 +267,13 @@
 
     <div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
-            <h2 class:hide="{replay_sequence}">Remaining time: {time_limit_seconds}s</h2>
+            <h3 style="margin-top: 0;">
+                {#if replay_sequence}
+                    You are now watching a recording of someone else playing the blicket game:
+                {:else}
+                    Remaining time: {time_limit_seconds}s
+                {/if}
+            </h3>
 
             <div class="row-container">
                 <!-- In this non-detector grid, display a block only if its state is false -->
@@ -279,10 +292,10 @@
             </div>
 
             <!-- Button for testing the detector -->
-            <button id="test-button" class:hide="{replay_sequence}" disabled="{disable_all}" on:click={test}>Test the blicket machine</button>
+            <button id="test-button" disabled="{disable_all}" class:normal="{replay_sequence && replay_test_button_normal}" on:click={test}>Test the blicket machine</button>
 
             <!-- Show all previously attempted block combinations -->
-            <h2>{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h2>
+            <h3 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h3>
             <div class="row-container">
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
@@ -348,9 +361,5 @@
         align-items: center;
 
         overflow: auto;
-    }
-
-    h2 {
-	    margin: 0;
     }
 </style>

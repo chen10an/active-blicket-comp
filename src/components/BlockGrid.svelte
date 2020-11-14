@@ -40,7 +40,7 @@
 
 <div class="container">
     <!-- The regular grid has an outer grid while the mini version does not. -->
-    <div class:outer-flex="{!is_mini}" class:detector="{is_detector && !is_mini}" class:active="{show_positive && !is_mini}">
+    <div class:outer-flex="{!is_mini}" class:not-allowed="{is_disabled}" class:detector="{is_detector && !is_mini}" class:active="{show_positive && !is_mini}">
         <div class="inner-grid" class:mini="{is_mini}" class:detector="{is_detector && is_mini}" class:active="{show_positive && is_mini}">
             {#each grid_blocks.filter(block_filter_func) as block (block.id)}
                 <div class="block" style="background-color: var(--{block.color}); grid-area: {block.letter};"
@@ -55,13 +55,15 @@
 
     <!-- Overlay for showing the detector response -->
     {#if is_detector && use_overlay} 
-        <div class="overlay" class:mini="{is_mini}">    
-            {#if show_positive}
+        {#if show_positive}
+            <div class="overlay not-allowed" class:mini="{is_mini}">    
                 Activated!
-            {:else if show_negative}
+            </div>
+        {:else if show_negative}
+            <div class="overlay not-allowed" class:mini="{is_mini}">   
                 Nothing happened.
-            {/if}
-        </div>
+            </div>
+        {/if}
     {/if}
 </div>
     
@@ -161,7 +163,7 @@
         
         border-radius: var(--container-border-radius);
 
-        background: rgba(0, 0, 0, 0);  /* see through */
+        background: rgba(255, 255, 255, 0.1);  /* almost see through, provides contrast for the black overlay text */
         transition: .5s ease;
         z-index: 10;  /* on top */
 
@@ -171,6 +173,7 @@
 
         text-align: center;
         font-size: x-large;
+        font-weight: bold;
     }
 
     .overlay.mini {
@@ -179,5 +182,9 @@
         bottom: 0;
         left: 0;
         font-size: small;
+    }
+
+    .outer-flex.not-allowed, .overlay.not-allowed {
+        cursor: not-allowed;
     }
 </style>
