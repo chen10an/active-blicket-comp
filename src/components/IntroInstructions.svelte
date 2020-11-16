@@ -1,4 +1,7 @@
 <script>
+    import { dev_mode } from '../modules/experiment_stores.js';
+    // dev_mode.set(true);
+
     export let collection_id;
 
     import CenteredCard from './CenteredCard.svelte';
@@ -76,11 +79,11 @@
         <div class="centering-container">
             <div style="margin: 0.5rem;">
                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={false} block_filter_func={block => !block.state} 
-                    is_detector={false} is_active={false} key_prefix="intro"/>
+                    is_detector={false} key_prefix="intro"/>
             </div>
             <div style="margin: 0.5rem;">
                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
-                    is_detector={true} is_active={false} key_prefix="intro"/>
+                    is_detector={true} key_prefix="intro"/>
             </div>
             <!-- TODO: test button -->
         </div>
@@ -121,6 +124,8 @@
             <p class="wrong">Please move only the warm-colored blocks onto the blicket machine.</p>
         {/if}
     </div>
+
+    <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip</button>
 </CenteredCard>
 
 <div class="attribution" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">

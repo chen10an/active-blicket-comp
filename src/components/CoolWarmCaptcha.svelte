@@ -23,10 +23,10 @@
 
 <div class="row-container">
     <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => !block.state}
-        key_prefix="captcha" is_detector={false} is_active={false}/>
+        key_prefix="captcha" is_detector={false}/>
     
     <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
-        key_prefix="captcha" is_detector={true} is_active={false}/>
+        key_prefix="captcha" is_detector={true}/>
 </div>
 
 <style>
