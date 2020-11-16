@@ -109,7 +109,12 @@ button {
 
 button:active, button:disabled {
 	background-color: var(--light-gray);
-	color: var(--dark-gray)
+	color: black;
+}
+
+button.normal {
+	background-color: var(--dark-gray);
+	color: var(--background-color);
 }
 
 button:disabled {
