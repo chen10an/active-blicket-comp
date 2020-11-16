@@ -21,7 +21,7 @@
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
     export let time_limit_seconds = 30;  // time limit in seconds
-    export let instructions_seconds = 0;  // time in seconds to show the overlay instructions before the task starts
+    export let instructions_seconds = $dev_mode ? 0 : 15;  // time in seconds to show the overlay instructions before the task starts
     
     // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true,
     // defaults to 0

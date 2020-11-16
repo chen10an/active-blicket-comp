@@ -1,4 +1,7 @@
 <script>
+    import { dev_mode } from '../modules/experiment_stores.js';
+    // dev_mode.set(true);
+
     // Props
     export let collection_id = "intro";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     // quiz examples are specified using bit strings, where the ith index in the string corresponds to the block with id=i
@@ -8,7 +11,7 @@
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
-    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, total_score } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
@@ -41,6 +44,8 @@
     quiz_data_dict.update(dict => {
         dict[collection_id] = {
             activation_answer_groups: [],
+            correct_activation_answers: [],
+            activation_score: 0,
             blicket_answer_groups: [],
             free_response_answer: ""
         }
@@ -56,6 +61,21 @@
     for (let i=0; i < quiz_bit_combos[0].length; i++) {
         // one "is this a blicket" questions for each bit within a bit-string
         $quiz_data_dict[collection_id].blicket_answer_groups.push(-1);  // corresponds to the "unselected" option
+    }
+
+    // derive block combinations and correct activation answers from quiz_bit_combos
+    let quiz_block_combos = getBlockCombos(quiz_bit_combos, blocks);
+    // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
+
+    // generate the array of correct answers (true or false) for the activation questions
+    for (let i=0; i < quiz_block_combos.length; i++) {
+        let block_states = quiz_block_combos[i].map(block => block.state);
+        let correct_ans = activation(...block_states);
+
+        quiz_data_dict.update(dict => {
+            dict[collection_id].correct_activation_answers.push(correct_ans);
+            return dict;
+        });
     }
     
     // check whether the participant has given an answer to all problems
@@ -82,21 +102,22 @@
         }
     }
 
-    // derive block combinations and correct activation answers from quiz_bit_combos
-    let quiz_block_combos = getBlockCombos(quiz_bit_combos, blocks);
-    // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
-
-    let correct_activation_answers = [];  // array of correct answers (true or false) for the activation questions
-    for (let i=0; i < quiz_block_combos.length; i++) {
-        let block_states = quiz_block_combos[i].map(block => block.state);
-        let correct_ans = activation(...block_states);
-        correct_activation_answers.push(correct_ans);
-    }
-
     // Click handlers
     function show_correct_answers() {
         hide_correct_answers = false;
         scrollY = 0;  // scroll to the top
+
+        for (let i=0; i < $quiz_data_dict[collection_id].activation_answer_groups.length; i++) {
+            // count number of correct answers
+            if ($quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]) {
+                quiz_data_dict.update(dict => {
+                    dict[collection_id].activation_score += 1;
+                    return dict;
+                });
+            }
+        }
+
+        current_score.update(score => score += $quiz_data_dict[collection_id].activation_score);
     }
 
     // event dispatcher for communicating with parent components
@@ -106,8 +127,7 @@
         dispatch("continue");
     }
 
-    // TODO: remove for prod
-    function skip() {
+    function skip_validation() {
         answered_all_questions = true;
     }
 </script>
@@ -117,11 +137,19 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
+        <p>Only the "Will the blicket machine activate?" section will contribute toward <b>your score</b>, but we hope that you'll earnestly answer all questions.</p>
         <h3>Will the blicket machine activate?</h3>
+        <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
+            <span style="font-size: xx-large;">
+                Your score here: {$quiz_data_dict[collection_id].activation_score}/{$quiz_data_dict[collection_id].activation_answer_groups.length}
+            </span>
+            <p>Your total running score: {$current_score}/{$total_score}</p>
+        </div>
         {#each quiz_block_combos as arr, i}
             <div class="qa">
                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true} is_active={!hide_correct_answers && correct_activation_answers[i]}/>
+                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true}
+                    show_positive={!hide_correct_answers && $quiz_data_dict[collection_id].correct_activation_answers[i]}/>
                 <div class="answer-options">
                     {#each ACTIVATION_ANSWER_OPTIONS as option}
                         <label>
@@ -133,7 +161,7 @@
     
                     <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
                     <div class:hide="{hide_correct_answers}">
-                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === correct_activation_answers[i]}
+                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]}
                             <span id="checkmark">&nbsp;&#10004</span>
                         {:else}
                             <span id="cross">&nbsp;&#10008</span>
@@ -169,12 +197,11 @@
         </div> -->
 
         <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
-            Submit your answers and receive feedback
+            Submit and get your score
         </button>
         <button on:click="{cont}" class:hide="{hide_correct_answers}">Continue</button>
 
-        <!-- TODO: remove this button for prod -->
-        <button on:click={skip}>dev: skip form validation</button>
+        <button class:hide="{!$dev_mode}" on:click="{skip_validation}">dev: skip form validation</button>
     </CenteredCard>
 </div>
 

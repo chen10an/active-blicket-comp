@@ -12,6 +12,10 @@ export const FADE_IN_DELAY_MS = 500;
 // Write-able boolean indicating whether to view the app in dev mode
 export const dev_mode = writable(false);
 
+// Write-able ints for the participant's score throughout the experiment
+export const total_score = writable(0);
+export const current_score = writable(0);
+
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by collection IDs
 export const block_dict = writable({}, function start(set) {
     set(init_block_dict());
