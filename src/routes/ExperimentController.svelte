@@ -37,14 +37,13 @@
 	let progress_inc = 1/(Object.keys(component_sequence).length - 1);  // how much to increment the progress bar for each component
 
 	// update the total quiz score based on the props to the Quiz component
+	let total_quiz_score = 0;
 	for (const key in component_sequence) {
 		if (key.split("_")[0] == "Quiz") {
-			total_score.update(score => {
-				score += component_sequence[key].quiz_bit_combos.length;
-				return score;
-			});
+			total_quiz_score += component_sequence[key].quiz_bit_combos.length;
 		}
 	}
+	total_score.set(total_quiz_score);
 
 	let task_quiz_keys = Object.keys(component_sequence);
 	let task_quiz_dex = 0;
