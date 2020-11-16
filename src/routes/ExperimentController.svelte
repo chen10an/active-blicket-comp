@@ -1,8 +1,6 @@
 <script>
-	import { dev_mode } from '../modules/experiment_stores.js';
-    // dev_mode.set(true);
-
 	export let component_sequence;
+	export let set_dev_mode = false;
 
 	import IntroInstructions from '../components/IntroInstructions.svelte';
 	import Task from '../components/Task.svelte';
@@ -13,6 +11,9 @@
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { dev_mode } from '../modules/experiment_stores.js';
+	
+	dev_mode.set(set_dev_mode);
 
 	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
 	const block_dict_unsub = block_dict.subscribe(value => {});

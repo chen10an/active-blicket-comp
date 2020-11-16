@@ -1,6 +1,6 @@
 <script>
     import { dev_mode } from '../modules/experiment_stores.js';
-    // $dev_mode = true;  // set dev_mode to true to see the hidden form elements
+    // dev_mode.set(true);  // set dev_mode to true to see the hidden form elements
 
     // Event dispatcher for communicating with parent components
     import {createEventDispatcher} from 'svelte';
@@ -40,7 +40,7 @@
 
 <!-- Hidden form with very generic/conventional syntax that a bot should be able to parse. -->
 <form on:submit|preventDefault={submit}>
-    <h2 class:christopher-robin="{!$dev_mode}">If you are not a robot, please ignore everything below here.</h2>
+    <h2 class:christopher-robin="{!$dev_mode}">If you are not a robot, please ignore everything below here. If you fill out any of the questions below, you will not be able to complete the study.</h2>
 
     <label class:christopher-robin="{!$dev_mode}">Who is Christopher Robin?
     <input type="text" name="christopher-robin" bind:value={form_responses.christopher_robin} required>

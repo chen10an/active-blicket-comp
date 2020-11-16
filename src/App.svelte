@@ -3,7 +3,6 @@
 	import {wrap} from 'svelte-spa-router/wrap'
 
 	import ExperimentController from './routes/ExperimentController.svelte';
-	import Task from './components/Task.svelte'  // TODO: remove
 
 	// Deterministic conjunctive task and quiz sequence
 	let conj_sequence = {
@@ -30,25 +29,32 @@
 	}
 
 	const routes = {
-		'/condition0': wrap({
+		"/condition0": wrap({
 			component: ExperimentController,
 			props: {
-				component_sequence: conj_sequence
+				component_sequence: conj_sequence,
+				set_dev_mode: false
 			},
 		}),
-		'/condition2': wrap({
+		"/condition1": wrap({
 			component: ExperimentController,
 			props: {
-				component_sequence: disj_sequence
+				component_sequence: disj_sequence,
+				set_dev_mode: false
 			},
 		}),
-		"/testing": Task  // TODO: remove
+		"/dev": wrap({
+			component: ExperimentController,
+			props: {
+				component_sequence: disj_sequence,
+				set_dev_mode: true
+			},
+		})
 	}
 
-	// TODO: implement noisy conditions
-	// TODO: terminate the experiment on page reload: destroy the app component
+	// TODO: remove noisy condition code for now
+	// TODO: make time limit into a variable and share it across components, use this for the instructions
 
-	// TODO: implement dev mode variable in stores
 	// TODO: implement different wrapper component for different platforms: reddit sample size, mturk and prolific
 </script>
 
