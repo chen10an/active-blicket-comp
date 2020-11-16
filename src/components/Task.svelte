@@ -13,7 +13,10 @@
 <!-- TODO: update description -->
 <!-- TODO: label detector on UI -->
 
-<script>    
+<script>
+    import { dev_mode } from '../modules/experiment_stores.js';
+    // dev_mode.set(true);  // set dev_mode to true to see the skip button
+    
     // Props
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
@@ -34,12 +37,13 @@
     import OverlayInstructions from './OverlayInstructions.svelte';
     import { available_features, block_dict, available_ids, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
-    import { receive } from '../modules/crossfade.js';
+    import { receive, send } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
-    import { onDestroy } from 'svelte';
+    import { onDestroy, tick } from 'svelte';
 
     onDestroy(() => {
+        clearInterval(instructions_interval);
         clearInterval(count_down_interval);
         clearInterval(animation_interval);
     });
@@ -47,7 +51,7 @@
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
-    const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
+    const FLIP_DURATION_MS = 200;  // duration of animation in milliseconds
 
     // milliseconds passed to setInterval, used for replaying block animations,
     // make sure this is sufficiently larger than the crossfade duration
@@ -87,14 +91,20 @@
     let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
     let show_instructions = true;
     let count_down_interval;  // task count down
-    let time_up = false;  // whether the time limit has been reached
+    let has_ended = false;  // whether this task has ended
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
-    let replay_test_button_normal = true;  // use for changing the appearance of the test button during replay
+    
     // all block combinations that the participant has tried; use arrays to maintain order
     let all_bit_combos = [];  // list of bit strings
     let all_block_combos = [];  // list of lists of block objects
+
+    // replay-specific variables:
+    let replay_test_button_normal = true;  // use for changing the appearance of the test button during replay
+    let disable_replay_cont = true;  // whether the continue button can be clicked on
+    let disable_replay_again = true;  // whether the replay again button can be clicked on
+    let remaining_replays = 3;  // number of times the replay button can be clicked
 
     // Click handler functions
     async function test() {
@@ -165,11 +175,11 @@
         }
     }
 
-    // TODO: remove for prod
-    function skip() {
+    function cont() {
+        clearInterval(instructions_interval);
         clearInterval(count_down_interval);
         clearInterval(animation_interval);
-        time_up = true;
+        has_ended = true;
     }
 
     // Count down timer
@@ -190,7 +200,7 @@
             if (time_limit_seconds == 0) {
                 // the time limit has been reached --> end the task (see the markup)
                 clearInterval(count_down_interval);
-                time_up = true;
+                has_ended = true;
             }
 
             time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
@@ -220,6 +230,13 @@
 
         if (outer_dex >= replay_block_combos.length) {  // outer_dex out of bound
             clearInterval(animation_interval);
+            if (remaining_replays > 0) {
+                // allow the participant to replay the animations again
+                disable_replay_again = false;
+            }
+
+            // allow the participant to continue after the first replay
+            disable_replay_cont = false;
         } else {
             // simulataneously change all block states for one combo
             let replay_combo = replay_block_combos[outer_dex];
@@ -248,9 +265,30 @@
         }
     }
 
+    async function replay_again() {
+        // replay the animations again
+        outer_dex = 0;
+        disable_replay_again = true;
+        remaining_replays -= 1;
+
+        while (all_block_combos.length > 0) {
+            // explicit assignments to trigger reactivity for removing from the front of the array
+            all_block_combos.shift();
+            all_block_combos = all_block_combos;
+            all_bit_combos.shift();
+            all_bit_combos = all_bit_combos;
+
+            // wait for each combo grid to disappear
+            await new Promise(r => setTimeout(r, FLIP_DURATION_MS));
+            await tick();
+        }
+
+        animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
+    }
+
 </script>
 
-{#if !time_up}
+{#if !has_ended}
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
             {#if replay_sequence}
@@ -299,19 +337,32 @@
             <div class="row-container">
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                    {#each all_block_combos as block_arr, i (String(all_block_combos.length - i).concat("combo"))}  
+                    {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
                         <div style="margin-right: 0.5rem;"
-                        in:receive="{{key: String(all_block_combos.length - i).concat("combo")}}" animate:flip="{{duration: FLIP_DURATION_MS}}">
+                        in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
+                        out:send="{{key: ("combo_").concat(all_block_combos.length - i)}}"
+                        animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                copied_blocks_arr={block_arr} key_prefix="prev_combos" is_detector={true} 
+                                copied_blocks_arr={block_arr} key_prefix="combo_grid_{all_block_combos.length - i}" is_detector={true} 
                                 show_positive={activation(...block_arr.map(block => block.state))} show_negative={false}/>                                
                         </div>
                     {/each}
                 </div>
             </div>
 
-            <!-- TODO: remove this button for prod -->
-            <button on:click={skip}>dev: skip to the next part</button>
+            <div>
+                <!-- Replay button -->
+                <button disabled="{disable_replay_again}" class:hide="{!replay_sequence}" on:click="{replay_again}">
+                    Replay recording ({remaining_replays} {remaining_replays == 1 ? "time" : "times"} remaining)
+                </button>
+
+                <!-- Continue button for the replay -->
+                <button disabled="{disable_replay_cont}" class:hide="{!replay_sequence}" on:click="{cont}">
+                    Continue
+                </button>
+            </div>
+
+            <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip to the next part</button>
         </div>
     </div>
 {:else}
