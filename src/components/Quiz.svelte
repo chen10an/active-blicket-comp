@@ -7,11 +7,12 @@
     // quiz examples are specified using bit strings, where the ith index in the string corresponds to the block with id=i
     export let quiz_bit_combos = ["100", "010", "001", "110", "101", "011", "111"];
     export let activation = (arg0, arg1, arg2) => arg0 && arg2; // lambda function that represents the causal relationship
+    export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
-    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, total_score } from '../modules/experiment_stores.js';
+    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, total_score, feedback } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
@@ -138,6 +139,7 @@
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <p>Only the "Will the blicket machine activate?" section will contribute toward <b>your score</b>, but we hope that you'll earnestly answer all questions.</p>
+        <p>You will be able to submit and check your answers after answering all questions.</p>
         <h3>Will the blicket machine activate?</h3>
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
             <span style="font-size: xx-large;">
@@ -191,6 +193,11 @@
 
         <h3>Please describe how you think the blicket machine works.</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
+
+        <h3 class:hide="{!is_last}" style="margin-bottom: 0;">Do you have any feedback for us? (optional)</h3>
+        <p class:hide="{!is_last}">We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
+        <textarea class:hide="{!is_last}" bind:value={$feedback}></textarea>
+
         <!-- TODO: uncomment for mturk/prolific -->
         <!-- <div class:hide="{hide_correct_answers}" style="text-align: center;">
             <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>

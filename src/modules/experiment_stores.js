@@ -36,8 +36,11 @@ export const available_ids = writable([], function start(set) {
     return function stop() {};
 });
 
-// Writeable dictionary/object of experiment data collected from the Quiz component, keyed by quiz IDs
+// Write-able dictionary/object of experiment data collected from the Quiz component, keyed by quiz IDs
 export const quiz_data_dict = writable({});
+
+// Write-able feedback from the participant
+export const feedback = writable("");
 // TODO: send to server using stop()
 
 // TODO: store and send participant's combo list
