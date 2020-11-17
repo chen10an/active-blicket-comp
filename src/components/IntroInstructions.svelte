@@ -2,13 +2,13 @@
     import { dev_mode } from '../modules/experiment_stores.js';
     // dev_mode.set(true);
 
-    export let collection_id;
+    export let collection_id = "intro";
 
     import CenteredCard from './CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';
     import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
     import WinnieThePooh from './WinnieThePooh.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
 
     // Event dispatcher for communicating with parent components
@@ -53,6 +53,26 @@
         }
         show_cont_feedback = true;
     }
+
+    let disable_blocks = false;
+    let show_dummy_negative = false;
+    async function dummy_test() {
+        disable_blocks = true;
+        show_dummy_negative = true;
+
+        // wait before returning everything to their default state
+        await new Promise(r => setTimeout(r, 750));
+
+        disable_blocks = false;
+        show_dummy_negative = false;
+        // return all block states back to false
+        for (let i=0; i < $block_dict[collection_id].length; i++) {
+            block_dict.update(dict => {
+                dict[collection_id][i].state = false;
+                return dict;
+            });
+        }
+    }
 </script>
 
 <CenteredCard is_large={true} has_button={false}>
@@ -75,20 +95,29 @@
         <h3>The Blicket Game</h3>
         <p>Our blicket game has a collection of blocks with different letters and colors. Some blocks have special properties that make them "blickets" and only a blicket machine will be able to help you detect these blickets. You have a time limit of 30 seconds to figure out which blocks are blickets.</p>
 
-        <p>Here is an example of the blocks (left) and the blicket machine (right):</p>
-        <div class="centering-container">
+        <p>Here is an example of some blocks (left) and a dummy blicket machine (right):</p>
+        <div class="centering-container" style="padding: 0;">
             <div style="margin: 0.5rem;">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={false} block_filter_func={block => !block.state} 
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} block_filter_func={block => !block.state} 
                     is_detector={false} key_prefix="intro"/>
             </div>
             <div style="margin: 0.5rem;">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
-                    is_detector={true} key_prefix="intro"/>
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} block_filter_func={block => block.state}
+                    is_detector={true} key_prefix="intro" use_overlay={true} show_negative={show_dummy_negative}/>
             </div>
-            <!-- TODO: test button -->
+        </div>
+        <div class="centering-container" style="padding: 0;">
+            <!-- Dummy blicket machine test button -->
+            <button on:click={dummy_test} disabled="{disable_blocks}">
+                Test the dummy blicket machine<br/>
+                <span style="font-size: small">Note: this dummy machine does not do anything</span>
+            </button>
         </div>
             
-        <p>Try clicking on the blocks (A, B and C) above! This allows you to move blocks on or off the blicket machine. Press the "Test the blicket machine" button to see how the blicket machine reacts to different combinations of blocks. the blicket machine will respond to blickets by "activating" with a green color.</p>
+        <p>Try clicking on the blocks (A, B and C) above! This allows us to move blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
+            
+        <p> In the <b>real blicket game</b>, the blicket machine can either "activate" with a <span style="background: var(--active-color); padding: 0 0.3rem;">green color</span>, or do nothing. It doesn’t matter where blocks are placed on the machine.
+        </p>
 
         <h3>Checking Your Understanding</h3>
         {#each Object.keys(qa_dict) as key}

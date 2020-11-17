@@ -4,10 +4,10 @@
     export let is_mini;  // boolean, whether to show a mini, non-interactive grid
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
     export let block_filter_func;  // lambda function that determines which blocks to show on the grid, e.g. block => !block.state
+    export let is_detector;  // boolean, whether the grid is a detector
     export let key_prefix;  // send/receive transitions will apply between blocks with the same key_prefix and id
     
     export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `block_dict[collection_id]` from `experiment_stores.js`
-    export let is_detector = false;  // boolean, whether the grid is a detector
     export let show_positive = false;  // boolean, whether to show a positive response from the detector
     export let show_negative = false;  // boolean, whether to show a negative response from the detector
     export let use_overlay = false;  // boolean, whether to use an overlay that describes the detector's response
