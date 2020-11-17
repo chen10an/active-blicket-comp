@@ -23,10 +23,6 @@
     export let time_limit_seconds = 30;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 0 : 15;  // time in seconds to show the overlay instructions before the task starts
     
-    // [0, 1) float that represents the probability of the blicket detector **not** lighting up when activation=true,
-    // defaults to 0
-    export let noise = 0;
-    
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
     // defaults to null
     export let replay_sequence = null;  // ["100", "100", "100", "010", "101", "101"];
@@ -117,36 +113,31 @@
         // the randomly assigned id then becomes the argument position in `activation`
         let block_states = blocks_copy.map(block => block.state)
        
-        // TODO: different color backgrounds should be different combos --> both are shown to the participant as past attempts
-        // don't change the color of the detector with probability noise
-        let rand = Math.random();
-        if (rand >= noise) {
-            // change the detector's response and turn off button interactions
-            if (activation(...block_states)) {
-                show_positive_detector = true;
-            } else {
-                show_negative_detector = true;
-            }
-            if (!replay_sequence) {
-                disable_all = true;
-            } else {
-                replay_test_button_normal = false;
-            }
-
-            // wait before returning everything to their default state
-            await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
-
-            if (!replay_sequence) {  // not a non-interactive replay of block animations
-                // enable button interactions
-                disable_all = false;
-            } else {
-                replay_test_button_normal = true;
-            }
-
-            // revert to the default detector background color
-            show_positive_detector = false;
-            show_negative_detector = false;
+        // change the detector's response and turn off button interactions
+        if (activation(...block_states)) {
+            show_positive_detector = true;
+        } else {
+            show_negative_detector = true;
         }
+        if (!replay_sequence) {
+            disable_all = true;
+        } else {
+            replay_test_button_normal = false;
+        }
+
+        // wait before returning everything to their default state
+        await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
+
+        if (!replay_sequence) {  // not a non-interactive replay of block animations
+            // enable button interactions
+            disable_all = false;
+        } else {
+            replay_test_button_normal = true;
+        }
+
+        // revert to the default detector background color
+        show_positive_detector = false;
+        show_negative_detector = false;
 
         // create the bit string representation of the current block states
         let bit_combo = "";  // note that index i in this string corresponds to the block with id=i
