@@ -101,6 +101,7 @@
     let disable_replay_cont = true;  // whether the continue button can be clicked on
     let disable_replay_again = true;  // whether the replay again button can be clicked on
     let remaining_replays = 3;  // number of times the replay button can be clicked
+    let hide_all_combos = false;  // whether to hide all previous combos
 
     // Click handler functions
     async function test() {
@@ -262,18 +263,14 @@
         disable_replay_again = true;
         remaining_replays -= 1;
 
-        while (all_block_combos.length > 0) {
-            // explicit assignments to trigger reactivity for removing from the front of the array
-            all_block_combos.shift();
-            all_block_combos = all_block_combos;
-            all_bit_combos.shift();
-            all_bit_combos = all_bit_combos;
+        // hide the combo grid first to avoid a clunky disappearance from using `all_block_combos = []` only
+        hide_all_combos = true;
+        await tick();
 
-            // wait for each combo grid to disappear
-            await new Promise(r => setTimeout(r, FLIP_DURATION_MS));
-            await tick();
-        }
+        all_bit_combos = [];
+        all_block_combos = [];
 
+        hide_all_combos = false;
         animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
     }
 
@@ -335,9 +332,8 @@
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                     {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
-                        <div style="margin-right: 0.5rem;"
+                        <div class:invisible={hide_all_combos} style="margin-right: 0.5rem;"
                         in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
-                        out:send="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
                                 copied_blocks_arr={block_arr} key_prefix="combo_grid_{all_block_combos.length - i}" is_detector={true} 
@@ -409,5 +405,9 @@
         align-items: center;
 
         overflow: auto;
+    }
+
+    .invisible {
+        visibility: hidden;
     }
 </style>
