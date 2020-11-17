@@ -9,6 +9,7 @@
     import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
     import WinnieThePooh from './WinnieThePooh.svelte';
     import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../modules/experiment_stores.js';
+    import { CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
 
     // Event dispatcher for communicating with parent components
@@ -63,8 +64,6 @@
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, 750));
 
-        disable_blocks = false;
-        show_dummy_negative = false;
         // return all block states back to false
         for (let i=0; i < $block_dict[collection_id].length; i++) {
             block_dict.update(dict => {
@@ -72,6 +71,12 @@
                 return dict;
             });
         }
+
+        // wait for crossfade transition
+        await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
+
+        disable_blocks = false;
+        show_dummy_negative = false;
     }
 </script>
 

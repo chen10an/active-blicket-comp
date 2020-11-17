@@ -33,7 +33,7 @@
     import OverlayInstructions from './OverlayInstructions.svelte';
     import { available_features, block_dict, available_ids, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
-    import { receive, send } from '../modules/crossfade.js';
+    import { receive, CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
     import { onDestroy, tick } from 'svelte';
@@ -47,7 +47,7 @@
     // Constants
     const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
-    const FLIP_DURATION_MS = 200;  // duration of animation in milliseconds
+    const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
 
     // milliseconds passed to setInterval, used for replaying block animations,
     // make sure this is sufficiently larger than the crossfade duration
@@ -113,7 +113,7 @@
 
         // the randomly assigned id then becomes the argument position in `activation`
         let block_states = blocks_copy.map(block => block.state)
-       
+
         // change the detector's response and turn off button interactions
         if (activation(...block_states)) {
             show_positive_detector = true;
@@ -128,17 +128,6 @@
 
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
-
-        if (!replay_sequence) {  // not a non-interactive replay of block animations
-            // enable button interactions
-            disable_all = false;
-        } else {
-            unpress_their_test_button = true;
-        }
-
-        // revert to the default detector background color
-        show_positive_detector = false;
-        show_negative_detector = false;
 
         // create the bit string representation of the current block states
         let bit_combo = "";  // note that index i in this string corresponds to the block with id=i
@@ -165,6 +154,20 @@
         for (let i=0; i < $block_dict[collection_id].length; i++) {
             $block_dict[collection_id][i].state = false;
         }
+
+        // wait for crossfade transition
+        await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
+
+        if (!replay_sequence) {  // not a non-interactive replay of block animations
+            // enable button interactions
+            disable_all = false;
+        } else {
+            unpress_their_test_button = true;
+        }
+
+        // revert to the default detector background color
+        show_positive_detector = false;
+        show_negative_detector = false;
     }
 
     function cont() {

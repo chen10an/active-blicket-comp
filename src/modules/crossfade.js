@@ -5,7 +5,7 @@
 import { quintOut } from "svelte/easing";
 import { crossfade } from "svelte/transition";
 
-const CROSSFADE_DURATION_MS = 500;
+export const CROSSFADE_DURATION_MS = 500;
 
 // The following function is from: https://svelte.dev/tutorial/deferred-transitions
 const [send, receive] = crossfade({
