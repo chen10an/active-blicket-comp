@@ -15,7 +15,7 @@
 
 <script>
     import { dev_mode } from '../modules/experiment_stores.js';
-    // dev_mode.set(true);  // set dev_mode to true to see the skip button
+    // dev_mode.set(true);
     
     // Props
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
@@ -330,7 +330,13 @@
             </div>
 
             <!-- Button for testing the detector -->
-            <button id="test-button" disabled="{disable_all}" class:normal="{replay_sequence && replay_test_button_normal}" on:click={test}>Test the blicket machine</button>
+            <button disabled="{disable_all}" class:normal="{replay_sequence && replay_test_button_normal}" on:click={test}>
+                {#if replay_sequence}
+                    Their blicket machine test
+                {:else}
+                    Test the blicket machine
+                {/if}
+            </button>
 
             <!-- Show all previously attempted block combinations -->
             <h3 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h3>

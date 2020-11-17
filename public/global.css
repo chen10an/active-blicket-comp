@@ -95,13 +95,17 @@ button {
 	min-width: 7rem;
 	margin: 1rem 0;
 	padding: 0.5rem;
-	border: none;
-	border-radius: 0.5rem;
 	outline: none;
 	cursor: pointer;
 
-	background-color: var(--dark-gray);
-	color: var(--background-color);
+	background-color: white;
+	color: black;
+	box-shadow: 0 5px var(--medium-gray);
+
+	border: solid;
+	border-color: var(--medium-gray);
+	border-width: 1px;
+	border-radius: var(--container-border-radius);
 
 	font-family: inherit;
 	font-size: inherit;
@@ -110,15 +114,20 @@ button {
 button:active, button:disabled {
 	background-color: var(--light-gray);
 	color: black;
-}
 
-button.normal {
-	background-color: var(--dark-gray);
-	color: var(--background-color);
+	box-shadow: 0 2px var(--dark-gray);
+  	transform: translateY(3px);
 }
 
 button:disabled {
 	cursor: not-allowed;
+}
+
+button.normal {
+	background-color: white;
+	color: black;
+	box-shadow: 0 5px var(--medium-gray);
+	transform: translateY(-3px);
 }
 
 .hide {
