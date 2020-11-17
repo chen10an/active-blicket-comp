@@ -97,7 +97,7 @@
     let all_block_combos = [];  // list of lists of block objects
 
     // replay-specific variables:
-    let replay_test_button_normal = true;  // use for changing the appearance of the test button during replay
+    let unpress_their_test_button = true;  // use for changing the appearance of the test button during replay
     let disable_replay_cont = true;  // whether the continue button can be clicked on
     let disable_replay_again = true;  // whether the replay again button can be clicked on
     let remaining_replays = 3;  // number of times the replay button can be clicked
@@ -123,7 +123,7 @@
         if (!replay_sequence) {
             disable_all = true;
         } else {
-            replay_test_button_normal = false;
+            unpress_their_test_button = false;
         }
 
         // wait before returning everything to their default state
@@ -133,7 +133,7 @@
             // enable button interactions
             disable_all = false;
         } else {
-            replay_test_button_normal = true;
+            unpress_their_test_button = true;
         }
 
         // revert to the default detector background color
@@ -318,7 +318,7 @@
             </div>
 
             <!-- Button for testing the detector -->
-            <button disabled="{disable_all}" class:normal="{replay_sequence && replay_test_button_normal}" on:click={test}>
+            <button disabled="{disable_all}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
                 {#if replay_sequence}
                     Their blicket machine test
                 {:else}

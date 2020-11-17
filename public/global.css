@@ -123,9 +123,8 @@ button:disabled {
 	cursor: not-allowed;
 }
 
-button.normal {
-	background-color: white;
-	color: black;
+button:disabled.unpress {
+	/* unpress a disabled button without changing the disabled color */
 	box-shadow: 0 5px var(--medium-gray);
 	transform: translateY(-3px);
 }
