@@ -320,7 +320,7 @@
             <!-- Button for testing the detector -->
             <button disabled="{disable_all}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
                 {#if replay_sequence}
-                    Their blicket machine test
+                    Their blicket machine test button
                 {:else}
                     Test the blicket machine
                 {/if}
@@ -343,19 +343,19 @@
                 </div>
             </div>
 
-            <div>
+            <div class:hide="{!replay_sequence}">
                 <!-- Replay button -->
-                <button disabled="{disable_replay_again}" class:hide="{!replay_sequence}" on:click="{replay_again}">
+                <button disabled="{disable_replay_again}" on:click="{replay_again}">
                     Replay recording ({remaining_replays} {remaining_replays == 1 ? "time" : "times"} remaining)
                 </button>
 
                 <!-- Continue button for the replay -->
-                <button disabled="{disable_replay_cont}" class:hide="{!replay_sequence}" on:click="{cont}">
+                <button disabled="{disable_replay_cont}" on:click="{cont}">
                     Continue
                 </button>
             </div>
 
-            <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip to the next part</button>
+            <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
         </div>
     </div>
 {:else}

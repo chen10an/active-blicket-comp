@@ -139,7 +139,6 @@
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <p>Only the "Will the blicket machine activate?" section will contribute toward <b>your score</b>, but we hope that you'll earnestly answer all questions.</p>
-        <p>You will be able to submit and check your answers after answering all questions.</p>
         <h3>Will the blicket machine activate?</h3>
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
             <span style="font-size: xx-large;">
@@ -194,7 +193,7 @@
         <h3>Please describe how you think the blicket machine works.</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
 
-        <h3 class:hide="{!is_last}" style="margin-bottom: 0;">Do you have any feedback for us? (optional)</h3>
+        <h3 class:hide="{!is_last}" style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
         <p class:hide="{!is_last}">We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
         <textarea class:hide="{!is_last}" bind:value={$feedback}></textarea>
 
@@ -206,6 +205,7 @@
         <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
             Submit and get your score
         </button>
+        <p class:hide="{answered_all_questions}" style="color: red;">You will be able to submit after answering all questions.</p>
         <button on:click="{cont}" class:hide="{hide_correct_answers}">Continue</button>
 
         <button class:hide="{!$dev_mode}" on:click="{skip_validation}">dev: skip form validation</button>
