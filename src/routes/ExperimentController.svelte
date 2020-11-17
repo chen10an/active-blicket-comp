@@ -6,6 +6,7 @@
 	import Task from '../components/Task.svelte';
 	import Quiz from '../components/Quiz.svelte';
 	import End from '../components/End.svelte';
+	import TroubleEnd from '../components/TroubleEnd.svelte';
 	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score, dev_mode } from '../modules/experiment_stores.js';
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
 
@@ -56,12 +57,12 @@
 		"IntroInstructions": IntroInstructions,
 		"End": End
 	}
+	$: current_component = str_to_component[current_key.split("_")[0]];
 
 	function handleContinue(event) {
-
 		// force the end of the experiment
-		if (event.detail && event.detail.end) {
-			task_quiz_dex = task_quiz_keys.length - 1;
+		if (event.detail && event.detail.trouble) {
+			current_component = TroubleEnd;
 			return;
 		}
 
@@ -73,7 +74,7 @@
 </script>
 
 <!-- Dynamically show different components to the participant depending on the first part of current_key -->
-<svelte:component this={str_to_component[current_key.split("_")[0]]} {...component_sequence[current_key]} on:continue={handleContinue}/>
+<svelte:component this={current_component} {...component_sequence[current_key]} on:continue={handleContinue}/>
 
 <div class="bottom">
 	<progress value={$progress}></progress>

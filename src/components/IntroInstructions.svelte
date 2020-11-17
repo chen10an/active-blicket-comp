@@ -45,7 +45,7 @@
         num_clicks += 1;
         if (num_clicks >= MAX_CLICKS) {
             // force the end of the experiment
-            dispatch("continue", {end: true});
+            dispatch("continue", {trouble: true});
         }
 
         if (understanding_correct && passed_captcha) {

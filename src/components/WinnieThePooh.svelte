@@ -24,13 +24,13 @@
 
         if (num_filled >= 2) {
             // force the end of the experiment when 2 hidden elements are filled
-            dispatch("continue", {end: true});
+            dispatch("continue", {trouble: true});
         }
     }
 
     function submit() {
         // force the end of the experiment when the hidden form is successfully submitted
-        dispatch("continue", {end: true});
+        dispatch("continue", {trouble: true});
     }
 
     function click() {
