@@ -3,6 +3,9 @@
     // dev_mode.set(true);
 
     export let collection_id = "intro";
+    export let outline;  // a list of strings outlining the different parts of the experiment
+    export let est_time_str;  // a string describing the estimated time of the entire experiment
+    export let qa_dict;  // a dictionary with "question" (string that can contain html) and "correct_answer" (boolean) pairs
 
     import CenteredCard from './CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';
@@ -18,20 +21,16 @@
 
     const MAX_CLICKS = 50;  // number of clicks allowed on the continue button before forcing the end of the experiment
 
-    let qa_dict = {
-        "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "answer": null, "correct_answer": false},
-        "letter": {"question": "A block’s <em>letter</em> tells you whether it’s a blicket.", "answer": null, "correct_answer": false},
-        "position": {"question": "A block’s <em>position</em> tells you whether it’s a blicket.", "answer": null, "correct_answer": false},
-        "machine": {"question": "Only the blicket machine can help you figure out whether a block is a blicket.", "answer": null, "correct_answer": true},
-        "time_limit": {"question": "You have a time limit of 30 seconds to figure out which blocks are blickets.", "answer": null, "correct_answer": true},
-        "quiz": {"question": "You will be quizzed on your understanding of blickets and the blicket machine.", "answer": null, "correct_answer": true}
-    };
-
     let understanding_correct = false;
     let show_understanding_feedback = false;
     let passed_captcha = false;
     let show_cont_feedback = false;
     let num_clicks = 0;  // track the number of clicks on the continue button
+
+    for (const key in qa_dict) {
+        // create an answer field that the inputs below can bind to
+        qa_dict[key].answer = null;
+    }
 
     $: {
         understanding_correct = true;  // start with true then flip to false depending on the checks below
@@ -89,12 +88,11 @@
         </em></p>
         
         <h3>Introduction</h3>
-        <p>Welcome to our research study! Our study has 4 parts that last around 5 minutes in total:</p>
+        <p>Welcome to our research study! Our study has {outline.length} parts that last around {est_time_str} in total:</p>
         <ol>
-            <li>An interactive game called the "blicket game (~30s)</li>
-            <li>A quiz about the blicket game (~2min)</li>
-            <li>A recording of someone else playing the blicket game (~30s)</li>
-            <li>A quiz about the recording (~2min)</li>
+            {#each outline as part}
+                <li>{part}</li>
+            {/each}
         </ol>
         
         <h3>The Blicket Game</h3>

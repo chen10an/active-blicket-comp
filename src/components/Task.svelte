@@ -20,12 +20,13 @@
     // Props
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
-    export let time_limit_seconds = 30;  // time limit in seconds
+    export let time_limit_seconds = 45;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 0 : 15;  // time in seconds to show the overlay instructions before the task starts
     
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
     // defaults to null
     export let replay_sequence = null;  // ["100", "100", "100", "010", "101", "101"];
+    export let replay_person_name = "someone";
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
@@ -59,6 +60,8 @@
     }
 
     // Initialize variables
+    let scrollY = 0;  // make sure the task starts at the top of the window
+
     let blocks = [];  // initialize an array of block objects
     // get the first n available block ids, where n=activation.length and remove these block ids from available_ids
     let id_arr = $available_ids.splice(0, activation.length);
@@ -279,16 +282,18 @@
 
 </script>
 
+<svelte:window bind:scrollY={scrollY}/>
+
 {#if !has_ended}
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
             {#if replay_sequence}
-                <h3>A recording of someone else playing the blicket game will start in {instructions_seconds} seconds.</h3>
+                <h3>A recording of {replay_person_name} playing the blicket game will start in {instructions_seconds} seconds.</h3>
                 <p>Your goal is still to figure out which blocks (A, B, C) are blickets, but this time from a recording that you will not be able to interact with. Only the reaction of the blicket machine can help you find blickets.</p>
                 <p>Make sure to remember which blocks are blickets. You will again be quizzed about blickets and the blicket machine right after this recording.</p>
             {:else}
                 <h3>The blicket game will start in {instructions_seconds} seconds.</h3>
-                <p>During the game, you will have a time limit of 30 seconds to figure out which blocks (A, B, C) are blickets. Only the blicket machine can help you find blickets.</p>
+                <p>During the game, you will have a time limit of {time_limit_seconds} seconds to figure out which blocks (A, B, C) are blickets. Only the blicket machine can help you find blickets.</p>
                 <p>Make sure to remember which blocks are blickets. You will be quizzed about blickets and the blicket machine right after this game.</p>
             {/if}
         </CenteredCard>
@@ -298,7 +303,7 @@
         <div class="col-container">
             <h3 style="margin-top: 0;">
                 {#if replay_sequence}
-                    You are now watching a recording of someone else playing the blicket game:
+                    You are now watching a recording of {replay_person_name}'s blicket game:
                 {:else}
                     Remaining time: {time_limit_seconds}s
                 {/if}

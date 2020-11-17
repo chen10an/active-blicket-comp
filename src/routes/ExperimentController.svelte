@@ -6,12 +6,12 @@
 	import Task from '../components/Task.svelte';
 	import Quiz from '../components/Quiz.svelte';
 	import End from '../components/End.svelte';
-	import { onDestroy } from 'svelte';
-	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score} from '../modules/experiment_stores.js';
+	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score, dev_mode } from '../modules/experiment_stores.js';
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
+
+	import { onDestroy } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	import { dev_mode } from '../modules/experiment_stores.js';
 	
 	dev_mode.set(set_dev_mode);
 
