@@ -82,21 +82,20 @@
 <CenteredCard is_large={true} has_button={false}>
     <div>
         <h2>Welcome to a Research Study by the University of Edinburgh</h2>
-        <p style="color: red;"><b>Please do NOT reload the page. A page reload will stop the study.</b></p>
-        <p><em>If you are on a phone or tablet, please flip your device into the landscape orientation (where the screen width is longer than the height).
-        No need to do anything if you are on a computer.
-        </em></p>
+        <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
+        <p><em>If you are on a phone or tablet, please flip your device into the landscape orientation (where the screen width is longer than the height). No need to do anything if you are on a computer.</em></p>
         
         <h3>Introduction</h3>
-        <p>Welcome to our research study! Our study has {outline.length} parts that last around {est_time_str} in total:</p>
+        <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process. Our study has {outline.length} parts that last around {est_time_str} in total:</p>
         <ol>
             {#each outline as part}
                 <li>{part}</li>
             {/each}
         </ol>
+        <p>We'll tally your <b>quiz scores</b> on the top right corner of your screen.</p>
         
         <h3>The Blicket Game</h3>
-        <p>Our blicket game has a collection of blocks with different letters and colors. Some blocks have special properties that make them "blickets" and only a blicket machine will be able to help you detect these blickets. You have a time limit of 30 seconds to figure out which blocks are blickets.</p>
+        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and only a <b>blicket machine</b> can help us identify these blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
 
         <p>Here is an example of some blocks (left) and a dummy blicket machine (right):</p>
         <div class="centering-container" style="padding: 0;">
@@ -113,14 +112,13 @@
             <!-- Dummy blicket machine test button -->
             <button on:click={dummy_test} disabled="{disable_blocks}">
                 Test the dummy blicket machine<br/>
-                <span style="font-size: small">Note: this dummy machine does not do anything</span>
+                <span style="font-size: var(--small-font-size)">Note: this dummy machine does not do anything</span>
             </button>
         </div>
             
         <p>Try clicking on the blocks (A, B and C) above! This allows us to move blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
             
-        <p> In the <b>real blicket game</b>, the blicket machine can either "activate" with a <span style="background: var(--active-color); padding: 0 0.3rem;">green color</span>, or do nothing. It doesn’t matter where blocks are placed on the machine.
-        </p>
+        <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. It doesn’t matter where blocks are placed on the machine.</p>
 
         <h3>Checking Your Understanding</h3>
         {#each Object.keys(qa_dict) as key}
@@ -135,14 +133,13 @@
             {#if understanding_correct}
                 <p class="correct">All correct! Thanks for reading our instructions.</p>
             {:else}
-                <p class="wrong">Not all answers are correct. Try again.</p>
+                <p class="wrong">Not all answers are correct. Please try again.</p>
             {/if}
         </div>
 
         <h3>Do you consent to participate in our study?</h3>
         <!-- TODO: participant information sheet -->
         <p>To confirm that you would like to participate in our study, please move only the blocks with warm colors onto the blicket machine. Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
-
         <!-- TODO: compensation and bonus -->
     </div>
 

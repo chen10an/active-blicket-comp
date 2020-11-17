@@ -77,7 +77,7 @@
 
 <div class="bottom">
 	<progress value={$progress}></progress>
-	<span class="score">Running Score: {$current_score}/{$total_score}</span>
+	<span class="score"><span style="font-size: var(--small-font-size);">Running Quiz Score: </span><b>{$current_score}/{$total_score}</b></span>
 </div>
 
 

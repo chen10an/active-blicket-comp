@@ -182,7 +182,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        font-size: small;
+        font-size: var(--small-font-size);
     }
 
     .outer-flex.not-allowed, .overlay.not-allowed {

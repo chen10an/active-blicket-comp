@@ -288,13 +288,12 @@
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
             {#if replay_sequence}
-                <h3>A recording of {replay_person_name} playing the blicket game will start in {instructions_seconds} seconds.</h3>
-                <p>Your goal is still to figure out which blocks (A, B, C) are blickets, but this time from a recording that you will not be able to interact with. Only the reaction of the blicket machine can help you find blickets.</p>
-                <p>Make sure to remember which blocks are blickets. You will again be quizzed about blickets and the blicket machine right after this recording.</p>
+                <!-- Capitalize the first letter of replay_person_name for the start of the sentence -->
+                <p>{replay_person_name.charAt(0).toUpperCase() + replay_person_name.slice(1)} has been playing the blicket game. Can you figure out which blocks are blickets in their game? Remember, only the blicket machine's responses can help you identify blickets.</p>
+                <p>A recording of their blicket game will start in {instructions_seconds} seconds.</p>
             {:else}
-                <h3>The blicket game will start in {instructions_seconds} seconds.</h3>
-                <p>During the game, you will have a time limit of {time_limit_seconds} seconds to figure out which blocks (A, B, C) are blickets. Only the blicket machine can help you find blickets.</p>
-                <p>Make sure to remember which blocks are blickets. You will be quizzed about blickets and the blicket machine right after this game.</p>
+                <p>Can you figure out which blocks are blickets? You will have <b>{time_limit_seconds} seconds</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+                <p>The blicket game will start in  {instructions_seconds} seconds.</p>
             {/if}
         </CenteredCard>
     </OverlayInstructions>
@@ -335,7 +334,8 @@
             </button>
 
             <!-- Show all previously attempted block combinations -->
-            <h3 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous results from the blicket machine:</h3>
+            <h3 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous (scrollable) results from the blicket machine:</h3>
+            <span>Be ready to be quizzed about blickets and the blicket machine.</span>
             <div class="row-container">
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
@@ -370,9 +370,9 @@
     <!-- Show when the time limit is reached and forward the continue event upward. -->
     <CenteredCard on:continue>
         {#if replay_sequence}
-            <h3 style="text-align: center;">Based on the replay you just watched, the next part is a quiz about blickets and the blicket machine.</h3>
+            <h3 style="text-align: center;">Based on the recording you just saw, the next part is a quiz about blickets and the blicket machine.</h3>
         {:else}
-            <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just encountered.</h3>
+            <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just saw.</h3>
         {/if}
     </CenteredCard>
 {/if}

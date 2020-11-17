@@ -21,17 +21,17 @@
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
     const BLICKET_ANSWER_OPTIONS = [
         {id: -1, text: "Unselected"},
-        {id: 10, text: "10 — Definitely a blicket"}, 
+        {id: 10, text: "10 — Definitely a blicket."}, 
         {id: 9, text: "9"}, 
-        {id: 8, text: "8 — Almost sure that this is a blicket."}, 
+        {id: 8, text: "8 — Almost sure this is a blicket."}, 
         {id: 7, text: "7"}, 
         {id: 6, text: "6"}, 
         {id: 5, text: "5 — Equally likely to be a blicket or not."}, 
         {id: 4, text: "4"},
         {id: 3, text: "3"},
-        {id: 2, text: "2 — Almost sure that this is NOT a blicket."},
+        {id: 2, text: "2 — Almost sure this is NOT a blicket."},
         {id: 1, text: "1"},
-        {id: 0, text: "0 — Definitely NOT a blicket"}
+        {id: 0, text: "0 — Definitely NOT a blicket."}
     ]
 
     // Initialize and store variables
@@ -139,12 +139,12 @@
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <p>Only the "Will the blicket machine activate?" section will contribute toward <b>your score</b>, but we hope that you'll earnestly answer all questions.</p>
-        <h3>Will the blicket machine activate?</h3>
+        <h3>Will the blicket machine activate (light up with a green color)?</h3>
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
             <span style="font-size: xx-large;">
                 Your score here: {$quiz_data_dict[collection_id].activation_score}/{$quiz_data_dict[collection_id].activation_answer_groups.length}
             </span>
-            <p>Your total running score: {$current_score}/{$total_score}</p>
+            <p>Your total running quiz score: {$current_score}/{$total_score}</p>
         </div>
         {#each quiz_block_combos as arr, i}
             <div class="qa">
@@ -190,7 +190,7 @@
             </div>
         {/each}
 
-        <h3>Please describe how you think the blicket machine works.</h3>
+        <h3>How do you think the blicket machine works?</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_answer} disabled="{!hide_correct_answers}"></textarea>
 
         <h3 class:hide="{!is_last}" style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
@@ -203,7 +203,7 @@
         </div> -->
 
         <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
-            Submit and get your score
+            Submit and see your score
         </button>
         <p class:hide="{answered_all_questions}" style="color: red;">You will be able to submit after answering all questions.</p>
         <button on:click="{cont}" class:hide="{hide_correct_answers}">Continue</button>
