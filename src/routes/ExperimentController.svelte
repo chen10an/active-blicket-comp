@@ -58,11 +58,13 @@
 		"End": End
 	}
 	$: current_component = str_to_component[current_key.split("_")[0]];
+	$: current_props = component_sequence[current_key];
 
 	function handleContinue(event) {
 		// force the end of the experiment
 		if (event.detail && event.detail.trouble) {
 			current_component = TroubleEnd;
+			current_props = {};
 			return;
 		}
 
@@ -74,7 +76,7 @@
 </script>
 
 <!-- Dynamically show different components to the participant depending on the first part of current_key -->
-<svelte:component this={current_component} {...component_sequence[current_key]} on:continue={handleContinue}/>
+<svelte:component this={current_component} {...current_props} on:continue={handleContinue}/>
 
 <div class="bottom">
 	<progress value={$progress}></progress>

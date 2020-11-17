@@ -34,8 +34,9 @@ function init_block_dict() {
         {id: -3, state: false, color: "color5", letter: "C"}],
     };
 
-    // TODO: ensure at least one warm block and one cool block
-    let captcha_blocks = get_rand_features([...WARM_COLORS, ...COOL_COLORS], 9);
+    let captcha_blocks = get_rand_features([...WARM_COLORS, ...COOL_COLORS], 7);
+    // ensure at least one warm block and one cool block
+    captcha_blocks = [...captcha_blocks, {color: "warm0", letter: ALPHABET.charAt(7)}, {color: "cool0", letter: ALPHABET.charAt(8)}]
     for (let i=0; i < captcha_blocks.length; i++) {
         captcha_blocks[i].state = false;
         captcha_blocks[i].id = -11 - i;
