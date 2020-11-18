@@ -9,11 +9,12 @@
 	import { passive_conj_seq, passive_disj_seq } from './condition_configs/passive.js';
 
 	const ALL_SEQ = [active_conj_seq, passive_conj_seq, active_disj_seq, passive_disj_seq];
+	const VERSION = "0.0.0";
 
 	// create routes
 	let routes = {};
 	for (let i=0; i < ALL_SEQ.length; i++) {
-		routes[`/conditions/${i}`] = wrap({
+		routes[`/${VERSION}/conditions/${i}`] = wrap({
 			component: ExperimentController,
 			props: {
 				component_sequence: ALL_SEQ[i],
@@ -21,7 +22,7 @@
 			}
 		});
 
-		routes[`/dev/conditions/${i}`] = wrap({
+		routes[`/${VERSION}/dev/conditions/${i}`] = wrap({
 			component: ExperimentController,
 			props: {
 				component_sequence: ALL_SEQ[i],
