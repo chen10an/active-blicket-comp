@@ -42,42 +42,25 @@
 	--warm8: #ffaa00ff;
 
 	/* blocks are squares specified by one length variable */
-	--block-length: 5rem;
-	--block-margin: 0.5rem;
-	--mini-block-length: 2rem;
-	--mini-block-margin: 0.2rem;
+	--block-length: 5em;
+	--block-margin: 0.5em;
+	--mini-block-length: 30px;
+	--mini-block-margin: 3px;
 
 	/* block containers are also squares specified by one length variable */
-	--block-outer-length: 20rem;
-	--block-outer-margin: 1rem;
+	--block-outer-length: 20em;
+	--block-outer-margin: 1em;
 
 	/* general containers have rounded corners and shadow */
-	--container-border-radius: 0.5rem;
+	--container-border-radius: 10px;
 	--container-box-shadow: 0px 0px 7px 1px var(--medium-gray);
-
-	/* root font size that controls the size of everything with sizes defined in terms of rem */
-	--root-font-size: 16px;
-	--small-font-size: calc(var(--root-font-size) - 2px);
-}
-
-/* TODO: only apply these font changes to the task component, probably use em for this */
-/* achieve responsiveness by changing the root font size for landscape mobile devices */
-@media (min-height: 300px) and (max-height: 399px) and (orientation: landscape) {
-	:root {
-		--root-font-size: 9px;
-	}
-}
-@media (min-height: 400px) and (max-height: 499px) and (orientation: landscape) {
-	:root {
-		--root-font-size: 10px;
-	}
 }
 
 html {
 	width: 100%;
 	height: 100%;
 	font-family: 'Open Sans', sans-serif;
-	font-size: var(--root-font-size);
+	font-size: 16px;
 }
 
 body {

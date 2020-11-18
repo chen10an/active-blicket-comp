@@ -60,6 +60,8 @@
 	$: current_component = str_to_component[current_key.split("_")[0]];
 	$: current_props = component_sequence[current_key];
 
+	let scrollY = 0;
+
 	function handleContinue(event) {
 		// force the end of the experiment
 		if (event.detail && event.detail.trouble) {
@@ -72,15 +74,17 @@
 		task_quiz_dex += 1;
 		// incremement the progress bar
 		progress.update(x => x + progress_inc);
+		scrollY = 0; // make sure to start each component at the top of the window
 	}
 </script>
 
+<svelte:window bind:scrollY={scrollY}/>
 <!-- Dynamically show different components to the participant depending on the first part of current_key -->
 <svelte:component this={current_component} {...current_props} on:continue={handleContinue}/>
 
 <div class="bottom">
 	<progress value={$progress}></progress>
-	<span class="score"><span style="font-size: var(--small-font-size);">Running Quiz Score: </span><b>{$current_score}/{$total_score}</b></span>
+	<span class="score"><span style="font-size: 0.7rem;">Running Quiz Score: </span><b>{$current_score}/{$total_score}</b></span>
 </div>
 
 

@@ -83,7 +83,7 @@
     <div>
         <h2>Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
-        <p><em>If you are on a phone or tablet, please flip your device into the landscape orientation (where the screen width is longer than the height). No need to do anything if you are on a computer.</em></p>
+        <p><em>If you are on <span style="color: red;">phone or tablet</span>, please flip your device into the landscape orientation (where the screen width is longer than the height). No need to do anything if you are on a computer.</em></p>
         
         <h3>Introduction</h3>
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process. Our study has {outline.length} parts that last around {est_time_str} in total:</p>
@@ -112,7 +112,7 @@
             <!-- Dummy blicket machine test button -->
             <button on:click={dummy_test} disabled="{disable_blocks}">
                 Test the dummy blicket machine<br/>
-                <span style="font-size: var(--small-font-size)">Note: this dummy machine does not do anything</span>
+                <span style="font-size: 0.7rem">Note: this dummy machine does not do anything</span>
             </button>
         </div>
             

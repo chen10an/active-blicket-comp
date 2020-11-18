@@ -176,7 +176,7 @@
         {#each $block_dict[collection_id] as block, i}
             <div class="qa">
                 <div class="block" style="background-color: var(--{block.color})">
-                    <b>{block.letter}</b>
+                    <span class="block-letter"><b>{block.letter}</b></span>
                 </div>
                 <div class="answer-options">
                     <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]} disabled="{!hide_correct_answers}">
@@ -243,17 +243,22 @@
     }
 
     .block {
+        font-size: 1rem;
+
         width: var(--block-length);
         height: var(--block-length);
         margin: var(--block-margin);
         border-radius: var(--block-margin);
 
         color: var(--background-color);
-        font-size: 2rem;
         /* center text */
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .block-letter {
+        font-size: 2em;
     }
 
     textarea {

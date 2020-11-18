@@ -21,7 +21,7 @@
     export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
     export let time_limit_seconds = 45;  // time limit in seconds
-    export let instructions_seconds = $dev_mode ? 0 : 15;  // time in seconds to show the overlay instructions before the task starts
+    export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
     
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
     // defaults to null
@@ -60,8 +60,6 @@
     }
 
     // Initialize variables
-    let scrollY = 0;  // make sure the task starts at the top of the window
-
     let blocks = [];  // initialize an array of block objects
     // get the first n available block ids, where n=activation.length and remove these block ids from available_ids
     let id_arr = $available_ids.splice(0, activation.length);
@@ -282,8 +280,6 @@
 
 </script>
 
-<svelte:window bind:scrollY={scrollY}/>
-
 {#if !has_ended}
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
@@ -301,13 +297,13 @@
 
     <div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
-            <h3 style="margin-top: 0;">
+            <h4 style="margin: 0;">
                 {#if replay_sequence}
                     You are watching a recording of {replay_person_name}'s blicket game:
                 {:else}
                     Remaining time: {time_limit_seconds}s
                 {/if}
-            </h3>
+            </h4>
 
             <div class="row-container">
                 <!-- In this non-detector grid, display a block only if its state is false -->
@@ -335,7 +331,7 @@
             </button>
 
             <!-- Show all previously attempted block combinations -->
-            <h3 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous (scrollable) results from the blicket machine:</h3>
+            <h4 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous (scrollable) results from the blicket machine:</h4>
             <span>Be ready to be quizzed about blickets and the blicket machine.</span>
             <div class="row-container">
                 <div id="all-combos">

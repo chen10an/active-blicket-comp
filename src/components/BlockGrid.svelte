@@ -48,7 +48,7 @@
                 class:mini="{is_mini}" class:disabled="{is_disabled}"
                 in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
                 on:click={() => click_block(block.id)}>
-                    <b>{block.letter}</b>
+                    <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
                 </div>
             {/each}
         </div>
@@ -58,11 +58,11 @@
     {#if is_detector && use_overlay} 
         {#if show_positive}
             <div class="overlay not-allowed" class:mini="{is_mini}">    
-                Activated!
+                <span class="overlay-text">Activated!</span>
             </div>
         {:else if show_negative}
             <div class="overlay not-allowed" class:mini="{is_mini}">   
-                Nothing happened.
+                <span class="overlay-text">Nothing happened.</span>
             </div>
         {/if}
     {/if}
@@ -70,7 +70,42 @@
     
 
 <style>
+    /* achieve responsiveness by changing the parent font size for landscape devices */
+    @media (min-height: 0px) and (orientation: landscape) {
+        .container {
+            font-size: 7px;
+        }
+    }
+    @media (min-height: 300px) and (orientation: landscape) {
+        .container {
+            font-size: 8px;
+        }
+    }
+    @media (min-height: 400px) and (orientation: landscape) {
+        .container {
+            font-size: 10px;
+        }
+    }
+    @media (min-height: 500px) and (orientation: landscape) {
+        .container {
+            font-size: 12px;
+        }
+    }
+    @media (min-height: 600px) and (orientation: landscape) {
+        .container {
+            font-size: 14px;
+        }
+    }
+
+    @media (min-height: 700px) and (orientation: landscape) {
+        .container {
+            font-size: 16px;
+        }
+    }
+    
     .outer-flex {
+        font-size: inherit;
+
         min-height: var(--block-outer-length);
         width: var(--block-outer-length);
         margin: var(--block-outer-margin);
@@ -85,6 +120,8 @@
     }
 
     .inner-grid {
+        font-size: inherit;
+
         /* enough space for 3x3 blocks */
         width: calc(3*(var(--block-length) + 2*var(--block-margin)));
         height: calc(3*(var(--block-length) + 2*var(--block-margin)));
@@ -112,6 +149,8 @@
     }
 
     .block {
+        font-size: inherit;
+
         width: var(--block-length);
         height: var(--block-length);
         margin: var(--block-margin);
@@ -120,7 +159,6 @@
         cursor: pointer;
 
         color: var(--background-color);
-        font-size: 2rem;
         /* center text */
         display: flex;
         justify-content: center;
@@ -131,12 +169,19 @@
         width: var(--mini-block-length);
         height: var(--mini-block-length);
         margin: var(--mini-block-margin);
-        border-radius: var(--block-margin);
-        font-size: 1rem;
+        border-radius: 5px;
     }
 
     .block.disabled {
         pointer-events: none;
+    }
+
+    .block-letter {
+        font-size: 2em;
+    }
+
+    .block-letter.mini {
+        font-size: 16px;
     }
 
     .detector {
@@ -156,6 +201,8 @@
     }
 
     .overlay {
+        font-size: inherit;
+
         position: absolute;
         top: var(--block-outer-margin);
         right: var(--block-outer-margin);
@@ -173,16 +220,20 @@
         align-items: center;
 
         text-align: center;
-        font-size: x-large;
         font-weight: bold;
     }
 
     .overlay.mini {
+        font-size: 8px;
+
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        font-size: var(--small-font-size);
+    }
+
+    .overlay-text {
+        font-size: 1.7em;
     }
 
     .outer-flex.not-allowed, .overlay.not-allowed {

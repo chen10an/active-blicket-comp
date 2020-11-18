@@ -29,7 +29,7 @@
 <style>
     .col-container {
         max-width: 30rem;
-        min-height: 15rem;
+        min-height: 10rem;
         margin: 1rem;
         padding: 2rem;
 
@@ -46,7 +46,7 @@
     }
 
     .large {
-        max-width: 50rem !important;
-        min-height: 30rem !important;
+        max-width: 50rem;
+        min-height: 30rem;
     }
 </style>
