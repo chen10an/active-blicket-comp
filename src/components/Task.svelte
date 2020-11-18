@@ -287,10 +287,10 @@
                 <!-- Capitalize the first letter of replay_person_name for the start of the sentence -->
                 <p>{replay_person_name.charAt(0).toUpperCase() + replay_person_name.slice(1)} has been playing the blicket game.</p> 
                 <p><b>Can you figure out which blocks are blickets in their game?</b> Remember, only the blicket machine's responses can help you identify blickets.</p>
-                <p>A recording of their blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds} seconds</span>.</p>
+                <p>A recording of their blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
             {:else}
                 <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{time_limit_seconds} seconds</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
-                <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds} seconds</span>.</p>
+                <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
             {/if}
         </CenteredCard>
     </OverlayInstructions>
