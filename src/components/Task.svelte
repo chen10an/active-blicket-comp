@@ -289,11 +289,12 @@
         <CenteredCard has_button={false}>
             {#if replay_sequence}
                 <!-- Capitalize the first letter of replay_person_name for the start of the sentence -->
-                <p>{replay_person_name.charAt(0).toUpperCase() + replay_person_name.slice(1)} has been playing the blicket game. Can you figure out which blocks are blickets in their game? Remember, only the blicket machine's responses can help you identify blickets.</p>
-                <p>A recording of their blicket game will start in {instructions_seconds} seconds.</p>
+                <p>{replay_person_name.charAt(0).toUpperCase() + replay_person_name.slice(1)} has been playing the blicket game.</p> 
+                <p><b>Can you figure out which blocks are blickets in their game?</b> Remember, only the blicket machine's responses can help you identify blickets.</p>
+                <p>A recording of their blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds} seconds</span>.</p>
             {:else}
-                <p>Can you figure out which blocks are blickets? You will have <b>{time_limit_seconds} seconds</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
-                <p>The blicket game will start in  {instructions_seconds} seconds.</p>
+                <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{time_limit_seconds} seconds</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+                <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds} seconds</span>.</p>
             {/if}
         </CenteredCard>
     </OverlayInstructions>
@@ -302,7 +303,7 @@
         <div class="col-container">
             <h3 style="margin-top: 0;">
                 {#if replay_sequence}
-                    You are now watching a recording of {replay_person_name}'s blicket game:
+                    You are watching a recording of {replay_person_name}'s blicket game:
                 {:else}
                     Remaining time: {time_limit_seconds}s
                 {/if}
@@ -359,7 +360,7 @@
 
                 <!-- Continue button for the replay -->
                 <button disabled="{disable_replay_cont}" on:click="{cont}">
-                    Continue
+                    Continue to the quiz
                 </button>
             </div>
 

@@ -18,7 +18,7 @@ const qa_dict = {
     "quiz": {"question": "You will be quizzed on your understanding of blickets and the blicket machine.", "correct_answer": true}
 };
 
-// Deterministic conjunctive task and quiz sequence
+// Deterministic conjunctive with active training
 const active_conj_seq = {
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict: qa_dict},
     // interactive
@@ -30,7 +30,7 @@ const active_conj_seq = {
     "End": {}
 }
 
-// Deterministic disjunctive task and quiz sequence
+// Deterministic disjunctive with active training
 const active_disj_seq = {
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict, qa_dict},
     // interactive
