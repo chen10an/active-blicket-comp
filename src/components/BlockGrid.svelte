@@ -70,36 +70,75 @@
     
 
 <style>
-    /* achieve responsiveness by changing the parent font size for landscape devices */
-    @media (min-height: 0px) and (orientation: landscape) {
-        .container {
-            font-size: 7px;
+    /* achieve responsiveness by changing the parent font size */
+    @media (orientation: landscape) {
+        @media (min-height: 0px) {
+            .container {
+                font-size: 7px;
+            }
         }
-    }
-    @media (min-height: 300px) and (orientation: landscape) {
-        .container {
-            font-size: 8px;
+        @media (min-height: 300px) {
+            .container {
+                font-size: 8px;
+            }
         }
-    }
-    @media (min-height: 400px) and (orientation: landscape) {
-        .container {
-            font-size: 10px;
+        @media (min-height: 400px) {
+            .container {
+                font-size: 10px;
+            }
         }
-    }
-    @media (min-height: 500px) and (orientation: landscape) {
-        .container {
-            font-size: 12px;
+        @media (min-height: 500px) {
+            .container {
+                font-size: 12px;
+            }
         }
-    }
-    @media (min-height: 600px) and (orientation: landscape) {
-        .container {
-            font-size: 14px;
+        @media (min-height: 600px) {
+            .container {
+                font-size: 14px;
+            }
+        }
+        @media (min-height: 700px) {
+            .container {
+                font-size: 16px;
+            }
         }
     }
 
-    @media (min-height: 700px) and (orientation: landscape) {
-        .container {
-            font-size: 16px;
+    @media (orientation: portrait) {
+        @media (min-width: 0px) {
+            .container {
+                font-size: 5px;
+            }
+        }
+        @media (min-width: 350px) {
+            .container {
+                font-size: 7px;
+            }
+        }
+        @media (min-width: 400px) {
+            .container {
+                font-size: 8px;
+            }
+        }
+        @media (min-width: 500px) {
+            .container {
+                font-size: 10px;
+            }
+        }
+        @media (min-width: 600px) {
+            .container {
+                font-size: 12px;
+            }
+        }
+        @media (min-width: 700px) {
+            .container {
+                font-size: 14px;
+            }
+        }
+        @media (min-width: 750px) {
+            .container {
+                font-size: 16px;
+            }
         }
     }
     

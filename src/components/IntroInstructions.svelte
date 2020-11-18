@@ -97,7 +97,7 @@
         <h3>The Blicket Game</h3>
         <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and only a <b>blicket machine</b> can help us identify these blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
 
-        <p>Here is an example of some blocks (left) and a dummy blicket machine (right):</p>
+        <p>Here is an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
         <div class="centering-container" style="padding: 0;">
             <div style="margin: 0.5rem;">
                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} block_filter_func={block => !block.state} 
