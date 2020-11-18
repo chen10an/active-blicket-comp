@@ -91,7 +91,7 @@
 <style>
 	.bottom {
 		position: fixed;
-		top: 0;
+		bottom: 0;
 		width: 100%;
 		z-index: 20;
 
@@ -101,6 +101,7 @@
 
 	progress {
 		flex-grow: 1;
+		align-self: flex-end;
 	}
 
 	.score {

@@ -295,16 +295,21 @@
         </CenteredCard>
     </OverlayInstructions>
 
-    <div class="centering-container" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
-        <div class="col-container">
-            <h4 style="margin: 0;">
+    {#if !show_instructions}
+        <div class="top">
+            <span class="info">
                 {#if replay_sequence}
-                    You are watching a recording of {replay_person_name}'s blicket game:
+                    Recording of {replay_person_name}'s blicket game:                
                 {:else}
-                    Remaining time: {time_limit_seconds}s
+                    Remaining time: <b>{time_limit_seconds}s</b>
                 {/if}
-            </h4>
+            </span>
+        </div>
+    {/if}
 
+    <div class="centering-container" style="padding-top: 3rem;"
+    in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
+        <div class="col-container">
             <div class="row-container">
                 <!-- In this non-detector grid, display a block only if its state is false -->
                 <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
@@ -415,4 +420,24 @@
     .invisible {
         visibility: hidden;
     }
+
+    .top {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		z-index: 30;
+
+		display: flex;
+		justify-content: center;
+    }
+    
+    .info {
+		padding: 0.2rem;
+		text-align: center;
+        
+        background-color: white;
+        border-color: var(--medium-gray);
+        border-style: none solid solid solid;
+        border-radius: 0 0 var(--container-border-radius) var(--container-border-radius);
+	}
 </style>
