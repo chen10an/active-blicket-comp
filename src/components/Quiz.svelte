@@ -264,9 +264,5 @@
     textarea {
         width: 70%;
         height: 3rem;
-
-        border: none;
-        border-radius: var(--container-border-radius);
-        box-shadow: var(--container-box-shadow);
     }
 </style>

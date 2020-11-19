@@ -83,7 +83,6 @@
     <div>
         <h2>Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
-        <p><em>If you are on <span style="color: red;">phone or tablet</span>, please flip your device into the landscape orientation (where the screen width is longer than the height). No need to do anything if you are on a computer.</em></p>
         
         <h3>Introduction</h3>
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process. Our study has {outline.length} parts that last around {est_time_str} in total:</p>
@@ -92,7 +91,7 @@
                 <li>{part}</li>
             {/each}
         </ol>
-        <p>We'll tally your <b>quiz scores</b> on the top right corner of your screen.</p>
+        <p>We'll tally your <b>quiz scores</b> on the bottom right corner of your screen.</p>
         
         <h3>The Blicket Game</h3>
         <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and only a <b>blicket machine</b> can help us identify these blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
