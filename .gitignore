@@ -1,4 +1,5 @@
 /node_modules/
 /public/active-blicket-comp/build/
+/public/active-blicket-comp/prefixed_*
 
 .DS_Store
