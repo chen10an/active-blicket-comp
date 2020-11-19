@@ -6,7 +6,6 @@
 	import Task from '../components/Task.svelte';
 	import Quiz from '../components/Quiz.svelte';
 	import End from '../components/End.svelte';
-	import TroubleEnd from '../components/TroubleEnd.svelte';
 	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score, dev_mode } from '../modules/experiment_stores.js';
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
 
@@ -65,8 +64,8 @@
 	function handleContinue(event) {
 		// force the end of the experiment
 		if (event.detail && event.detail.trouble) {
-			current_component = TroubleEnd;
-			current_props = {};
+			current_component = End;
+			current_props = {is_trouble: true};
 			return;
 		}
 
