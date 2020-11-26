@@ -19,7 +19,7 @@
     
     // Props
     export let collection_id = "dev";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
-    export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
+    export let activation = (arg0, arg1, arg2) => arg2;  // lambda function that represents the causal relationship
     export let time_limit_seconds = 45;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
     
@@ -93,10 +93,11 @@
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
     
+    // all block combinations that the participant has tried; use arrays to maintain order
+    let all_block_combos = [];  // list of lists of block objects
     task_data_dict.update(dict => {
-        // all block combinations that the participant has tried; use arrays to maintain order
         dict[collection_id] = {
-            all_combos: [],  // list of block_combo objects
+            all_combos: [],  // list of objects with 2 properties: bitstring combo and timestamp
             replay_sequence: replay_sequence
         };
         return dict;
@@ -126,7 +127,7 @@
         } else {
             show_negative_detector = true;
         }
-        if (!replay_sequence) {
+        if (replay_sequence === null) {
             disable_all = true;
         } else {
             unpress_their_test_button = false;
@@ -135,28 +136,32 @@
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
 
-        // create the bit string representation of the current block states
-        let bit_combo = "";  // note that index i in this string corresponds to the block with id=i
-        for (let i=0; i < block_states.length; i++) {
-            if (block_states[i]) {
-                bit_combo = bit_combo.concat("1");
-            } else {
-                bit_combo = bit_combo.concat("0");
+        if (replay_sequence === null) {  // only record block combinations (for server) on interactive task
+            // create the bit string representation of the current block states
+            let bit_combo = "";  // note that index i in this string corresponds to the block with id=i
+            for (let i=0; i < block_states.length; i++) {
+                if (block_states[i]) {
+                    bit_combo = bit_combo.concat("1");
+                } else {
+                    bit_combo = bit_combo.concat("0");
+                }
             }
+            // copy and append the current combo (represented as bits) `task_data_dict[collection_id].all_combos` along with the current timestamp
+            let combo = {bits: bit_combo, timestamp: Date.now()};
+            task_data_dict.update(dict => {
+                dict[collection_id].all_combos.push(combo);
+                return dict;
+            });
         }
 
-        // copy and append the current combo (represented as both block objects and bits) `task_data_dict[collection_id].all_combos` along with the current timestamp
+        // copy and append the current block objects to `all_block_combos`
         // note that the copied blocks are ordered by their id because blocks_copy was sorted by id
-        let combo = {blocks: [], bits: bit_combo, timestamp: Date.now()};
+        let block_combo = [];
         for (let i=0; i < blocks_copy.length; i++) {
             let obj_copy = Object.assign({}, blocks_copy[i]);
-            combo.blocks.push(obj_copy);
+            block_combo.push(obj_copy);
         }
-
-        task_data_dict.update(dict => {
-            dict[collection_id].all_combos = [combo, ...dict[collection_id].all_combos];  // add to front
-            return dict;
-        });
+        all_block_combos = [block_combo, ...all_block_combos];  // add to front
 
         // return all block states back to false
         for (let i=0; i < $block_dict[collection_id].length; i++) {
@@ -166,7 +171,7 @@
         // wait for crossfade transition
         await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
 
-        if (!replay_sequence) {  // not a non-interactive replay of block animations
+        if (replay_sequence === null) {  // not a non-interactive replay of block animations
             // enable button interactions
             disable_all = false;
         } else {
@@ -274,14 +279,11 @@
         disable_replay_again = true;
         remaining_replays -= 1;
 
-        // hide the combo grid first to avoid a clunky disappearance from using `task_data_dict[collection_id].all_combos = []` only
+        // hide the combo grid first to avoid a clunky disappearance from using `all_block_combos = []` only
         hide_all_combos = true;
         await tick();
 
-        task_data_dict.update(dict => {
-            dict[collection_id].all_combos = [];
-            return dict;
-        });
+        all_block_combos = [];
 
         hide_all_combos = false;
         animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
@@ -349,20 +351,20 @@
             <span>Be ready to be quizzed about blickets and the blicket machine.</span>
             <div class="row-container">
                 <div id="all-combos">
-                    <!-- Use `all_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                    {#each $task_data_dict[collection_id].all_combos as combo, i (("combo_").concat($task_data_dict[collection_id].all_combos.length - i))}  
+                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                    {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
                         <div class:invisible={hide_all_combos} style="margin-right: 0.5rem;"
-                        in:receive="{{key: ("combo_").concat($task_data_dict[collection_id].all_combos.length - i)}}"
+                        in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                copied_blocks_arr={combo.blocks} key_prefix="combo_grid_{$task_data_dict[collection_id].all_combos.length - i}" is_detector={true} 
-                                show_positive={activation(...combo.blocks.map(block => block.state))} show_negative={false}/>                                
+                                copied_blocks_arr={block_arr} key_prefix="combo_grid_{all_block_combos.length - i}" is_detector={true} 
+                                show_positive={activation(...block_arr.map(block => block.state))} show_negative={false}/>                                
                         </div>
                     {/each}
                 </div>
             </div>
 
-            <div class:hide="{!replay_sequence}">
+            <div class:hide="{replay_sequence === null}">
                 <!-- Replay button -->
                 <button disabled="{disable_replay_again}" on:click="{replay_again}">
                     Replay recording ({remaining_replays} {remaining_replays == 1 ? "time" : "times"} remaining)
