@@ -8,8 +8,8 @@
 	import { active_conj_seq, active_disj_seq } from './condition_configs/active.js';
 	import { passive_conj_seq, passive_disj_seq } from './condition_configs/passive.js';
 
-	const ALL_SEQ = [active_conj_seq, passive_conj_seq, active_disj_seq, passive_disj_seq];
 	const VERSION = "0.0.0";
+	const ALL_SEQ = [active_conj_seq, passive_conj_seq, active_disj_seq, passive_disj_seq];
 
 	// create routes
 	let routes = {};
@@ -32,11 +32,13 @@
 	}
 
 	routes["/test"] = wrap({
-		component: TestComponent,
+		component: ExperimentController,
 		props: {
-			instructions_seconds: 5,
-			activation: (arg0, arg1, arg2) => arg2,
-			replay_sequence: ["100", "100", "100", "010", "101", "101"]
+			component_sequence: {
+				"Task": {collection_id: "wso_test", instructions_seconds: 0, activation: (arg0, arg1, arg2) => arg0 && arg2, replay_sequence: ["100", "101"]},
+				"End": {}
+			},
+			set_dev_mode: false
 		}
 	});
 

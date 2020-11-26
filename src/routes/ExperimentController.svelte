@@ -6,14 +6,89 @@
 	import Task from '../components/Task.svelte';
 	import Quiz from '../components/Quiz.svelte';
 	import End from '../components/End.svelte';
+	import Loading from '../components/Loading.svelte';
+
 	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score, dev_mode } from '../modules/experiment_stores.js';
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
+	import { ChunksIncremental } from '../modules/ChunksIncremental.js';
 
 	import { onDestroy } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
-	
+
+	import { location, querystring } from 'svelte-spa-router';
+
 	dev_mode.set(set_dev_mode);
+
+	// get the route (which contains the experiment condition) and the workerId
+	// note that this code only supports a query string with the regex pattern specified in query_re
+	let route = $location;
+	let query_re = /experimentId\=(.*)\&workerId\=(.*)/
+	let query_match = query_re.exec($querystring);
+	let experiment_id = query_match[1];
+	let worker_id = query_match[2];
+
+	let wait_for_chunks_interval = null;
+	let waited_for_chunks_ms = 0;
+	let remaining_chunks = null;
+	let WAIT_FOR_CHUNKS_LIMIT_MS = 3000;
+	let WAIT_FOR_CHUNKS_INTERVAL_MS = 100;
+
+	function wait_for_chunks() {
+		// check when we have waited for chunks beyond the time limit
+		if (waited_for_chunks_ms > WAIT_FOR_CHUNKS_LIMIT_MS) {
+			clearInterval(wait_for_chunks_interval);
+			
+			// force end with error
+			current_component = End;
+			current_props = {chunk_error: `After waiting for ${WAIT_FOR_CHUNKS_LIMIT_MS}ms, the remaining ${remaining_chunks} chunks could not be sent.`};
+		}
+
+		waited_for_chunks_ms += WAIT_FOR_CHUNKS_INTERVAL_MS;
+	}
+
+	// create one instance of ChunksIncremental for the entire experiment
+	let wso = new ChunksIncremental(
+		"wss://somata.inf.ed.ac.uk/chunks/ws",
+		// Callbacks like this could be empty, i.e., "() => {}",
+		// but are useful for making sure data are transmitted.
+		(chunksLeft,errStatus,m) => {
+			remaining_chunks = chunksLeft;
+			if (m.status === "ERROR") {
+				if (wait_for_chunks_interval !== null) {  // override any waiting
+					clearInterval(wait_for_chunks_interval);
+				}
+
+				current_component = End;
+				current_props = {chunk_error: `message: ${JSON.stringify(m)}<br>chunks left: ${chunksLeft}<br>ws error: ${errStatus}`};
+			} else if (chunksLeft !== 0 && wait_for_chunks_interval === null) {
+				// there are chunks left and we have not started waiting
+				wait_for_chunks_interval = setInterval(wait_for_chunks, WAIT_FOR_CHUNKS_INTERVAL_MS);
+				// show loading page
+				current_component = Loading;
+				current_props = {};
+			} else if (chunksLeft === 0) {  // all chunks have been sent
+				if (wait_for_chunks_interval !== null) {  // override any waiting
+					clearInterval(wait_for_chunks_interval);
+				}
+				// continue with showing the component that is supposed to come next
+				current_component = str_to_component[next_key.split("_")[0]];
+				current_props = next_props;
+
+				// reset waiting
+				wait_for_chunks_interval = null;
+				waited_for_chunks_ms = 0;
+			}
+		},
+		(e) => {
+			if (wait_for_chunks_interval !== null) {  // override any waiting
+				clearInterval(wait_for_chunks_interval);
+			}
+
+			current_component = End;
+			current_props = {chunk_error: JSON.stringify(e)};
+		}
+	);
 
 	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
 	const block_dict_unsub = block_dict.subscribe(value => {});
@@ -28,8 +103,10 @@
 	}
 
 	onDestroy(() => {
-		// reset store values whenever an instance of this component gets destroyed
+		// reset store values and close the websocket whenever an instance of this component gets destroyed
 		reset_stores();
+		wso.wso.onclose = function () {console.log("wso closing for good")}; // disable the recursive (see ChunksIncremental.js) onclose handler first
+    	wso.wso.close();
 	});
 	
 	// experiment progress bar
@@ -45,40 +122,59 @@
 	}
 	total_score.set(total_quiz_score);
 
-	let task_quiz_keys = Object.keys(component_sequence);
-	let task_quiz_dex = 0;
-	$: current_key = task_quiz_keys[task_quiz_dex];
-
 	// convert from the string of a component name to the component itself
 	let str_to_component = {
 		"Task": Task,
 		"Quiz": Quiz,
 		"IntroInstructions": IntroInstructions,
-		"End": End
+		"End": End,
 	}
-	$: current_component = str_to_component[current_key.split("_")[0]];
-	$: current_props = component_sequence[current_key];
 
 	let scrollY = 0;
 
+	let task_quiz_keys = Object.keys(component_sequence);
+	let task_quiz_dex = 0;
+	let next_key = task_quiz_keys[task_quiz_dex];
+	let current_component = str_to_component[next_key.split("_")[0]];
+	let next_props = component_sequence[next_key];
+	let current_props = next_props;
 	function handleContinue(event) {
-		// force the end of the experiment
-		if (event.detail && event.detail.trouble) {
-			current_component = End;
-			current_props = {is_trouble: true};
-			return;
+		if (event.detail && event.detail.trouble) {  // force the end of the experiment
+			// change key and props but not the component itself (so that the svelte:component is not rerendered yet)
+			next_key = "End";
+			next_props = {is_trouble: true};
+		} else {
+			// increment task_quiz_dex to select the next task or quiz
+			task_quiz_dex += 1;
+			// incremement the progress bar
+			progress.update(x => x + progress_inc);
+			
+			// change key and props but not the component itself (so that the svelte:component is not rerendered yet)
+			next_key = task_quiz_keys[task_quiz_dex];
+			next_props = component_sequence[next_key];
 		}
 
-		// increment task_quiz_dex to select the next task or quiz
-		task_quiz_dex += 1;
-		// incremement the progress bar
-		progress.update(x => x + progress_inc);
+		// update the component itself (so that the svelte:component is rerendered)
+		current_component = str_to_component[next_key.split("_")[0]];
+		current_props = next_props;
+
+		if (!$dev_mode && next_key.split("_")[0] === "End") {
+			// send data in prod at the end of the experiment
+			let message = {
+				experimentId: experiment_id,
+				sessionId: worker_id,
+				timestamp: Date.now(),
+				route: route
+			};
+			wso.sendChunk(message);
+		}
+
 		scrollY = 0; // make sure to start each component at the top of the window
 	}
 </script>
 
 <svelte:window bind:scrollY={scrollY}/>
-<!-- Dynamically show different components to the participant depending on the first part of current_key -->
+<!-- Dynamically show different components to the participant -->
 <svelte:component this={current_component} {...current_props} on:continue={handleContinue}/>
 
 <div class="bottom">
@@ -96,6 +192,7 @@
 
 		display: flex;
 		justify-content: space-between;
+		pointer-events: none;
 	}
 
 	progress {
