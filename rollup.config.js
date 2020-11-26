@@ -33,7 +33,7 @@ export default {
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
-		file: 'public/active-blicket-comp/build/bundle.js'
+		file: 'public/build/bundle.js'
 	},
 	plugins: [
 		svelte({
@@ -61,9 +61,9 @@ export default {
 		// the bundle has been generated
 		!production && serve(),
 
-		// Watch the `public/active-blicket-comp` directory and refresh the
+		// Watch the `public/ directory and refresh the
 		// browser on changes when not in production
-		!production && livereload('public/active-blicket-comp'),
+		!production && livereload('public/'),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify

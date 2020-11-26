@@ -4,14 +4,14 @@ module.exports = function (grunt) {
         autoprefixer: {
             dist: {
                 files: {
-                    'public/active-blicket-comp/build/prefixed_bundle.css': 'public/active-blicket-comp/build/bundle.css',
-                    'public/active-blicket-comp/prefixed_global.css': 'public/active-blicket-comp/global.css'
+                    'public/build/prefixed_bundle.css': 'public/build/bundle.css',
+                    'public/prefixed_global.css': 'public/global.css'
                 }
             }
         },
         watch: {
             styles: {
-                files: ['public/active-blicket-comp/build/bundle.css', 'public/active-blicket-comp/global.css'],
+                files: ['public/build/bundle.css', 'public/global.css'],
                 tasks: ['autoprefixer']
             }
         }

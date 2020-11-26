@@ -1,5 +1,5 @@
 /node_modules/
-/public/active-blicket-comp/build/
-/public/active-blicket-comp/prefixed_*
+/public/build/
+/public/prefixed_*
 
 .DS_Store
