@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode } from '../modules/experiment_stores.js';
+    import { dev_mode, honeypot_responses } from '../modules/experiment_stores.js';
     // dev_mode.set(true);  // set dev_mode to true to see the hidden form elements
 
     // Event dispatcher for communicating with parent components
@@ -21,6 +21,8 @@
                 num_filled += 1;
             }
         }
+
+        honeypot_responses.set({num_filled: num_filled, ...form_responses});
 
         if (num_filled >= 2) {
             // force the end of the experiment when 2 hidden elements are filled

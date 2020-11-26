@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode } from '../modules/experiment_stores.js';
+    import { dev_mode, num_cont_clicks } from '../modules/experiment_stores.js';
     // dev_mode.set(true);
 
     export let collection_id = "intro";
@@ -25,7 +25,6 @@
     let show_understanding_feedback = false;
     let passed_captcha = false;
     let show_cont_feedback = false;
-    let num_clicks = 0;  // track the number of clicks on the continue button
 
     for (const key in qa_dict) {
         // create an answer field that the inputs below can bind to
@@ -42,8 +41,8 @@
     }
 
     function cont() {
-        num_clicks += 1;
-        if (num_clicks >= MAX_CLICKS) {
+        num_cont_clicks.update(n => n+=1);
+        if ($num_cont_clicks >= MAX_CLICKS) {
             // force the end of the experiment
             dispatch("continue", {trouble: true});
         }

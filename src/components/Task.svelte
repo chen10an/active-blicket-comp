@@ -18,7 +18,7 @@
     // dev_mode.set(true);
     
     // Props
-    export let collection_id = "test_train";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
+    export let collection_id = "dev";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation = (arg0, arg1, arg2) => arg0;  // lambda function that represents the causal relationship
     export let time_limit_seconds = 45;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
@@ -32,7 +32,7 @@
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
     import OverlayInstructions from './OverlayInstructions.svelte';
-    import { available_features, block_dict, available_ids, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { available_features, block_dict, available_ids, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { flip } from 'svelte/animate';
     import { receive, CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -93,9 +93,14 @@
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_all = false;  // when true, participants cannot interact with buttons
     
-    // all block combinations that the participant has tried; use arrays to maintain order
-    let all_bit_combos = [];  // list of bit strings
-    let all_block_combos = [];  // list of lists of block objects
+    task_data_dict.update(dict => {
+        // all block combinations that the participant has tried; use arrays to maintain order
+        dict[collection_id] = {
+            all_combos: [],  // list of block_combo objects
+            replay_sequence: replay_sequence
+        };
+        return dict;
+    });
 
     // replay-specific variables:
     let unpress_their_test_button = true;  // use for changing the appearance of the test button during replay
@@ -139,17 +144,19 @@
                 bit_combo = bit_combo.concat("0");
             }
         }
-        // store all bit string representations
-        all_bit_combos = [bit_combo, ...all_bit_combos];  // add to front
 
-        // copy and append the current block objects to `all_block_combos`
-        // note that the copied blocks in `block_combo` are ordered by their id because blocks_copy was sorted by id
-        let block_combo = [];
+        // copy and append the current combo (represented as both block objects and bits) `task_data_dict[collection_id].all_combos` along with the current timestamp
+        // note that the copied blocks are ordered by their id because blocks_copy was sorted by id
+        let combo = {blocks: [], bits: bit_combo, timestamp: Date.now()};
         for (let i=0; i < blocks_copy.length; i++) {
             let obj_copy = Object.assign({}, blocks_copy[i]);
-            block_combo.push(obj_copy);
+            combo.blocks.push(obj_copy);
         }
-        all_block_combos = [block_combo, ...all_block_combos];  // add to front
+
+        task_data_dict.update(dict => {
+            dict[collection_id].all_combos = [combo, ...dict[collection_id].all_combos];  // add to front
+            return dict;
+        });
 
         // return all block states back to false
         for (let i=0; i < $block_dict[collection_id].length; i++) {
@@ -267,12 +274,14 @@
         disable_replay_again = true;
         remaining_replays -= 1;
 
-        // hide the combo grid first to avoid a clunky disappearance from using `all_block_combos = []` only
+        // hide the combo grid first to avoid a clunky disappearance from using `task_data_dict[collection_id].all_combos = []` only
         hide_all_combos = true;
         await tick();
 
-        all_bit_combos = [];
-        all_block_combos = [];
+        task_data_dict.update(dict => {
+            dict[collection_id].all_combos = [];
+            return dict;
+        });
 
         hide_all_combos = false;
         animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
@@ -340,14 +349,14 @@
             <span>Be ready to be quizzed about blickets and the blicket machine.</span>
             <div class="row-container">
                 <div id="all-combos">
-                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                    {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
+                    <!-- Use `all_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                    {#each $task_data_dict[collection_id].all_combos as combo, i (("combo_").concat($task_data_dict[collection_id].all_combos.length - i))}  
                         <div class:invisible={hide_all_combos} style="margin-right: 0.5rem;"
-                        in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
+                        in:receive="{{key: ("combo_").concat($task_data_dict[collection_id].all_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                copied_blocks_arr={block_arr} key_prefix="combo_grid_{all_block_combos.length - i}" is_detector={true} 
-                                show_positive={activation(...block_arr.map(block => block.state))} show_negative={false}/>                                
+                                copied_blocks_arr={combo.blocks} key_prefix="combo_grid_{$task_data_dict[collection_id].all_combos.length - i}" is_detector={true} 
+                                show_positive={activation(...combo.blocks.map(block => block.state))} show_negative={false}/>                                
                         </div>
                     {/each}
                 </div>

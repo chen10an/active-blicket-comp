@@ -21,7 +21,6 @@ export const block_dict = writable({}, function start(set) {
     set(init_block_dict());
     return function stop() {};
 })
-// TODO: send on stop
 
 // Write-able array of available surface feature properties (letter and color)
 export const available_features = writable(null, function start(set) {
@@ -36,13 +35,17 @@ export const available_ids = writable([], function start(set) {
     return function stop() {};
 });
 
-// Write-able dictionary/object of experiment data collected from the Quiz component, keyed by quiz IDs
+// Write-able dictionary/object of experiment data collected from the Task component, keyed by collection IDs
+export const task_data_dict = writable({});
+
+// Write-able dictionary/object of experiment data collected from the Quiz component, keyed by collection IDs
 export const quiz_data_dict = writable({});
 
 // Write-able feedback from the participant
 export const feedback = writable("");
-// TODO: send to server using stop()
 
-// TODO: store and send participant's combo list
-// TODO: store time between combos
+// Write-able responses to honeypot captcha
+export const honeypot_responses = writable({});
 
+// Write-able number of clicks on the intro page's continue button
+export const num_cont_clicks = writable(0);

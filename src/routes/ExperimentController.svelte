@@ -1,6 +1,7 @@
 <script>
 	export let component_sequence;
 	export let set_dev_mode = false;
+	export let experiment_id;
 
 	import IntroInstructions from '../components/IntroInstructions.svelte';
 	import Task from '../components/Task.svelte';
@@ -8,7 +9,19 @@
 	import End from '../components/End.svelte';
 	import Loading from '../components/Loading.svelte';
 
-	import { block_dict, available_features, quiz_data_dict, available_ids, current_score, total_score, dev_mode } from '../modules/experiment_stores.js';
+	import {
+		task_data_dict,
+		quiz_data_dict,
+		block_dict,
+		available_features,
+		available_ids,
+		current_score,
+		total_score,
+		dev_mode,
+		feedback,
+		honeypot_responses,
+		num_cont_clicks
+	} from '../modules/experiment_stores.js';
 	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
 	import { ChunksIncremental } from '../modules/ChunksIncremental.js';
 
@@ -23,10 +36,9 @@
 	// get the route (which contains the experiment condition) and the workerId
 	// note that this code only supports a query string with the regex pattern specified in query_re
 	let route = $location;
-	let query_re = /experimentId\=(.*)\&workerId\=(.*)/
+	let query_re = /sessionId\=(.*)/
 	let query_match = query_re.exec($querystring);
-	let experiment_id = query_match[1];
-	let worker_id = query_match[2];
+	let session_id = query_match[1];
 
 	let wait_for_chunks_interval = null;
 	let waited_for_chunks_ms = 0;
@@ -90,6 +102,19 @@
 		}
 	);
 
+	if (!$dev_mode) {
+		// send session_id at the very start of the experiment
+		// if this session_id doesn't have a matching chunk at the end of the experiment,
+		// we'll know that this person quit before reaching the end
+		wso.sendChunk({
+			experimentId: experiment_id,
+			sessionId: session_id,
+			timestamp: Date.now(),
+			route: route,
+			start: true
+		});
+	}
+
 	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
 	const block_dict_unsub = block_dict.subscribe(value => {});
 	const available_features_unsub = available_features.subscribe(value => {});
@@ -138,11 +163,13 @@
 	let current_component = str_to_component[next_key.split("_")[0]];
 	let next_props = component_sequence[next_key];
 	let current_props = next_props;
+	let is_trouble = false;
 	function handleContinue(event) {
 		if (event.detail && event.detail.trouble) {  // force the end of the experiment
 			// change key and props but not the component itself (so that the svelte:component is not rerendered yet)
 			next_key = "End";
-			next_props = {is_trouble: true};
+			is_trouble = true;
+			next_props = {is_trouble: is_trouble};
 		} else {
 			// increment task_quiz_dex to select the next task or quiz
 			task_quiz_dex += 1;
@@ -162,9 +189,19 @@
 			// send data in prod at the end of the experiment
 			let message = {
 				experimentId: experiment_id,
-				sessionId: worker_id,
+				sessionId: session_id,
 				timestamp: Date.now(),
-				route: route
+				route: route,
+				start: false,
+				is_trouble: is_trouble,
+				honeypot_responses: $honeypot_responses,
+				num_cont_clicks: $num_cont_clicks,
+				task_data: $task_data_dict,
+				quiz_data: $quiz_data_dict,
+				score: $current_score,
+				total_score: $total_score,
+				blocks: $block_dict,
+				feedback: $feedback
 			};
 			wso.sendChunk(message);
 		}
