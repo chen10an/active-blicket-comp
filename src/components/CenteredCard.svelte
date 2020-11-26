@@ -1,7 +1,7 @@
 <script>
     export let is_large = false;  // whether to show a larger card
     export let has_button = true;  // whether to include a button that dispatches the continue event
-    export let button_text = "Click to continue";  // text to show on the button
+    export let button_text = "Continue";  // text to show on the button
 
     import { FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';

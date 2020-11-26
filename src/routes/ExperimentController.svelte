@@ -8,6 +8,7 @@
 	import Quiz from '../components/Quiz.svelte';
 	import End from '../components/End.svelte';
 	import Loading from '../components/Loading.svelte';
+	import PIS from '../components/PIS.svelte';
 
 	import {
 		task_data_dict,
@@ -153,6 +154,7 @@
 		"Quiz": Quiz,
 		"IntroInstructions": IntroInstructions,
 		"End": End,
+		"PIS": PIS
 	}
 
 	let scrollY = 0;

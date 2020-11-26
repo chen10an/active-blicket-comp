@@ -20,6 +20,7 @@ const qa_dict = {
 
 // Deterministic conjunctive with active training
 const active_conj_seq = {
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict: qa_dict},
     // interactive
     "Task_train": {collection_id: "conj_train", activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: time_limit_seconds},
@@ -32,6 +33,7 @@ const active_conj_seq = {
 
 // Deterministic disjunctive with active training
 const active_disj_seq = {
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict, qa_dict},
     // interactive
     "Task_train": {collection_id: "disj_train", activation: (arg0, arg1, arg2) => arg0, time_limit_seconds: time_limit_seconds},

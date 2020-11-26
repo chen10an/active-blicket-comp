@@ -135,10 +135,7 @@
             {/if}
         </div>
 
-        <h3>Do you consent to participate in our study?</h3>
-        <!-- TODO: participant information sheet -->
-        <p>To confirm that you would like to participate in our study, please move only the blocks with warm colors onto the blicket machine. Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
-        <!-- TODO: compensation and bonus -->
+        <p><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
     </div>
 
     <!-- captcha -->

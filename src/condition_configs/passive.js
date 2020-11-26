@@ -19,6 +19,7 @@ const qa_dict = {
 
 // Deterministic conjunctive with only passive replays
 const passive_conj_seq = {
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict: qa_dict},
     "Task_train": {collection_id: "conj_train", activation: (arg0, arg1, arg2) => arg0 && arg2, replay_sequence: ["100", "010", "001", "110", "101", "011"], replay_person_name: first_person_name},
     "Quiz_train": {collection_id: "conj_train", quiz_bit_combos: ["100", "010", "001", "110", "101", "011"], activation: (arg0, arg1, arg2) => arg0 && arg2},
@@ -29,6 +30,7 @@ const passive_conj_seq = {
 
 // Deterministic disjunctive with only passive replays
 const passive_disj_seq = {
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict, qa_dict},
     "Task_train": {collection_id: "disj_train", activation: (arg0, arg1, arg2) => arg0, replay_sequence: ["100", "010", "001", "110", "101", "011"], replay_person_name: first_person_name},
     "Quiz_train": {collection_id: "disj_train", quiz_bit_combos: ["100", "010", "001", "110", "101", "011"], activation: (arg0, arg1, arg2) => arg0},
