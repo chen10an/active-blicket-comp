@@ -8,7 +8,6 @@
 	import { active_conj_seq, active_disj_seq } from './condition_configs/active.js';
 	import { passive_conj_seq, passive_disj_seq } from './condition_configs/passive.js';
 
-	const EXPERIMENT_ID = "active_blicket_comp_000";
 	const ALL_SEQ = [active_conj_seq, passive_conj_seq, active_disj_seq, passive_disj_seq];
 
 	// create routes
@@ -19,7 +18,16 @@
 			props: {
 				component_sequence: ALL_SEQ[i],
 				set_dev_mode: false,
-				experiment_id: EXPERIMENT_ID
+				experiment_id: "active_blicket_comp_000"
+			}
+		});
+
+		routes[`/groups/1/conditions/${i}`] = wrap({
+			component: ExperimentController,
+			props: {
+				component_sequence: ALL_SEQ[i],
+				set_dev_mode: false,
+				experiment_id: "active_blicket_comp_001"
 			}
 		});
 
@@ -28,7 +36,7 @@
 			props: {
 				component_sequence: ALL_SEQ[i],
 				set_dev_mode: true,
-				experiment_id: EXPERIMENT_ID
+				experiment_id: "active_blicket_comp_00x_dev"
 			}
 		});
 	}
