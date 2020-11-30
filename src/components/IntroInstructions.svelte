@@ -140,7 +140,7 @@
 
     <!-- captcha -->
     <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
-    <button on:click={cont}>Consent and begin the blicket game</button>
+    <button on:click={cont}>Begin the blicket game</button>
     <div class:hide={!show_cont_feedback}>
         {#if !understanding_correct}
             <p class="wrong">Please make sure you have correct answers on the "Checking Your Understanding" section.</p>

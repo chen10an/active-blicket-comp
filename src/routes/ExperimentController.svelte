@@ -9,6 +9,7 @@
 	import End from '../components/End.svelte';
 	import Loading from '../components/Loading.svelte';
 	import PIS from '../components/PIS.svelte';
+	import DontRepeat from '../components/DontRepeat.svelte';
 
 	import {
 		task_data_dict,
@@ -154,6 +155,17 @@
 	let current_props = next_props;
 	let is_trouble = false;
 	let passed_intro = false;
+
+	if (!$dev_mode) {
+		// use local storage to prevent repeated visits to the experiment website
+		if (localStorage.getItem("visited")) {  // true and not null
+			current_component = DontRepeat;
+			current_props = {};
+		} else {
+			localStorage.setItem("visited", true);
+		}
+	}
+
 	function handleContinue(event) {
 		if (event.detail && event.detail.trouble) {  // force the end of the experiment
 			// change key and props but not the component itself (so that the svelte:component is not rerendered yet)
@@ -205,9 +217,10 @@
 				if (prev_key.split("_")[0] === "IntroInstructions") {
 					passed_intro = true;
 
-					// send some data after the participant passes the intro
+					// send some data after the participant passes the intro, i.e. after they have committed to starting the experiment
 					// if this session_id doesn't have a matching chunk at the end of the experiment,
-					// we'll know that this person quit before reaching the end
+					// we'll know that this person quit mid-way through even though they were interested enough to
+					// pass the checks on the intro page
 					wso.sendChunk({
 						experimentId: experiment_id,
 						sessionId: session_id,
@@ -230,7 +243,7 @@
 
 <div class="bottom">
 	<progress value={$progress}></progress>
-	<span class="score"><span style="font-size: 0.7rem;">Running Quiz Score: </span><b>{$current_score}/{$total_score}</b></span>
+	<span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$total_score}</b></span>
 </div>
 
 
