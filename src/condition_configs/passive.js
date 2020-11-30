@@ -2,7 +2,7 @@ const est_time_str = "5-10 minutes";
 const first_person_name = "someone";
 const second_person_name = "a second person";
 const quiz_bit_combos = ["100", "010", "001", "110", "101", "011", "111"];
-const train_score_ith_combo = Array(quiz_bit_combos.length).fill(true);
+const train_score_ith_combo = [true, true, true, true, true, true, false];  // don't score "111" because participants have not seen a replay of it
 const test_score_ith_combo = [true, true, false, false, true, false, false];  // only score ["100", "010", "101"]
 
 const outline = [
