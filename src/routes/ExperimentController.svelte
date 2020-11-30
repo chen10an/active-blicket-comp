@@ -103,19 +103,6 @@
 		}
 	);
 
-	if (!$dev_mode) {
-		// send session_id at the very start of the experiment
-		// if this session_id doesn't have a matching chunk at the end of the experiment,
-		// we'll know that this person quit before reaching the end
-		wso.sendChunk({
-			experimentId: experiment_id,
-			sessionId: session_id,
-			timestamp: Date.now(),
-			route: route,
-			start: true
-		});
-	}
-
 	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
 	const block_dict_unsub = block_dict.subscribe(value => {});
 	const available_features_unsub = available_features.subscribe(value => {});
@@ -143,7 +130,7 @@
 	let total_quiz_score = 0;
 	for (const key in component_sequence) {
 		if (key.split("_")[0] == "Quiz") {
-			total_quiz_score += component_sequence[key].quiz_bit_combos.length;
+			total_quiz_score += component_sequence[key].score_ith_combo.filter(Boolean).length;  // filter to only true values
 		}
 	}
 	total_score.set(total_quiz_score);
@@ -166,6 +153,7 @@
 	let next_props = component_sequence[next_key];
 	let current_props = next_props;
 	let is_trouble = false;
+	let passed_intro = false;
 	function handleContinue(event) {
 		if (event.detail && event.detail.trouble) {  // force the end of the experiment
 			// change key and props but not the component itself (so that the svelte:component is not rerendered yet)
@@ -184,28 +172,52 @@
 		}
 
 		// update the component itself (so that the svelte:component is rerendered)
+		// this update comes before sending any data via websockets because we don't want this update to
+		// override component changes due to message/error callbacks
 		current_component = str_to_component[next_key.split("_")[0]];
 		current_props = next_props;
 
-		if (!$dev_mode && next_key.split("_")[0] === "End") {
-			// send data in prod at the end of the experiment
-			let message = {
-				experimentId: experiment_id,
-				sessionId: session_id,
-				timestamp: Date.now(),
-				route: route,
-				start: false,
-				is_trouble: is_trouble,
-				honeypot_responses: $honeypot_responses,
-				num_cont_clicks: $num_cont_clicks,
-				task_data: $task_data_dict,
-				quiz_data: $quiz_data_dict,
-				score: $current_score,
-				total_score: $total_score,
-				blocks: $block_dict,
-				feedback: $feedback
-			};
-			wso.sendChunk(message);
+		if (!$dev_mode) {  // send data only in prod
+			if (next_key.split("_")[0] === "End") {
+				// send data in prod at the end of the experiment
+				let message = {
+					experimentId: experiment_id,
+					sessionId: session_id,
+					timestamp: Date.now(),
+					route: route,
+					passed_intro: passed_intro,
+					seq_key: next_key,
+					is_trouble: is_trouble,
+					honeypot_responses: $honeypot_responses,
+					num_cont_clicks: $num_cont_clicks,
+					task_data: $task_data_dict,
+					quiz_data: $quiz_data_dict,
+					score: $current_score,
+					total_score: $total_score,
+					blocks: $block_dict,
+					feedback: $feedback
+				};
+				wso.sendChunk(message);
+			} else if (task_quiz_dex >= 1) {
+				let prev_dex = task_quiz_dex - 1;
+				let prev_key = task_quiz_keys[prev_dex];
+
+				if (prev_key.split("_")[0] === "IntroInstructions") {
+					passed_intro = true;
+
+					// send some data after the participant passes the intro
+					// if this session_id doesn't have a matching chunk at the end of the experiment,
+					// we'll know that this person quit before reaching the end
+					wso.sendChunk({
+						experimentId: experiment_id,
+						sessionId: session_id,
+						timestamp: Date.now(),
+						route: route,
+						passed_intro: passed_intro,
+						seq_key: prev_key
+					});
+				}
+			}
 		}
 
 		scrollY = 0; // make sure to start each component at the top of the window
