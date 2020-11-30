@@ -3,6 +3,7 @@
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
     <h2>Participant Information from the University of Edinburgh</h2>
+    <p style="color: red;"><b>Before we begin the research study, please read the following ethics information for participants.</b></p>
     <p>This study was certified according to the Informatics Research Ethics Process, RT number 2019/58792. Please take time to read the following information carefully. You should keep this page for your records.</p>
 
     <h3>Who are the researchers?</h3>
@@ -19,7 +20,7 @@
 
     <h3>What will happen if I decide to take part?</h3>
     <p>You are invited to participate in an online study that involves observing, interacting with, and making judgments about simple stimuli on a web-based interface, such as geometric shapes and causal systems. Once you finish, we may have some questions about your experience (e.g., age, gender, feedback about how you approached the task). Your responses will be recorded.</p>
-    <p>Specifically, we collect non-identifiable data about your responses during the study, including mouse clicks, keyboard presses, and answers to questionnaires. We do not record your audio or video. We also collect minimal identifiable information about your worker ID and IP address to prevent repeat participation. The identifiable information will only be stored in a secure database and only for the duration of data collection. This information will be stripped from the datasets prior to any academic publications.</p>
+    <p>Specifically, we collect non-identifiable data about your responses during the study, including mouse clicks, keyboard presses, and answers to questionnaires. We do not record your audio or video. We may also collect minimal identifiable information about your worker ID and IP address to prevent repeat participation. The identifiable information will only be stored in a secure database and only for the duration of data collection. This information will be stripped from the datasets prior to any academic publications.</p>
 
     <p>Your session should last for up to 10 minutes. You will be given full instructions shortly.</p>
 
@@ -42,8 +43,8 @@
     <p>For general information about how we use your data, go to: edin.ac/privacy-research</p>
 
     <h3>Who can I contact?</h3>
-    <p>If you have any further questions about the study, please contact the lead researcher, Christopher G. Lucas, clucas2@inf.ed.ac.uk.</p>
-    <p>If you have a complaint that the research team (clucas2@inf.ed.ac.uk) cannot resolve, please contact inf-ethics@inf.ed.ac.uk. When you contact us, please provide the study title and detail the nature of your complaint.</p>
+    <p>If you have any further questions about the study, please contact the lead researcher, Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
+    <p>If you have a complaint that the research team (cocosci_support@mlist.is.ed.ac.uk) cannot resolve, please contact inf-ethics@inf.ed.ac.uk. When you contact us, please provide the study title and detail the nature of your complaint.</p>
 
     <h3>Consent</h3>
     <p>By proceeding with the study, I agree to all of the following statements:</p>
