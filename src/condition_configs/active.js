@@ -1,6 +1,9 @@
 const time_limit_seconds = 45;
 const est_time_str = "5-10 minutes";
 const replay_person_name = "someone else";
+const quiz_bit_combos = ["100", "010", "001", "110", "101", "011", "111"];
+const train_score_ith_combo = Array(quiz_bit_combos.length).fill(true);
+const test_score_ith_combo = [true, true, false, false, true, false, false];  // only score ["100", "010", "101"]
 
 const outline = [
     `An interactive blicket game with a time limit of ${time_limit_seconds} seconds`,
@@ -24,10 +27,10 @@ const active_conj_seq = {
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict: qa_dict},
     // interactive
     "Task_train": {collection_id: "conj_train", activation: (arg0, arg1, arg2) => arg0 && arg2, time_limit_seconds: time_limit_seconds},
-    "Quiz_train": {collection_id: "conj_train", quiz_bit_combos: ["100", "010", "001", "110", "101", "011", "111"], activation: (arg0, arg1, arg2) => arg0 && arg2},
+    "Quiz_train": {collection_id: "conj_train", quiz_bit_combos: quiz_bit_combos, score_ith_combo: train_score_ith_combo, activation: (arg0, arg1, arg2) => arg0 && arg2},
     // non-interactive replay
     "Task_test": {collection_id: "conj_test", activation: (arg0, arg1, arg2) => arg0 && arg2, replay_sequence: ["100", "100", "100", "010", "101", "101"], replay_person_name: replay_person_name},
-    "Quiz_test": {collection_id: "conj_test", quiz_bit_combos: ["100", "010", "101"], activation: (arg0, arg1, arg2) => arg0 && arg2, is_last: true},  // only quiz the combos from the replay
+    "Quiz_test": {collection_id: "conj_test", quiz_bit_combos: quiz_bit_combos, score_ith_combo: test_score_ith_combo, activation: (arg0, arg1, arg2) => arg0 && arg2, is_last: true},  // only quiz the combos from the replay
     "End": {}
 }
 
@@ -37,10 +40,10 @@ const active_disj_seq = {
     "IntroInstructions": {collection_id: "intro", outline: outline, est_time_str: est_time_str, qa_dict, qa_dict},
     // interactive
     "Task_train": {collection_id: "disj_train", activation: (arg0, arg1, arg2) => arg0, time_limit_seconds: time_limit_seconds},
-    "Quiz_train": {collection_id: "disj_train", quiz_bit_combos: ["100", "010", "001", "110", "101", "011", "111"], activation: (arg0, arg1, arg2) => arg0},
+    "Quiz_train": {collection_id: "disj_train", quiz_bit_combos: quiz_bit_combos, score_ith_combo: train_score_ith_combo, activation: (arg0, arg1, arg2) => arg0},
     // non-interactive replay
     "Task_test": {collection_id: "disj_test", activation: (arg0, arg1, arg2) => arg2, replay_sequence: ["100", "100", "100", "010", "101", "101"], replay_person_name: replay_person_name},
-    "Quiz_test": {collection_id: "disj_test", quiz_bit_combos: ["100", "010", "101"], activation: (arg0, arg1, arg2) => arg2, is_last: true},  // only quiz the combos from the replay
+    "Quiz_test": {collection_id: "disj_test", quiz_bit_combos: quiz_bit_combos, score_ith_combo: test_score_ith_combo, activation: (arg0, arg1, arg2) => arg2, is_last: true},  // only quiz the combos from the replay
     "End": {}
 }
 

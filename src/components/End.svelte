@@ -5,7 +5,6 @@
 
     import CenteredCard from './CenteredCard.svelte';
     import { current_score, total_score } from '../modules/experiment_stores.js';
-    // TODO: trigger stores to send participant id and responses (including bot responses) to server
 </script>
 
 {#if is_trouble}
