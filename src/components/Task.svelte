@@ -18,9 +18,9 @@
     // dev_mode.set(true);
     
     // Props
-    export let collection_id = "dev";  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
-    export let activation = (arg0, arg1, arg2) => arg2;  // lambda function that represents the causal relationship
-    export let time_limit_seconds = 45;  // time limit in seconds
+    export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
+    export let activation;  // lambda function that represents the causal relationship
+    export let time_limit_seconds;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
     
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
@@ -318,7 +318,7 @@
         </div>
     {/if}
 
-    <div class="centering-container" style="padding-top: 3rem;"
+    <div class="centering-container" style="margin-top: 3rem;"
     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
             <div class="row-container">

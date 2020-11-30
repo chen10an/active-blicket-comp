@@ -88,6 +88,7 @@
 				// continue with showing the component that is supposed to come next
 				current_component = str_to_component[next_key.split("_")[0]];
 				current_props = next_props;
+				scrollY = 0; // make sure to start each component at the top of the window
 
 				// reset waiting
 				wait_for_chunks_interval = null;
@@ -183,12 +184,6 @@
 			next_props = component_sequence[next_key];
 		}
 
-		// update the component itself (so that the svelte:component is rerendered)
-		// this update comes before sending any data via websockets because we don't want this update to
-		// override component changes due to message/error callbacks
-		current_component = str_to_component[next_key.split("_")[0]];
-		current_props = next_props;
-
 		if (!$dev_mode) {  // send data only in prod
 			if (next_key.split("_")[0] === "End") {
 				// send data in prod at the end of the experiment
@@ -210,13 +205,13 @@
 					feedback: $feedback
 				};
 				wso.sendChunk(message);
+				return;  // let message callback handle rendering the next component
 			} else if (task_quiz_dex >= 1) {
 				let prev_dex = task_quiz_dex - 1;
 				let prev_key = task_quiz_keys[prev_dex];
 
 				if (prev_key.split("_")[0] === "IntroInstructions") {
 					passed_intro = true;
-
 					// send some data after the participant passes the intro, i.e. after they have committed to starting the experiment
 					// if this session_id doesn't have a matching chunk at the end of the experiment,
 					// we'll know that this person quit mid-way through even though they were interested enough to
@@ -229,10 +224,14 @@
 						passed_intro: passed_intro,
 						seq_key: prev_key
 					});
+					return;  // let message callback handle rendering the next component
 				}
 			}
 		}
 
+		// update the component itself (so that the svelte:component is rerendered)
+		current_component = str_to_component[next_key.split("_")[0]];
+		current_props = next_props;
 		scrollY = 0; // make sure to start each component at the top of the window
 	}
 </script>
