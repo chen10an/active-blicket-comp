@@ -3,7 +3,7 @@
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
     <h2>Participant Information from the University of Edinburgh</h2>
-    <p style="color: red;"><b>Before we begin the research study, please read the following ethics information for participants.</b></p>
+    <p style="color: green;"><b>Before we begin the research study, please read the following ethics information for participants.</b></p>
     <p>This study was certified according to the Informatics Research Ethics Process, RT number 2019/58792. Please take time to read the following information carefully. You should keep this page for your records.</p>
 
     <h3>Who are the researchers?</h3>
