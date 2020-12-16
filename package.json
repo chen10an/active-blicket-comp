@@ -1,6 +1,7 @@
 {
   "name": "active-blicket-comp-app",
-  "version": "0.0.0",
+  "version": "1.0.x",
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
