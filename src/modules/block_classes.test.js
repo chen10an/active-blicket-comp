@@ -47,34 +47,42 @@ describe("BlockGetter", () => {
     it("should error out when we request more blocks than total colors", () => {
         expect(() => getter.get(10)).toThrow(Error);
     });
+
+    it("should assign positions in the same order as the blocks are created", () => {
+        expect(blocks_1.map(block => block.position)).toStrictEqual([0, 1, 2]);
+        
+        expect(blocks_2.map(block => block.position)).toStrictEqual([0, 1, 2, 3, 4, 5]);
+
+        expect(blocks_3.map(block => block.position)).toStrictEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+    });
 });
 
 describe("Combo's set_block_states method", () => {
     let blocks = [
-        new Block(2, false, "color0", "A"),
-        new Block(1, false, "color1", "B"),
-        new Block(0, false, "color2", "C")
+        new Block(2, false, "color0", "A", 0),
+        new Block(1, false, "color1", "B", 1),
+        new Block(0, false, "color2", "C", 2)
     ];
 
     let threebit_combos = [new Combo("000"), new Combo("001"), new Combo("010"), new Combo("011"), new Combo("100"), new Combo("101"), new Combo("110"), new Combo("111")];
 
     let expected_threebit_blocks = [
-        [new Block(0, false, "color2", "C"), new Block(1, false, "color1", "B"), new Block(2, false, "color0", "A")],
-        [new Block(0, false, "color2", "C"), new Block(1, false, "color1", "B"), new Block(2, true, "color0", "A")],
-        [new Block(0, false, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, false, "color0", "A")],
-        [new Block(0, false, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, true, "color0", "A")],
-        [new Block(0, true, "color2", "C"), new Block(1, false, "color1", "B"), new Block(2, false, "color0", "A")],
-        [new Block(0, true, "color2", "C"), new Block(1, false, "color1", "B"), new Block(2, true, "color0", "A")],
-        [new Block(0, true, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, false, "color0", "A")],
-        [new Block(0, true, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, true, "color0", "A")]
+        [new Block(0, false, "color2", "C", 2), new Block(1, false, "color1", "B", 1), new Block(2, false, "color0", "A", 0)],
+        [new Block(0, false, "color2", "C", 2), new Block(1, false, "color1", "B", 1), new Block(2, true, "color0", "A", 0)],
+        [new Block(0, false, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, false, "color0", "A", 0)],
+        [new Block(0, false, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, true, "color0", "A", 0)],
+        [new Block(0, true, "color2", "C", 2), new Block(1, false, "color1", "B", 1), new Block(2, false, "color0", "A", 0)],
+        [new Block(0, true, "color2", "C", 2), new Block(1, false, "color1", "B", 1), new Block(2, true, "color0", "A", 0)],
+        [new Block(0, true, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, false, "color0", "A", 0)],
+        [new Block(0, true, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, true, "color0", "A", 0)]
     ]
 
-    let more_blocks = [new Block(4, false, "color3", "D"), new Block(3, false, "color4", "E")];
+    let more_blocks = [new Block(4, false, "color3", "D", 3), new Block(3, false, "color4", "E", 4)];
     let morebit_combos = [new Combo("0110"), new Combo("01110")];
     let expected_morebit_blocks = [
         // note that only the relative order of IDs should matter
-        [new Block(0, false, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, true, "color0", "A"), new Block(4, false, "color3", "D")],
-        [new Block(0, false, "color2", "C"), new Block(1, true, "color1", "B"), new Block(2, true, "color0", "A"), new Block(3, true, "color4", "E"), new Block(4, false, "color3", "D")],
+        [new Block(0, false, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, true, "color0", "A", 0), new Block(4, false, "color3", "D", 3)],
+        [new Block(0, false, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, true, "color0", "A", 0), new Block(3, true, "color4", "E", 4), new Block(4, false, "color3", "D", 3)],
     ];
 
     it("should return an array of blocks sorted by their IDs", () => {

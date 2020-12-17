@@ -1,9 +1,30 @@
+import {TOTAL_CSS_GRID_AREAS} from "./experiment_stores.js";
 class Block {
-    constructor(id, state, color, letter) {
-        this.id = id;
-        this.state = state;
-        this.color = color;
-        this.letter = letter;
+    constructor(id, state, color, letter, position) {
+        if (!Number.isInteger(id)) {
+            throw new Error("The id should be an integer.")
+        }
+        this.id = id;  // corresponds to a relative argument position in the detector's activation function (int)
+
+        if (typeof state !== "boolean") {
+            throw new Error("The state should be a boolean.")
+        }
+        this.state = state;  // whether the block is on (true) or off (false) the detector (boolean)
+
+        if (typeof color !== "string") {
+            throw new Error("The color should be a string.")
+        }
+        this.color = color;  // name of the css variable that contains the color (string)
+
+        if (typeof letter !== "string" || letter.length !== 1) {
+            throw new Error("The letter should be a string of length 1.")
+        }
+        this.letter = letter;  // an upper-case letter (string)
+
+        if (!Number.isInteger(position)) {
+            throw new Error("The position should be an integer.")
+        }
+        this.position = position;  // position on a css grid (integer)
     }
 
     on() {
@@ -20,12 +41,12 @@ class Block {
     }
 };
 
-// TODO: add position on grid as a property
 class BlockGetter {
     // In a single instance of BlockGetter, each call to `get` dynamically gives out an array of blocks where:
     // the first N available integers are randomly assigned as block IDs without repetition,
     // available letters are alphabetically assigned without repetition,
-    // available colors are randomly assigned with the possibility of repeating colors when there are not enough remaining colors
+    // available colors are randomly assigned with the possibility of repeating colors when there are not enough remaining colors,
+    // positions are assigned with repetition according to the order of block creation up to TOTAL_CSS_GRID_AREAS
 
     constructor(available_colors) {
         this.available_colors = available_colors;
@@ -45,6 +66,10 @@ class BlockGetter {
             throw new Error(`Not enough remaining letters (${this.available_letters.length}) to create ${num_blocks} more blocks.`)
         } else if (this.init_available_colors.length < num_blocks){
             throw new Error(`Not enough total colors (${this.init_available_colors.length}) to create ${num_blocks} more blocks.`)
+        }
+
+        if (num_blocks > TOTAL_CSS_GRID_AREAS) {
+            throw new Error(`Too many blocks (${num_blocks}) to fit into a CSS grid areas with ${TOTAL_CSS_GRID_AREAS} areas.`)
         }
 
         if (this.available_colors.length < num_blocks) {
@@ -74,7 +99,8 @@ class BlockGetter {
                 id,  // random id
                 false,  // init state to false
                 color,  // random color
-                this.available_letters.shift()  // pop letter from the front
+                this.available_letters.shift(),  // pop letter from the front
+                i  // grid position is determined by the block's order in this loop
             ));
         }
 
@@ -95,7 +121,7 @@ class Combo {
     }
 
     set_block_states(blocks) {
-        // Return a sorted (by ID) copy of the input blocks array where each block's state is set according to the bitstring
+        // Return a sorted (by ID) deep copy of the input blocks array where each block's state is set according to the bitstring
 
         if (!Array.isArray(blocks)) {
             throw new Error("Input should be an array of block objects.")

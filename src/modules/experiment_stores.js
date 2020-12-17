@@ -1,11 +1,13 @@
 // This file contains variables that need to be consistent between all variables within a single experiment
 
-// TODO: create a class for blocks: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
-
 import { writable } from 'svelte/store';
 import { init_block_dict, init_available_features, init_available_ids } from './init_functions.js';
 
-// Read-only default fade duration and delay
+// Read-only constants
+export const TOTAL_CSS_GRID_AREAS = 9;
+export const BLOCK_COLORS = ["color0", "color1", "color2", "color3", "color4", "color5", "color6", "color7", "color8"];
+export const COOL_COLORS = ["cool0", "cool1", "cool2", "cool3", "cool4", "cool5", "cool6", "cool7", "cool8"];
+export const WARM_COLORS = ["warm0", "warm1", "warm2", "warm3", "warm4", "warm5", "warm6", "warm7", "warm8"];
 export const FADE_DURATION_MS = 300;
 export const FADE_IN_DELAY_MS = 500;
 
