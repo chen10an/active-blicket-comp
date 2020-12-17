@@ -18,7 +18,7 @@
 		available_features,
 		available_ids,
 		current_score,
-		total_score,
+		max_score,
 		dev_mode,
 		feedback,
 		honeypot_responses,
@@ -135,7 +135,7 @@
 			total_quiz_score += component_sequence[key].score_ith_combo.filter(Boolean).length;  // filter to only true values
 		}
 	}
-	total_score.set(total_quiz_score);
+	max_score.set(total_quiz_score);
 
 	// convert from the string of a component name to the component itself
 	let str_to_component = {
@@ -200,7 +200,7 @@
 					task_data: $task_data_dict,
 					quiz_data: $quiz_data_dict,
 					score: $current_score,
-					total_score: $total_score,
+					max_score: $max_score,
 					blocks: $block_dict,
 					feedback: $feedback
 				};
@@ -242,7 +242,7 @@
 
 <div class="bottom">
 	<progress value={$progress}></progress>
-	<span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$total_score}</b></span>
+	<span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$max_score}</b></span>
 </div>
 
 

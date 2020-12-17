@@ -11,7 +11,6 @@
 -->
 
 <!-- TODO: update description -->
-<!-- TODO: label detector on UI -->
 
 <script>
     import { dev_mode } from '../modules/experiment_stores.js';

@@ -13,7 +13,7 @@
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
-    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, total_score, feedback } from '../modules/experiment_stores.js';
+    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
     import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
@@ -147,7 +147,7 @@
             <span style="font-size: xx-large;">
                 Your score here: {$quiz_data_dict[collection_id].activation_score}/{score_ith_combo.filter(Boolean).length}
             </span>
-            <p>Your total running quiz score: {$current_score}/{$total_score}</p>
+            <p>Your total running quiz score: {$current_score}/{$max_score}</p>
         </div>
         {#each quiz_block_combos as arr, i}
             <div class="qa">
