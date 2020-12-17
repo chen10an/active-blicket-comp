@@ -2,7 +2,6 @@
 
 import { writable } from 'svelte/store';
 import { Block, BlockGetter } from './block_classes.js';
-import { init_block_dict, init_available_features, init_available_ids } from './init_functions.js';
 
 // Read-only constants
 export const BLOCK_COLORS = ["color0", "color1", "color2", "color3", "color4", "color5", "color6", "color7", "color8"];
@@ -21,7 +20,7 @@ export const max_score = writable(0);
 export const current_score = writable(0);
 
 // Read-only BlockGetter for all tasks in the experiment
-export const task_getter = new BlockGetter(BLOCK_COLORS);
+export const TASK_GETTER = new BlockGetter(BLOCK_COLORS);
 
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by collection IDs
 export const block_dict = writable({}, function start(set) {
@@ -34,19 +33,6 @@ export const block_dict = writable({}, function start(set) {
     captcha_blocks = [...captcha_blocks, new Block(7, false, "warm0", ALPHABET.charAt(7), 7), new Block(8, false, "cool0", ALPHABET.charAt(8), 8)];
 
     set({intro: intro_blocks, captcha: captcha_blocks});
-    return function stop() {};
-})
-
-// Write-able array of available surface feature properties (letter and color)
-export const available_features = writable(null, function start(set) {
-    // Initialize blocks for the experiment
-    set(init_available_features());
-	return function stop() {};
-});
-
-// Write-able array of sorted, available blocks ids
-export const available_ids = writable([], function start(set) {
-    set(init_available_ids());
     return function stop() {};
 });
 

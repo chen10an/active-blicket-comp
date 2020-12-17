@@ -21,17 +21,31 @@
     export let activation;  // lambda function that represents the causal relationship
     export let time_limit_seconds;  // time limit in seconds
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
-    
+
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
     // defaults to null
     export let replay_sequence = null;  // ["100", "100", "100", "010", "101", "101"];
     export let replay_person_name = "someone";
 
+    // set some default values for convenience during testing, but do this only in dev mode
+    if ($dev_mode) {
+        if (collection_id === undefined) {
+            collection_id = ["TEST_collection"];
+        }
+        if (activation === undefined) {
+            activation = (arg0, arg1, arg2) => arg0 && arg2;
+        }
+        if (time_limit_seconds === undefined) {
+            time_limit_seconds = 60;
+        }
+    }
+
     // Imports
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
     import OverlayInstructions from './OverlayInstructions.svelte';
-    import { available_features, block_dict, available_ids, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { TASK_GETTER, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { Combo } from '../modules/block_classes.js';
     import { flip } from 'svelte/animate';
     import { receive, CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -53,34 +67,9 @@
     // make sure this is sufficiently larger than the crossfade duration
     const ANIMATION_INTERVAL_MS = 750;
 
-    // Check that the number of arguments to `activation` is supported by the available colors
-    if (activation.length > Math.floor($available_features.length)) {
-        throw "The task causal function has too many arguments/blocks! We don't have enough distinct colors.";
-    }
-
-    // Initialize variables
-    let blocks = [];  // initialize an array of block objects
-    // get the first n available block ids, where n=activation.length and remove these block ids from available_ids
-    let id_arr = $available_ids.splice(0, activation.length);
-    for (let i=0; i < activation.length; i++) {
-        // randomly assign ids without replacement
-        // this id corresponds to the argument position for the `activation` function
-        let id_dex = Math.floor(Math.random() * id_arr.length);
-        let id = id_arr[id_dex];
-        id_arr = id_arr.filter(x => x !== id);  // remove the selected id
-
-        blocks.push({
-            id: id,  // random
-            state: false,  // init to false
-            // get surface features from `experiment_store.js`
-            color: $available_features[i].color,
-            letter: $available_features[i].letter
-        });
-    }
-    $available_features.splice(0, activation.length);  // remove the used features
-
+    // Get blocks corresponding to each argument to the `activation` function
     block_dict.update(dict => {
-        dict[collection_id] = blocks;
+        dict[collection_id] = TASK_GETTER.get(activation.length);
         return dict;
     });
 
@@ -96,7 +85,7 @@
     let all_block_combos = [];  // list of lists of block objects
     task_data_dict.update(dict => {
         dict[collection_id] = {
-            all_combos: [],  // list of objects with 2 properties: bitstring combo and timestamp
+            all_combos: [],  // list of Combo objects
             replay_sequence: replay_sequence
         };
         return dict;
@@ -135,43 +124,33 @@
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
 
+        // create the bitstring representation where character i corresponds to the block with id=i
+        let bitstring = block_states.map(state => state ? "1" : "0").join("");
+        let combo = new Combo(bitstring);
         if (replay_sequence === null) {  // only record block combinations (for server) on interactive task
-            // create the bit string representation of the current block states
-            let bit_combo = "";  // note that index i in this string corresponds to the block with id=i
-            for (let i=0; i < block_states.length; i++) {
-                if (block_states[i]) {
-                    bit_combo = bit_combo.concat("1");
-                } else {
-                    bit_combo = bit_combo.concat("0");
-                }
-            }
-            // copy and append the current combo (represented as bits) `task_data_dict[collection_id].all_combos` along with the current timestamp
-            let combo = {bits: bit_combo, timestamp: Date.now()};
+            // create and store a Combo object from the current bitstring
             task_data_dict.update(dict => {
                 dict[collection_id].all_combos.push(combo);
                 return dict;
             });
         }
 
-        // copy and append the current block objects to `all_block_combos`
-        // note that the copied blocks are ordered by their id because blocks_copy was sorted by id
-        let block_combo = [];
-        for (let i=0; i < blocks_copy.length; i++) {
-            let obj_copy = Object.assign({}, blocks_copy[i]);
-            block_combo.push(obj_copy);
-        }
-        all_block_combos = [block_combo, ...all_block_combos];  // add to front
+        // append a deep copy of blocks_copy where states are set according to the bitstring combo
+        all_block_combos = [combo.set_block_states(blocks_copy), ...all_block_combos];  // add to front
 
         // return all block states back to false
         for (let i=0; i < $block_dict[collection_id].length; i++) {
-            $block_dict[collection_id][i].state = false;
+            block_dict.update(dict => {
+                dict[collection_id][i].off();
+                return dict;
+            });
         }
 
         // wait for crossfade transition
         await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
 
-        if (replay_sequence === null) {  // not a non-interactive replay of block animations
-            // enable button interactions
+        if (replay_sequence === null) {
+            // enable button interactions only for interactive task
             disable_all = false;
         } else {
             unpress_their_test_button = true;
@@ -219,8 +198,12 @@
         disable_all = true;
 
         // derive block combinations from the bit strings in replay_sequence
-        var replay_block_combos = getBlockCombos(replay_sequence, blocks);
-        // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
+        var replay_block_combos = [];
+        for (const bitstring of replay_sequence) {
+            let combo = new Combo(bitstring);
+            let block_combo = combo.set_block_states($block_dict[collection_id]);
+            replay_block_combos.push(block_combo);
+        }
 
         // filter each nested array to only contain blocks with state=true
         for (let i=0; i < replay_block_combos.length; i++) {

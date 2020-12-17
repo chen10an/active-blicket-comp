@@ -63,13 +63,13 @@ class BlockGetter {
 
     get(num_blocks) {
         if (this.available_letters.length < num_blocks) {
-            throw new Error(`Not enough remaining letters (${this.available_letters.length}) to create ${num_blocks} more blocks.`)
+            throw new Error(`Not enough remaining letters (${this.available_letters.length}) to create ${num_blocks} more blocks.`);
         } else if (this.init_available_colors.length < num_blocks){
-            throw new Error(`Not enough total colors (${this.init_available_colors.length}) to create ${num_blocks} more blocks.`)
+            throw new Error(`Not enough total colors (${this.init_available_colors.length}) to create ${num_blocks} more blocks.`);
         }
 
         if (num_blocks > TOTAL_CSS_GRID_AREAS) {
-            throw new Error(`Too many blocks (${num_blocks}) to fit into a CSS grid areas with ${TOTAL_CSS_GRID_AREAS} areas.`)
+            throw new Error(`Too many blocks (${num_blocks}) to fit into a CSS grid areas with ${TOTAL_CSS_GRID_AREAS} areas.`);
         }
 
         if (this.available_colors.length < num_blocks) {
@@ -113,7 +113,10 @@ class Combo {
 
     constructor(bitstring) {
         if (typeof bitstring !== "string") {
-            throw new Error("The input should be a bit-**string**.")
+            throw new Error("The input should be a bit-**string**.");
+        }
+        if (!(/^[01]+$/.test(bitstring))) {
+            throw new Error("The input string should conly contain ones and zeros.");
         }
 
         this.bitstring = bitstring;
@@ -124,11 +127,11 @@ class Combo {
         // Return a sorted (by ID) deep copy of the input blocks array where each block's state is set according to the bitstring
 
         if (!Array.isArray(blocks)) {
-            throw new Error("Input should be an array of block objects.")
+            throw new Error("Input should be an array of block objects.");
         }
 
         if (blocks.length !== this.bitstring.length) {
-            throw new Error(`The length of the input block array (${blocks.length}) should be the same as the number of bits in this combo's bitstring (${this.bitstring.length}).`)
+            throw new Error(`The length of the input block array (${blocks.length}) should be the same as the number of bits in this combo's bitstring (${this.bitstring.length}).`);
         }
 
         // (shallow) copy and sort by id such that the ith bit matches the ith block in blocks_copy
@@ -141,7 +144,7 @@ class Combo {
             let block_obj_copy = Object.assign(Object.create(Object.getPrototypeOf(blocks_copy[i])), blocks_copy[i]);
             if (this.bitstring[i] === "1") {
                 block_obj_copy.on();
-            } else {
+            } else if (this.bitstring[i] === "0") {
                 block_obj_copy.off();
             }
             ret_blocks.push(block_obj_copy);

@@ -3,9 +3,22 @@
     // dev_mode.set(true);
 
     export let collection_id = "intro";
-    export let outline = ["TEST outline"];  // a list of strings outlining the different parts of the experiment
-    export let est_time_str = "TEST minutes";  // a string describing the estimated time of the entire experiment
-    export let qa_dict = {"test": {"question": "TEST: A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false}};  // a dictionary with "question" (string that can contain html) and "correct_answer" (boolean) pairs
+    export let outline;  // a list of strings outlining the different parts of the experiment
+    export let est_time_str;  // a string describing the estimated time of the entire experiment
+    export let qa_dict;  // a dictionary with "question" (string that can contain html) and "correct_answer" (boolean) pairs
+
+    // set some default values for convenience during testing, but do this only in dev mode
+    if ($dev_mode) {
+        if (outline === undefined) {
+            outline = ["TEST outline"];
+        }
+        if (est_time_str === undefined) {
+            est_time_str = "TEST minutes";
+        }
+        if (qa_dict === undefined) {
+            qa_dict = {"test": {"question": "TEST: A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false}};
+        }
+    }
 
     import CenteredCard from './CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';

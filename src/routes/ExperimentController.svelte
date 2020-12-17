@@ -15,8 +15,6 @@
 		task_data_dict,
 		quiz_data_dict,
 		block_dict,
-		available_features,
-		available_ids,
 		current_score,
 		max_score,
 		dev_mode,
@@ -107,14 +105,11 @@
 
 	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
 	const block_dict_unsub = block_dict.subscribe(value => {});
-	const available_features_unsub = available_features.subscribe(value => {});
 	const quiz_data_dict_unsub = quiz_data_dict.subscribe(value => {});
 
 	function reset_stores() {
 		// reset store values
 		block_dict.set(init_block_dict());
-		available_features.set(init_available_features());
-		available_ids.set(init_available_ids());
 	}
 
 	onDestroy(() => {
