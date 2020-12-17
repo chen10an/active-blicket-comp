@@ -30,7 +30,7 @@
     function click_block(id) {
         // When a block is clicked by the participant, reverse its state (true to false; false to true)
         let current_block = grid_blocks.find(block => block.id === id);
-        current_block.state = !current_block.state;
+        current_block.flip();
 
         block_dict.update(dict => {
             dict[collection_id] = grid_blocks;

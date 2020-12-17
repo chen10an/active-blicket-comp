@@ -1,4 +1,4 @@
-import {TOTAL_CSS_GRID_AREAS} from "./experiment_stores.js";
+const TOTAL_CSS_GRID_AREAS = 9;
 class Block {
     constructor(id, state, color, letter, position) {
         if (!Number.isInteger(id)) {
@@ -151,4 +151,4 @@ class Combo {
     }
 }
 
-export {Block, BlockGetter, Combo}
+export {Block, BlockGetter, Combo};
