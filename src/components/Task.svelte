@@ -44,12 +44,11 @@
     import BlockGrid from './BlockGrid.svelte';
     import CenteredCard from './CenteredCard.svelte';
     import OverlayInstructions from './OverlayInstructions.svelte';
-    import { TASK_GETTER, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
+    import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
     import { Combo } from '../modules/block_classes.js';
     import { flip } from 'svelte/animate';
     import { receive, CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
-    import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
     import { onDestroy, tick } from 'svelte';
 
     onDestroy(() => {
@@ -69,7 +68,7 @@
 
     // Get blocks corresponding to each argument to the `activation` function
     block_dict.update(dict => {
-        dict[collection_id] = TASK_GETTER.get(activation.length);
+        dict[collection_id] = $task_getter.get(activation.length);
         return dict;
     });
 

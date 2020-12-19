@@ -20,9 +20,9 @@
 		dev_mode,
 		feedback,
 		honeypot_responses,
-		num_cont_clicks
+		num_cont_clicks,
+		reset_experiment_stores
 	} from '../modules/experiment_stores.js';
-	import { init_block_dict, init_available_features, init_available_ids } from '../modules/init_functions.js';
 	import { ChunksIncremental } from '../modules/ChunksIncremental.js';
 
 	import { onDestroy } from 'svelte';
@@ -103,18 +103,9 @@
 		}
 	);
 
-	// Stores that need to have at least one subscriber until the end of the experiment (to control when start() and stop() are called)
-	const block_dict_unsub = block_dict.subscribe(value => {});
-	const quiz_data_dict_unsub = quiz_data_dict.subscribe(value => {});
-
-	function reset_stores() {
-		// reset store values
-		block_dict.set(init_block_dict());
-	}
-
 	onDestroy(() => {
 		// reset store values and close the websocket whenever an instance of this component gets destroyed
-		reset_stores();
+		reset_experiment_stores();
 		wso.wso.onclose = function () {console.log("wso closing for good")}; // disable the recursive (see ChunksIncremental.js) onclose handler first
     	wso.wso.close();
 	});

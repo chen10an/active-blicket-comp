@@ -78,7 +78,7 @@
         // return all block states back to false
         for (let i=0; i < $block_dict[collection_id].length; i++) {
             block_dict.update(dict => {
-                dict[collection_id][i].state = false;
+                dict[collection_id][i].off();
                 return dict;
             });
         }

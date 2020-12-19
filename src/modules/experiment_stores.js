@@ -19,11 +19,12 @@ export const dev_mode = writable(false);
 export const max_score = writable(0);
 export const current_score = writable(0);
 
-// Read-only BlockGetter for all tasks in the experiment
-export const TASK_GETTER = new BlockGetter(BLOCK_COLORS);
+// Write-able BlockGetter for consistently getting blocks in different components
+export const task_getter = writable(new BlockGetter(BLOCK_COLORS));
 
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by collection IDs
-export const block_dict = writable({}, function start(set) {
+export const block_dict = writable(init_block_dict());
+function init_block_dict() {
     let intro_getter = new BlockGetter(INTRO_COLORS);
     let intro_blocks = intro_getter.get(3);
 
@@ -32,9 +33,8 @@ export const block_dict = writable({}, function start(set) {
     // ensure at least one warm block and one cool block
     captcha_blocks = [...captcha_blocks, new Block(7, false, "warm0", ALPHABET.charAt(7), 7), new Block(8, false, "cool0", ALPHABET.charAt(8), 8)];
 
-    set({intro: intro_blocks, captcha: captcha_blocks});
-    return function stop() {};
-});
+    return {intro: intro_blocks, captcha: captcha_blocks};
+}
 
 // Write-able dictionary/object of experiment data collected from the Task component, keyed by collection IDs
 export const task_data_dict = writable({});
@@ -50,3 +50,21 @@ export const honeypot_responses = writable({});
 
 // Write-able number of clicks on the intro page's continue button
 export const num_cont_clicks = writable(0);
+
+export function reset_experiment_stores() {
+    // Reset experiment store values without relying on start() and stop()
+
+    // current_score reset
+    current_score.set(0);
+
+    // task_getter reset
+    task_getter.set(new BlockGetter(BLOCK_COLORS));
+
+    // block_dict reset
+    block_dict.set(init_block_dict());
+
+    // data reset
+    task_data_dict.set({});
+    quiz_data_dict.set({});
+    feedback.set("");
+}
