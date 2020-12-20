@@ -1,17 +1,3 @@
-<!-- 
-    This Task component runs a behavioral task where participants actively learn the underlying causal relationships by
-    interacting with a number of different blocks. They can click on the blocks to turn them on (true) or off (false), and
-    they can press the test button to observe whether their combination of block states (on/off) will cause an "activation".
-    An activation is indicated by a change in the background color, where the background is called the "detector" in the code.
-    The task ends when a time limit is reached or when the participant has found all possible activation combinations.
-
-    This Task component accepts three Svelte props:
-    * activation: Lambda function that represents the underlying causal relationship. It can have any number of arguments.
-    * time_limit_seconds: Number of seconds before the task ends.
--->
-
-<!-- TODO: update description -->
-
 <script>
     import { dev_mode } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
@@ -41,7 +27,7 @@
     }
 
     // Imports
-    import BlockGrid from './BlockGrid.svelte';
+    import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
     import OverlayInstructions from '../partials/OverlayInstructions.svelte';
     import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../../modules/experiment_stores.js';

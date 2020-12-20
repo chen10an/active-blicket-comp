@@ -13,7 +13,7 @@
     export let use_overlay = false;  // boolean, whether to use an overlay that describes the detector's response
 
     // Imports
-    import { block_dict } from '../modules/experiment_stores.js';
+    import { block_dict } from '../../modules/experiment_stores.js';
     import Block from './Block.svelte';
 
     // Reactively update blocks to display on the grid

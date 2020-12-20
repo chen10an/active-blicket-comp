@@ -4,8 +4,8 @@
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
     export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
-    import { send, receive } from '../modules/crossfade.js';
-    import { block_dict } from '../modules/experiment_stores.js';
+    import { send, receive } from '../../modules/crossfade.js';
+    import { block_dict } from '../../modules/experiment_stores.js';
 
     function click() {
         // When a block is clicked by the participant, reverse its state (true to false; false to true)

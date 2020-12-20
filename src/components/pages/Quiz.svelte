@@ -11,8 +11,8 @@
     export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
     // Imports
-    import Block from './Block.svelte';
-    import BlockGrid from './BlockGrid.svelte';
+    import Block from '../partials/Block.svelte';
+    import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
     import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';

@@ -21,7 +21,7 @@
     }
 
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import BlockGrid from './BlockGrid.svelte';
+    import BlockGrid from '../partials/BlockGrid.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../../modules/experiment_stores.js';
