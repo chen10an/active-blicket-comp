@@ -2,7 +2,7 @@
     export let block;  // object of the Block class
     export let is_mini;  // boolean, whether to show a mini-size blocks
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
-    export let key_prefix;  // send/receive transitions will apply between blocks with the same key_prefix and id
+    export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
     import { send, receive } from '../modules/crossfade.js';
     import { block_dict } from '../modules/experiment_stores.js';

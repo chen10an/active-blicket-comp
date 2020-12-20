@@ -25,47 +25,25 @@
     import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
     import WinnieThePooh from './WinnieThePooh.svelte';
     import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../modules/experiment_stores.js';
+    import { BlockGetter } from '../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
     import { fade } from 'svelte/transition';
-
-    // Event dispatcher for communicating with parent components
     import {createEventDispatcher} from 'svelte';
-    const dispatch = createEventDispatcher();
 
+    // Constants
+    const dispatch = createEventDispatcher();  // for communicating with parent components
+    const INTRO_COLORS = ["color0", "color1", "color5"];
     const MAX_CLICKS = 50;  // number of clicks allowed on the continue button before forcing the end of the experiment
 
-    let understanding_correct = false;
-    let show_understanding_feedback = false;
-    let passed_captcha = false;
-    let show_cont_feedback = false;
+    // Dummy blocks
+    let intro_getter = new BlockGetter(INTRO_COLORS);
+    let intro_blocks = intro_getter.get(3);
+    block_dict.update(dict => {
+        dict["intro"] = intro_blocks;
+        return dict;
+    });
 
-    for (const key in qa_dict) {
-        // create an answer field that the inputs below can bind to
-        qa_dict[key].answer = null;
-    }
-
-    $: {
-        understanding_correct = true;  // start with true then flip to false depending on the checks below
-        for (const key in qa_dict) {
-            if (qa_dict[key].answer !== qa_dict[key].correct_answer) {
-                understanding_correct = false;
-            }
-        }
-    }
-
-    function cont() {
-        num_cont_clicks.update(n => n+=1);
-        if ($num_cont_clicks >= MAX_CLICKS) {
-            // force the end of the experiment
-            dispatch("continue", {trouble: true});
-        }
-
-        if (understanding_correct && passed_captcha) {
-            dispatch("continue");
-        }
-        show_cont_feedback = true;
-    }
-
+    // Dummy detector
     let disable_blocks = false;
     let show_dummy_negative = false;
     async function dummy_test() {
@@ -88,6 +66,40 @@
 
         disable_blocks = false;
         show_dummy_negative = false;
+    }
+
+    // Check understanding of the instructions
+    let understanding_correct = false;
+    let show_understanding_feedback = false;
+    let passed_captcha = false;
+    let show_cont_feedback = false;
+
+    for (const key in qa_dict) {
+        // create an answer field that the inputs below can bind to
+        qa_dict[key].answer = null;
+    }
+
+    $: {
+        understanding_correct = true;  // start with true then flip to false depending on the checks below
+        for (const key in qa_dict) {
+            if (qa_dict[key].answer !== qa_dict[key].correct_answer) {
+                understanding_correct = false;
+            }
+        }
+    }
+
+    // Continue click handler
+    function cont() {
+        num_cont_clicks.update(n => n+=1);
+        if ($num_cont_clicks >= MAX_CLICKS) {
+            // force the end of the experiment
+            dispatch("continue", {trouble: true});
+        }
+
+        if (understanding_correct && passed_captcha) {
+            dispatch("continue");
+        }
+        show_cont_feedback = true;
     }
 </script>
 
