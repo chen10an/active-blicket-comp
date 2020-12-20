@@ -19,7 +19,7 @@
             collection_id = ["TEST_collection"];
         }
         if (activation === undefined) {
-            activation = (arg0, arg1, arg2) => arg0 && arg2;
+            activation = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
         }
         if (time_limit_seconds === undefined) {
             time_limit_seconds = 60;

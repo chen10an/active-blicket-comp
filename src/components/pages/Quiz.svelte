@@ -10,11 +10,32 @@
     export let activation; // lambda function that represents the causal relationship
     export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
+    // set some default values for convenience during testing, but do this only in dev mode
+    if ($dev_mode) {
+        if (quiz_bit_combos === undefined) {
+            quiz_bit_combos = ["100", "010", "001"];
+        }
+        if (score_ith_combo === undefined) {
+            score_ith_combo = Array(quiz_bit_combos.length).fill(true);
+        }
+        if (activation === undefined) {
+            activation = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
+        }
+        if (collection_id === undefined) {
+            collection_id = ["TEST_collection"];
+            block_dict.update(dict => {
+                dict[collection_id] = $task_getter.get(activation.length);
+                return dict;
+            });
+        }
+        is_last = true;
+    }
+
     // Imports
     import Block from '../partials/Block.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
+    import { block_dict, task_getter, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
     import { getBlockCombos } from '../../modules/bitstring_to_blocks.js';
@@ -128,8 +149,23 @@
     // event dispatcher for communicating with parent components
     const dispatch = createEventDispatcher();
     function cont() {
-        // Tell parent components to move on to the next task/quiz
+        // escape quotes in free response questions
+        quiz_data_dict.update(dict => {
+            dict[collection_id].free_response_0 = escape_quotes($quiz_data_dict[collection_id].free_response_0);
+            dict[collection_id].free_response_1 = escape_quotes($quiz_data_dict[collection_id].free_response_1);
+            return dict;
+        });
+        feedback.set(escape_quotes($feedback));
+
+        // tell parent components to move on to the next task/quiz
         dispatch("continue");
+    }
+
+    // Helper functions
+    function escape_quotes(str) {
+        let ret = str.replaceAll('"', '\\"');
+        ret = ret.replaceAll("'", "\\'");
+        return ret;
     }
 
     function skip_validation() {
@@ -211,7 +247,7 @@
             Submit and see your score
         </button>
         <p class:hide="{answered_all_questions}" style="color: red;">You will be able to submit after answering all questions.</p>
-        <button on:click="{cont}" class:hide="{hide_correct_answers}">Continue</button>
+        <button on:click="{cont}" class:hide="{hide_correct_answers}" disabled="{hide_correct_answers}">Continue</button>
 
         <button class:hide="{!$dev_mode}" on:click="{skip_validation}">dev: skip form validation</button>
     </CenteredCard>
