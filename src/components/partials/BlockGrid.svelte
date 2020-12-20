@@ -154,9 +154,9 @@
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
         grid-template-areas: 
-        "A B C"
-        "D E F"
-        "G H I";
+        "pos0 pos1 pos2"
+        "pos3 pos4 pos5"
+        "pos6 pos7 pos8";
     }
 
     .inner-grid.mini {
