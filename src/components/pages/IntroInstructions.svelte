@@ -3,17 +3,13 @@
     // dev_mode.set(true);
 
     export let collection_id = "intro";
-    export let outline;  // a list of strings outlining the different parts of the experiment
-    export let est_time_str;  // a string describing the estimated time of the entire experiment
+    export let overview;  // overview description of the experiment
     export let qa_dict;  // a dictionary with "question" (string that can contain html) and "correct_answer" (boolean) pairs
 
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
-        if (outline === undefined) {
-            outline = ["TEST outline"];
-        }
-        if (est_time_str === undefined) {
-            est_time_str = "TEST minutes";
+        if (overview === undefined) {
+            overview = "TEST overview";
         }
         if (qa_dict === undefined) {
             qa_dict = {"test": {"question": "TEST: A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false}};
@@ -109,12 +105,10 @@
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
         <h3>Introduction</h3>
-        <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process. Our study has {outline.length} parts that last around {est_time_str} in total:</p>
-        <ol>
-            {#each outline as part}
-                <li>{part}</li>
-            {/each}
-        </ol>
+        <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
+            
+        <p>{@html overview}</p>
+
         <p>We'll tally your <b>quiz scores</b> on the bottom right corner of your screen.</p>
         
         <h3>The Blicket Game</h3>

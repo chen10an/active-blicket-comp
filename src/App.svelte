@@ -4,11 +4,11 @@
 
 	import ExperimentController from './routes/ExperimentController.svelte';
 	import TestComponent from './components/pages/Task.svelte';
+	import { dev_mode } from './modules/experiment_stores.js';
 
-	import { active_conj_seq, active_disj_seq } from './condition_configs/active.js';
-	import { passive_conj_seq, passive_disj_seq } from './condition_configs/passive.js';
+	import {c1_c2_d3, d1_d2_c3, c1_d3, d1_c3} from './condition_configs/incongruous.js';
 
-	const ALL_SEQ = [active_conj_seq, passive_conj_seq, active_disj_seq, passive_disj_seq];
+	const ALL_SEQ = [c1_c2_d3, d1_d2_c3, c1_d3, d1_c3];
 
 	// TODO: route that doesn't write data (can be turned on/off separately from dev mode)
 	// create routes
@@ -19,16 +19,7 @@
 			props: {
 				component_sequence: ALL_SEQ[i],
 				set_dev_mode: false,
-				experiment_id: "active_blicket_comp_000"
-			}
-		});
-
-		routes[`/groups/1/conditions/${i}`] = wrap({
-			component: ExperimentController,
-			props: {
-				component_sequence: ALL_SEQ[i],
-				set_dev_mode: false,
-				experiment_id: "active_blicket_comp_001"
+				experiment_id: "active_blicket_comp_100"
 			}
 		});
 
@@ -37,13 +28,20 @@
 			props: {
 				component_sequence: ALL_SEQ[i],
 				set_dev_mode: true,
-				experiment_id: "active_blicket_comp_00x_dev"
+				experiment_id: "active_blicket_comp_10x_dev"
 			}
 		});
 	}
 
 	routes["/test"] = wrap({
 		component: TestComponent,
+		conditions: [
+            // use pre-condition to activate dev_mode
+            (detail) => {
+				dev_mode.set(true);
+				return dev_mode;
+            },
+        ]
 	});
 
 	// TODO: implement different wrapper component for different platforms: reddit sample size, mturk and prolific
