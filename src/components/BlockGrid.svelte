@@ -14,28 +14,17 @@
 
     // Imports
     import { block_dict } from '../modules/experiment_stores.js';
-    import { send, receive } from '../modules/crossfade.js';
+    import Block from './Block.svelte';
 
-    // Initialize variables
-    let grid_blocks;  // blocks to display on the grid
+    // Reactively update blocks to display on the grid
+    let grid_blocks;
     $: {
-        if (copied_blocks_arr) {  // if not null
-            grid_blocks = copied_blocks_arr;
+        if (copied_blocks_arr === null) {
+            // reactive reference to the blocks in `experiment_stores.js`
+            grid_blocks = $block_dict[collection_id];
         } else {
-            grid_blocks = $block_dict[collection_id];  // cross-component (using $) reference to the blocks in `experiment_stores.js`
+            grid_blocks = copied_blocks_arr;
         }
-    }
-
-    // Click handler
-    function click_block(id) {
-        // When a block is clicked by the participant, reverse its state (true to false; false to true)
-        let current_block = grid_blocks.find(block => block.id === id);
-        current_block.flip();
-
-        block_dict.update(dict => {
-            dict[collection_id] = grid_blocks;
-            return dict;
-        });  // explicit update to trigger svelte's reactivity
     }
 </script>
 
@@ -44,12 +33,7 @@
     <div class:outer-flex="{!is_mini}" class:not-allowed="{is_disabled}" class:detector="{is_detector && !is_mini}" class:active="{show_positive && !is_mini}">
         <div class="inner-grid" class:mini="{is_mini}" class:detector="{is_detector && is_mini}" class:active="{show_positive && is_mini}">
             {#each grid_blocks.filter(block_filter_func) as block (block.id)}
-                <div class="block" style="background-color: var(--{block.color}); grid-area: {block.letter};"
-                class:mini="{is_mini}" class:disabled="{is_disabled}"
-                in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
-                on:click={() => click_block(block.id)}>
-                    <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
-                </div>
+                <Block block={block} is_mini={is_mini} is_disabled={is_disabled} key_prefix={key_prefix}/>
             {/each}
         </div>
     </div>
@@ -185,42 +169,6 @@
         border-radius: var(--container-border-radius);
         
         flex-shrink: 0;
-    }
-
-    .block {
-        font-size: inherit;
-
-        width: var(--block-length);
-        height: var(--block-length);
-        margin: var(--block-margin);
-        border-radius: var(--block-margin);
-
-        cursor: pointer;
-
-        color: var(--background-color);
-        /* center text */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .block.mini {
-        width: var(--mini-block-length);
-        height: var(--mini-block-length);
-        margin: var(--mini-block-margin);
-        border-radius: 5px;
-    }
-
-    .block.disabled {
-        pointer-events: none;
-    }
-
-    .block-letter {
-        font-size: 2em;
-    }
-
-    .block-letter.mini {
-        font-size: 16px;
     }
 
     .detector {

@@ -39,6 +39,11 @@ class Block {
         // reverse the state
         this.state = !this.state;
     }
+
+    copy() {
+        // create a deep copy of a Block instance
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+    }
 };
 
 class BlockGetter {
@@ -141,7 +146,7 @@ class Combo {
         let ret_blocks = []  // sorted by id
         for (let i=0; i < this.bitstring.length; i++) {
             // deep copy
-            let block_obj_copy = Object.assign(Object.create(Object.getPrototypeOf(blocks_copy[i])), blocks_copy[i]);
+            let block_obj_copy = blocks_copy[i].copy();
             if (this.bitstring[i] === "1") {
                 block_obj_copy.on();
             } else if (this.bitstring[i] === "0") {
