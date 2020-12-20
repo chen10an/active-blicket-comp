@@ -1,5 +1,5 @@
 <script>
-    import CenteredCard from './CenteredCard.svelte';
+    import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 
 <CenteredCard has_button={false} is_large={true}>

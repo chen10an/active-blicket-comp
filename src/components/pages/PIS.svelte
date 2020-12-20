@@ -1,5 +1,5 @@
 <script>
-    import CenteredCard from './CenteredCard.svelte';
+    import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
     <h2>Participant Information from the University of Edinburgh</h2>

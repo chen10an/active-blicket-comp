@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode, num_cont_clicks } from '../modules/experiment_stores.js';
+    import { dev_mode, num_cont_clicks } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
 
     export let collection_id = "intro";
@@ -20,13 +20,13 @@
         }
     }
 
-    import CenteredCard from './CenteredCard.svelte';
+    import CenteredCard from '../partials/CenteredCard.svelte';
     import BlockGrid from './BlockGrid.svelte';
-    import CoolWarmCaptcha from './CoolWarmCaptcha.svelte';
-    import WinnieThePooh from './WinnieThePooh.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../modules/experiment_stores.js';
-    import { BlockGetter } from '../modules/block_classes.js';
-    import { CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
+    import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
+    import WinnieThePooh from '../partials/WinnieThePooh.svelte';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../../modules/experiment_stores.js';
+    import { BlockGetter } from '../../modules/block_classes.js';
+    import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import {createEventDispatcher} from 'svelte';
 

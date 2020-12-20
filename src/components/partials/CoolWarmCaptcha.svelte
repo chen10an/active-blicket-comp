@@ -3,8 +3,8 @@
     export let passed = false;
 
     import BlockGrid from './BlockGrid.svelte';
-    import { block_dict } from '../modules/experiment_stores.js';
-    import { Block, BlockGetter } from '../modules/block_classes.js';
+    import { block_dict } from '../../modules/experiment_stores.js';
+    import { Block, BlockGetter } from '../../modules/block_classes.js';
 
     const COOL_COLORS = ["cool0", "cool1", "cool2", "cool3", "cool4", "cool5", "cool6", "cool7", "cool8"];
     const WARM_COLORS = ["warm0", "warm1", "warm2", "warm3", "warm4", "warm5", "warm6", "warm7", "warm8"];

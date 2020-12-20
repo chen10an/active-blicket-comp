@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode } from '../modules/experiment_stores.js';
+    import { dev_mode } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
 
     // Props
@@ -11,12 +11,13 @@
     export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
     // Imports
+    import Block from './Block.svelte';
     import BlockGrid from './BlockGrid.svelte';
-    import CenteredCard from './CenteredCard.svelte';
-    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../modules/experiment_stores.js';
+    import CenteredCard from '../partials/CenteredCard.svelte';
+    import { block_dict, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
-    import { getBlockCombos } from '../modules/bitstring_to_blocks.js';
+    import { getBlockCombos } from '../../modules/bitstring_to_blocks.js';
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];

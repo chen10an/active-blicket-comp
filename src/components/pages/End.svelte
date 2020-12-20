@@ -3,8 +3,8 @@
 
     export let chunk_error = null;
 
-    import CenteredCard from './CenteredCard.svelte';
-    import { current_score, max_score } from '../modules/experiment_stores.js';
+    import CenteredCard from '../partials/CenteredCard.svelte';
+    import { current_score, max_score } from '../../modules/experiment_stores.js';
 </script>
 
 {#if is_trouble}

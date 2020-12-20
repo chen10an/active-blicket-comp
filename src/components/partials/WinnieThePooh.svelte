@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode, honeypot_responses } from '../modules/experiment_stores.js';
+    import { dev_mode, honeypot_responses } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);  // set dev_mode to true to see the hidden form elements
 
     // Event dispatcher for communicating with parent components

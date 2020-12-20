@@ -13,7 +13,7 @@
 <!-- TODO: update description -->
 
 <script>
-    import { dev_mode } from '../modules/experiment_stores.js';
+    import { dev_mode } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
     
     // Props
@@ -42,12 +42,12 @@
 
     // Imports
     import BlockGrid from './BlockGrid.svelte';
-    import CenteredCard from './CenteredCard.svelte';
-    import OverlayInstructions from './OverlayInstructions.svelte';
-    import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../modules/experiment_stores.js';
-    import { Combo } from '../modules/block_classes.js';
+    import CenteredCard from '../partials/CenteredCard.svelte';
+    import OverlayInstructions from '../partials/OverlayInstructions.svelte';
+    import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../../modules/experiment_stores.js';
+    import { Combo } from '../../modules/block_classes.js';
     import { flip } from 'svelte/animate';
-    import { receive, CROSSFADE_DURATION_MS } from '../modules/crossfade.js';
+    import { receive, CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { onDestroy, tick } from 'svelte';
 

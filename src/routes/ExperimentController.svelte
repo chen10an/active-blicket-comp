@@ -3,13 +3,13 @@
 	export let set_dev_mode = false;
 	export let experiment_id;
 
-	import IntroInstructions from '../components/IntroInstructions.svelte';
-	import Task from '../components/Task.svelte';
-	import Quiz from '../components/Quiz.svelte';
-	import End from '../components/End.svelte';
-	import Loading from '../components/Loading.svelte';
-	import PIS from '../components/PIS.svelte';
-	import DontRepeat from '../components/DontRepeat.svelte';
+	import IntroInstructions from '../components/pages/IntroInstructions.svelte';
+	import Task from '../components/pages/Task.svelte';
+	import Quiz from '../components/pages/Quiz.svelte';
+	import End from '../components/pages/End.svelte';
+	import Loading from '../components/conditional_pages/Loading.svelte';
+	import PIS from '../components/pages/PIS.svelte';
+	import DontRepeat from '../components/conditional_pages/DontRepeat.svelte';
 
 	import {
 		task_data_dict,
