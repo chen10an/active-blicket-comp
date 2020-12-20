@@ -32,37 +32,20 @@
     }
 
     // Imports
-    import Block from '../partials/Block.svelte';
+    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
     import { block_dict, task_getter, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
+    import { Combo } from '../../modules/block_classes.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
-    import { getBlockCombos } from '../../modules/bitstring_to_blocks.js';
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
-    const BLICKET_ANSWER_OPTIONS = [
-        {id: -1, text: "Unselected"},
-        {id: 10, text: "10 — Definitely a blicket."}, 
-        {id: 9, text: "9"}, 
-        {id: 8, text: "8 — Almost sure this is a blicket."}, 
-        {id: 7, text: "7"}, 
-        {id: 6, text: "6"}, 
-        {id: 5, text: "5 — Equally likely to be a blicket or not."}, 
-        {id: 4, text: "4"},
-        {id: 3, text: "3"},
-        {id: 2, text: "2 — Almost sure this is NOT a blicket."},
-        {id: 1, text: "1"},
-        {id: 0, text: "0 — Definitely NOT a blicket."}
-    ]
 
     // Initialize and store variables
     let hide_correct_answers = true;
     let scrollY = 0;
-
-    // copy the blocks that were used by the preceding task
-    let blocks = [...$block_dict[collection_id]];
 
     // Store participant answers
     quiz_data_dict.update(dict => {
@@ -71,7 +54,7 @@
             correct_activation_answers: [],
             score_ith_activation_answer: score_ith_combo,
             activation_score: 0,
-            blicket_answer_groups: [],
+            blicket_answer_blocks: [],
             free_response_0: "",
             free_response_1: ""
         }
@@ -84,14 +67,13 @@
         // one "does this activate" question for each bit-string
         $quiz_data_dict[collection_id].activation_answer_groups.push(null);
     }
-    for (let i=0; i < quiz_bit_combos[0].length; i++) {
-        // one "is this a blicket" questions for each bit within a bit-string
-        $quiz_data_dict[collection_id].blicket_answer_groups.push(-1);  // corresponds to the "unselected" option
-    }
 
     // derive block combinations and correct activation answers from quiz_bit_combos
-    let quiz_block_combos = getBlockCombos(quiz_bit_combos, blocks);
-    // this is an array of arrays of (copied) block objects, where each nested array of block objects is sorted by block id
+    let quiz_block_combos = [];
+    for (const bitstring of quiz_bit_combos) {
+        let combo = new Combo(bitstring);
+        quiz_block_combos.push(combo.set_block_states($block_dict[collection_id]));
+    }
 
     // generate the array of correct answers (true or false) for the activation questions
     for (let i=0; i < quiz_block_combos.length; i++) {
@@ -119,20 +101,14 @@
                 answered_all_questions = false;
             }
         }
-
-        let blicket_answer_groups = $quiz_data_dict[collection_id].blicket_answer_groups;
-        for (let i=0; i < blicket_answer_groups.length; i++) {
-            if (blicket_answer_groups[i] === -1) {  // one of the blicket dropdowns have not been answered
-                answered_all_questions = false;
-            }
-        }
     }
 
     // Click handlers
-    function show_correct_answers() {
+    function submit_answers() {
         hide_correct_answers = false;
         scrollY = 0;  // scroll to the top
 
+        // update the participant's running score
         for (let i=0; i < $quiz_data_dict[collection_id].activation_answer_groups.length; i++) {
             // count number of correct answers out of the combos that we are scoring
             if (score_ith_combo[i] && $quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]) {
@@ -142,8 +118,16 @@
                 });
             }
         }
-
         current_score.update(score => score += $quiz_data_dict[collection_id].activation_score);
+
+        // make a deep copy of the blocks used in the blicket questions and record them in the quiz data
+        for (let i=0; i < $block_dict[collection_id].length; i++) {
+            let block_copy = $block_dict[collection_id][i].copy();
+            quiz_data_dict.update(dict => {
+                dict[collection_id].blicket_answer_blocks.push(block_copy);
+                return dict;
+            });
+        }
     }
 
     // event dispatcher for communicating with parent components
@@ -179,6 +163,11 @@
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <p><b>Your score</b> will be calculated after you answer and submit all questions. Some of these questions will be scored, some will not. After submitting, the scored questions will be labeled with checkmarks or crosses.</p>
+
+        <h3>Do you think that these blocks are blickets?</h3>
+        <p style="margin-top: 0;">Please move the blickets onto the blicket machine.</p>
+        <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true}/>
+
         <h3>Will the blicket machine activate (light up with a green color)?</h3>
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
             <span style="font-size: xx-large;">
@@ -209,24 +198,6 @@
                 </div>
             </div>
         {/each}
-        <h3>Do you think that these blocks are blickets?</h3>
-        <!-- Iterate over $block_dict, which orders blocks alphabetically -->
-        {#each $block_dict[collection_id] as block, i}
-            <div class="qa">
-                <div class="block" style="background-color: var(--{block.color})">
-                    <span class="block-letter"><b>{block.letter}</b></span>
-                </div>
-                <div class="answer-options">
-                    <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]} disabled="{!hide_correct_answers}">
-                        {#each BLICKET_ANSWER_OPTIONS as option}
-                            <option value={option.id}>
-                                {option.text}
-                            </option>
-                        {/each}
-                    </select>
-                </div>
-            </div>
-        {/each}
 
         <h3>How do you think the blicket machine works?</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_0} disabled="{!hide_correct_answers}"></textarea>
@@ -243,7 +214,7 @@
             <p style="color: blue;">Thank you for your answers!<br>We will review your blicket machine description and award you a bonus for a correct explanation.</p>
         </div> -->
 
-        <button on:click="{show_correct_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
+        <button on:click="{submit_answers}" class:hide="{!hide_correct_answers}" disabled="{!answered_all_questions}">
             Submit and see your score
         </button>
         <p class:hide="{answered_all_questions}" style="color: red;">You will be able to submit after answering all questions.</p>
@@ -281,25 +252,6 @@
     #cross {
         color: red;
         font-size: xx-large;
-    }
-
-    .block {
-        font-size: 1rem;
-
-        width: var(--block-length);
-        height: var(--block-length);
-        margin: var(--block-margin);
-        border-radius: var(--block-margin);
-
-        color: var(--background-color);
-        /* center text */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .block-letter {
-        font-size: 2em;
     }
 
     textarea {

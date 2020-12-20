@@ -48,8 +48,9 @@
 	--mini-block-margin: 3px;
 
 	/* block containers are also squares specified by one length variable */
-	--block-outer-length: 20em;
-	--block-outer-margin: 1em;
+	--block-container-length: 20em;
+	--block-container-margin: 1em;
+	--mini-block-container-margin: 6px;
 
 	/* general containers have rounded corners and shadow */
 	--container-border-radius: 10px;

@@ -129,9 +129,9 @@
     .outer-flex {
         font-size: inherit;
 
-        min-height: var(--block-outer-length);
-        width: var(--block-outer-length);
-        margin: var(--block-outer-margin);
+        min-height: var(--block-container-length);
+        width: var(--block-container-length);
+        margin: var(--block-container-margin);
         
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);
@@ -163,6 +163,7 @@
         /* enough space for 3x3 mini blocks */
         width: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
         height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
+        margin: 0 var(--mini-block-container-margin);
 
         border: solid;
         border-color: var(--light-gray);
@@ -191,10 +192,10 @@
         font-size: inherit;
 
         position: absolute;
-        top: var(--block-outer-margin);
-        right: var(--block-outer-margin);
-        bottom: var(--block-outer-margin);
-        left: var(--block-outer-margin);
+        top: var(--block-container-margin);
+        right: var(--block-container-margin);
+        bottom: var(--block-container-margin);
+        left: var(--block-container-margin);
         
         border-radius: var(--container-border-radius);
 

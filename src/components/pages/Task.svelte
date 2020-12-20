@@ -151,6 +151,15 @@
         clearInterval(instructions_interval);
         clearInterval(count_down_interval);
         clearInterval(animation_interval);
+
+        // return all block states back to false
+        for (let i=0; i < $block_dict[collection_id].length; i++) {
+            block_dict.update(dict => {
+                dict[collection_id][i].off();
+                return dict;
+            });
+        }
+
         has_ended = true;
     }
 
@@ -307,7 +316,7 @@
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                     {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
-                        <div class:invisible={hide_all_combos} style="margin-right: 0.5rem;"
+                        <div class:invisible={hide_all_combos}
                         in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
@@ -366,10 +375,10 @@
 
     #all-combos {
         height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)) + 1rem);
-        max-width: calc(2*var(--block-outer-length) + 2*var(--block-outer-margin));
-        margin: var(--block-outer-margin);
+        max-width: calc(2*var(--block-container-length) + 2*var(--block-container-margin));
+        margin: var(--block-container-margin);
 
-        flex-basis: calc(2*var(--block-outer-length) + 2*var(--block-outer-margin));
+        flex-basis: calc(2*var(--block-container-length) + 2*var(--block-container-margin));
 
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);
