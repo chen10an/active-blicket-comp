@@ -27,6 +27,7 @@
     }
 
     // Imports
+    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
     import OverlayInstructions from '../partials/OverlayInstructions.svelte';
@@ -288,21 +289,7 @@
     <div class="centering-container" style="margin-top: 3rem;"
     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
-            <div class="row-container">
-                <!-- In this non-detector grid, display a block only if its state is false -->
-                <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => !block.state}
-                    key_prefix="interactive" is_detector={false}/>
-                
-                <!-- 
-                    The detector changes color when activation=true.
-                    Hide the detector (i.e. end the task) when the time limit has been reached or 
-                    the participant has found all block combinations that produce the activation.
-                -->
-                <!-- Within the detector, display a block only if its state is true -->
-                <BlockGrid collection_id={collection_id} is_mini={false} is_disabled={disable_all} block_filter_func={block => block.state}
-                    key_prefix="interactive" is_detector={true} show_positive={show_positive_detector} show_negative={show_negative_detector}
-                    use_overlay={true}/>
-            </div>
+            <GridDetectorPair collection_id={collection_id} is_disabled={disable_all} is_mini={false} bind:show_positive_detector={show_positive_detector} bind:show_negative_detector={show_negative_detector}/>
 
             <!-- Button for testing the detector -->
             <button disabled="{disable_all}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
