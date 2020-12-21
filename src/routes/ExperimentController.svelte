@@ -1,7 +1,9 @@
 <script>
 	export let component_sequence;
-	export let set_dev_mode = false;
 	export let experiment_id;
+	export let bonus_pounds_per_q;
+
+	export let set_dev_mode = false;
 
 	import IntroInstructions from '../components/pages/IntroInstructions.svelte';
 	import Task from '../components/pages/Task.svelte';
@@ -17,6 +19,7 @@
 		block_dict,
 		current_score,
 		max_score,
+		bonus_pounds,
 		dev_mode,
 		feedback,
 		honeypot_responses,
@@ -32,6 +35,14 @@
 	import { location, querystring } from 'svelte-spa-router';
 
 	dev_mode.set(set_dev_mode);
+	bonus_pounds.set(bonus_pounds_per_q);
+
+	// TODO: remove after testing
+	$: console.log("block_dict: ", $block_dict);
+	$: console.log("task_data_dict: ", $task_data_dict);
+	$: console.log("quiz_data_dict: ", $quiz_data_dict);
+	// TODO: UI and print test new quiz combos
+	// TODO: brainstorm new quiz combos for disjunctive, or else participants can just get away with all true: add "3 blocks 0 blickets" x2
 
 	// get the route (which contains the experiment condition) and the workerId
 	// note that this code only supports a query string with the regex pattern specified in query_re

@@ -35,7 +35,7 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import { block_dict, task_getter, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, feedback } from '../../modules/experiment_stores.js';
+    import { block_dict, task_getter, quiz_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, bonus_pounds, feedback } from '../../modules/experiment_stores.js';
     import { Combo } from '../../modules/block_classes.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
@@ -162,10 +162,10 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
-        <p><b>Your score</b> will be calculated after you answer and submit all questions. Some of these questions will be scored, some will not. After submitting, the scored questions will be labeled with checkmarks or crosses.</p>
+        <p><b>Your score</b> will be calculated after you answer and submit all questions. Only the "Will the blicket machine activate?" secton will be scored. After submitting, the scored questions will be labeled with checkmarks or crosses.</p>
 
-        <h3>Do you think that these blocks are blickets?</h3>
-        <p style="margin-top: 0;">Please move the blickets onto the blicket machine.</p>
+        <h3>Which blocks do you think are blickets?</h3>
+        <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
         <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/>
 
         <h3>Will the blicket machine activate (light up with a green color)?</h3>
@@ -190,7 +190,7 @@
                     <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
                     <div class:hide="{hide_correct_answers || !score_ith_combo[i]}">
                         {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]}
-                            <span id="checkmark">&nbsp;&#10004</span>
+                            <span id="checkmark">&nbsp;&#10004</span><span> (bonus: £{$bonus_pounds})</span>
                         {:else}
                             <span id="cross">&nbsp;&#10008</span>
                         {/if}

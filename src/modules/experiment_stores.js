@@ -11,9 +11,10 @@ export const FADE_IN_DELAY_MS = 500;
 // Write-able boolean indicating whether to view the app in dev mode
 export const dev_mode = writable(false);
 
-// Write-able ints for the participant's score throughout the experiment
+// Write-able ints for the participant's score and bonus throughout the experiment
 export const max_score = writable(0);
 export const current_score = writable(0);
+export const bonus_pounds = writable(0);
 
 // Write-able BlockGetter for consistently getting blocks in different components
 export const task_getter = writable(new BlockGetter(BLOCK_COLORS));
