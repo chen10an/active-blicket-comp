@@ -1,4 +1,6 @@
 <script>
+    export let max_duration_str = "10 minutes";
+
     import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
@@ -22,7 +24,7 @@
     <p>You are invited to participate in an online study that involves observing, interacting with, and making judgments about simple stimuli on a web-based interface, such as geometric shapes and causal systems. Once you finish, we may have some questions about your experience (e.g., age, gender, feedback about how you approached the task). Your responses will be recorded.</p>
     <p>Specifically, we collect non-identifiable data about your responses during the study, including mouse clicks, keyboard presses, and answers to questionnaires. We do not record your audio or video. We may also collect minimal identifiable information about your worker ID and IP address to prevent repeat participation. The identifiable information will only be stored in a secure database and only for the duration of data collection. This information will be stripped from the datasets prior to any academic publications.</p>
 
-    <p>Your session should last for up to 10 minutes. You will be given full instructions shortly.</p>
+    <p>Your session should last for up to {max_duration_str}. You will be given full instructions shortly.</p>
 
     <h3>Are there any risks associated with taking part?</h3>
     <p>There are no significant risks associated with participation.</p>

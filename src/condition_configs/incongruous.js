@@ -64,7 +64,7 @@ const disj_l3 = {
 };
 
 const c1_c2_d3 = {
-    "PIS": {},
+    "PIS": {max_duration_str: "12 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
@@ -76,7 +76,7 @@ const c1_c2_d3 = {
 };
 
 const d1_d2_c3 = {
-    "PIS": {},
+    "PIS": {max_duration_str: "12 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,
@@ -88,7 +88,7 @@ const d1_d2_c3 = {
 };
 
 const c1_d3 = {
-    "PIS": {},
+    "PIS": {max_duration_str: "10 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
@@ -98,7 +98,7 @@ const c1_d3 = {
 };
 
 const d1_c3 = {
-    "PIS": {},
+    "PIS": {max_duration_str: "10 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,
