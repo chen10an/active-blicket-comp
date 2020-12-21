@@ -7,8 +7,8 @@
 
 const time_limit_seconds = 45;
 
-const overview_2l = "Our study has 2 parts and lasts around 10min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
-const overview_3l = "Our study has 3 parts and lasts around 15min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
+const overview_2l = `Our study has 2 parts and lasts around 10min in total. Each part includes an interactive "blicket game" (with a time limit of ${time_limit_seconds}s) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
+const overview_3l = `Our study has 3 parts and lasts around 15min in total. Each part includes an interactive "blicket game" (with a time limit of ${time_limit_seconds}s) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
 
 const qa_dict = {
     "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false},

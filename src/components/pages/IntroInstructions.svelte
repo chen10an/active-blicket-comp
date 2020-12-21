@@ -104,9 +104,9 @@
         <h2>Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
-        <h3>Introduction</h3>
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
-            
+        
+        <h3>Overview</h3>
         <p>{@html overview}</p>
 
         <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you'll earn a bonus of {$bonus_currency_str}{$bonus_val} for each correct quiz answer. You can earn a <b>total bonus up to {$bonus_currency_str}{+($max_score*$bonus_val).toFixed(3)}</b>.</p>
