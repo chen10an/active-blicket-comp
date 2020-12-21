@@ -37,13 +37,6 @@
 	dev_mode.set(set_dev_mode);
 	bonus_val.set(bonus_val_per_q);
 
-	// TODO: remove after testing
-	$: console.log("block_dict: ", $block_dict);
-	$: console.log("task_data_dict: ", $task_data_dict);
-	$: console.log("quiz_data_dict: ", $quiz_data_dict);
-	// TODO: UI and print test new quiz combos
-	// TODO: brainstorm new quiz combos for disjunctive, or else participants can just get away with all true: add "3 blocks 0 blickets" x2
-
 	// get the route (which contains the experiment condition) and the workerId
 	// note that this code only supports a query string with the regex pattern specified in query_re
 	let route = $location;
@@ -126,13 +119,13 @@
 	let progress_inc = 1/(Object.keys(component_sequence).length - 1);  // how much to increment the progress bar for each component
 
 	// update the total quiz score based on the props to the Quiz component
-	let total_quiz_score = 0;
+	let max_quiz_score = 0;
 	for (const key in component_sequence) {
 		if (key.split("_")[0] == "Quiz") {
-			total_quiz_score += component_sequence[key].score_ith_combo.filter(Boolean).length;  // filter to only true values
+			max_quiz_score += component_sequence[key].score_ith_combo.filter(Boolean).length;  // filter to only true values
 		}
 	}
-	max_score.set(total_quiz_score);
+	max_score.set(max_quiz_score);
 
 	// convert from the string of a component name to the component itself
 	let str_to_component = {

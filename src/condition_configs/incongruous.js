@@ -36,9 +36,9 @@ const disj_l1 = {
 // level 2: 6 blocks, 3 blickets
 const conj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 + arg2 >= 2;
 const disj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 + arg2 >= 1;
-// 5 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, all blocks; 3rd combo includes a conjunction of the 2nd
-const quiz_bit_combos_l2 = ["100011", "010101", "110010", "011100", "111111"];
-const score_ith_combo_l2 = Array(quiz_bit_combos_l1.length).fill(true);
+// 7 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, 2 blocks 0 blickets, 3 blocks 0 blickets, all blocks; 3rd combo includes a conjunction of the 2nd and 1st
+const quiz_bit_combos_l2 = ["100011", "010101", "110010", "011100", "000011", "000111", "111111"];
+const score_ith_combo_l2 = Array(quiz_bit_combos_l2.length).fill(true);
 const conj_l2 = {
     "Task": {collection_id: "level_2", activation: conj_activation_l2, time_limit_seconds: time_limit_seconds},
     "Quiz": {collection_id: "level_2", activation: conj_activation_l2, quiz_bit_combos: quiz_bit_combos_l2, score_ith_combo: score_ith_combo_l2}
@@ -51,8 +51,8 @@ const disj_l2 = {
 // level 3: 9 blocks, 4 blickets
 const conj_activation_l3 = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 + arg2 + arg3 >= 2;
 const disj_activation_l3 = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 + arg2 + arg3 >= 1;
-// 5 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, all blocks; 3rd combo includes a conjunction of the 2nd
-const quiz_bit_combos_l3 = ["100000011", "010001100", "110010000", "001100001", "111111111"];
+// 7 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, 3 blocks 0 blickets, 4 blocks 0 blickets, all blocks; 3rd combo includes a conjunction of the 2nd and 1st
+const quiz_bit_combos_l3 = ["100000011", "010001100", "110010000", "001100001", "000000111", "000011011", "111111111"];
 const score_ith_combo_l3 = Array(quiz_bit_combos_l3.length).fill(true);
 const conj_l3 = {
     "Task": {collection_id: "level_3", activation: conj_activation_l3, time_limit_seconds: time_limit_seconds},

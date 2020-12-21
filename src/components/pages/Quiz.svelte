@@ -162,7 +162,7 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
-        <p><b>Your score</b> will be calculated after you answer and submit all questions. Only the "Will the blicket machine activate?" section will be scored. After submitting, the scored questions will be labeled with checkmarks or crosses, and you will receive a <b>bonus of {$bonus_currency_str}{$bonus_val}</b> for each checkmark.</p>
+        <p><b>Your score (and resulting bonus)</b> will be calculated after you answer and submit all questions. Only the "Will the blicket machine activate?" section will be scored, but we hope that you'll sincerely answer all questions. After submitting, the scored questions will be labeled with checkmarks or crosses, and you'll receive a <b>bonus of {$bonus_currency_str}{$bonus_val}</b> for each checkmark.</p>
 
         <h3>Which blocks do you think are blickets?</h3>
         <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
