@@ -72,7 +72,7 @@ const c1_c2_d3 = {
     "Quiz_2": conj_l2.Quiz,
     "Task_3": disj_l3.Task,
     "Quiz_3": {...disj_l3.Quiz, is_last: true},
-    "End": {}
+    "End": {code_suffix: "C1C2D3"}
 };
 
 const d1_d2_c3 = {
@@ -84,7 +84,7 @@ const d1_d2_c3 = {
     "Quiz_2": disj_l2.Quiz,
     "Task_3": conj_l3.Task,
     "Quiz_3": {...conj_l3.Quiz, is_last: true},
-    "End": {}
+    "End": {code_suffix: "D1D2C3"}
 };
 
 const c1_d3 = {
@@ -94,7 +94,7 @@ const c1_d3 = {
     "Quiz_1": conj_l1.Quiz,
     "Task_3": disj_l3.Task,
     "Quiz_3": {...disj_l3.Quiz, is_last: true},
-    "End": {}
+    "End": {code_suffix: "C1D3"}
 };
 
 const d1_c3 = {
@@ -104,7 +104,7 @@ const d1_c3 = {
     "Quiz_1": disj_l1.Quiz,
     "Task_3": conj_l3.Task,
     "Quiz_3": {...conj_l3.Quiz, is_last: true},
-    "End": {}
+    "End": {code_suffix: "D1C3"}
 };
 
 export {c1_c2_d3, d1_d2_c3, c1_d3, d1_c3}

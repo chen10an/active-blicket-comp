@@ -1,9 +1,13 @@
 <script>
     export let is_trouble = false;
     export let chunk_error = null;
+    export let code_suffix = "";
 
     import CenteredCard from '../partials/CenteredCard.svelte';
     import { current_score, max_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
+
+    const CODE_PREFIX = "K3SHW";  // generated with www.random.org
+    const CODE_MID = ["CS", $current_score, "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
 </script>
 
 {#if is_trouble}
@@ -24,8 +28,7 @@
     <CenteredCard has_button={false}>
         <h3 style="margin-bottom: 0">Thank you for participating!</h3>
         <p style="color: green;">Your final score is {$current_score}/{$max_score}, which results in a total bonus of {$bonus_currency_str}{+($current_score*$bonus_val).toFixed(3)}.</p>
-        <!-- TODO: make mturk completion code -->
-        <p style="margin-top: 0;">Your Prolific completion code is: B524F5F1</p>
+        <p style="margin-top: 0;">Your MTurk completion code is: {[CODE_PREFIX, CODE_MID, code_suffix].join("-")}</p>
         <img src="/images/thankyou.jpg" alt="dog biting a thank you card">
         <span class="attribution"><br/>Photo by <a href="https://unsplash.com/@howier?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Howie R</a> on <a href="https://unsplash.com/s/photos/thank-you?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>
     </CenteredCard>
