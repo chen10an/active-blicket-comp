@@ -17,7 +17,7 @@
     }
 
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import BlockGrid from '../partials/BlockGrid.svelte';
+    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict } from '../../modules/experiment_stores.js';
@@ -116,14 +116,7 @@
 
         <p>Here is an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
         <div class="centering-container" style="padding: 0;">
-            <div style="margin: 0.5rem;">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} block_filter_func={block => !block.state} 
-                    is_detector={false} key_prefix="intro"/>
-            </div>
-            <div style="margin: 0.5rem;">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} block_filter_func={block => block.state}
-                    is_detector={true} key_prefix="intro" use_overlay={true} show_negative={show_dummy_negative}/>
-            </div>
+            <GridDetectorPair collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} key_prefix="intro" show_negative_detector={show_dummy_negative}/>
         </div>
         <div class="centering-container" style="padding: 0;">
             <!-- Dummy blicket machine test button -->

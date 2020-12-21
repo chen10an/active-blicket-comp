@@ -298,7 +298,7 @@
     <div class="centering-container" style="margin-top: 3rem;"
     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
-            <GridDetectorPair collection_id={collection_id} is_disabled={disable_all} is_mini={false} bind:show_positive_detector={show_positive_detector} bind:show_negative_detector={show_negative_detector}/>
+            <GridDetectorPair collection_id={collection_id} is_disabled={disable_all} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
 
             <!-- Button for testing the detector -->
             <button disabled="{disable_all}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
@@ -319,9 +319,7 @@
                         <div class:invisible={hide_all_combos}
                         in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
-                            <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                                copied_blocks_arr={block_arr} key_prefix="combo_grid_{all_block_combos.length - i}" is_detector={true} 
-                                show_positive={activation(...block_arr.map(block => block.state))} show_negative={false}/>                                
+                            <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true} show_positive={activation(...block_arr.map(block => block.state))}/>                                
                         </div>
                     {/each}
                 </div>

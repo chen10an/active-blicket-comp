@@ -5,8 +5,9 @@
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
     export let block_filter_func;  // lambda function that determines which blocks to show on the grid, e.g. block => !block.state
     export let is_detector;  // boolean, whether the grid is a detector
-    export let key_prefix;  // send/receive transitions will apply between blocks with the same key_prefix and id
     
+    export let use_transitions = true;  // whether to use transitions for individual blocks
+    export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
     export let copied_blocks_arr = null;  // array of copied block objects to use inplace of the shared `block_dict[collection_id]` from `experiment_stores.js`
     export let show_positive = false;  // boolean, whether to show a positive response from the detector
     export let show_negative = false;  // boolean, whether to show a negative response from the detector
@@ -33,7 +34,7 @@
     <div class:outer-flex="{!is_mini}" class:not-allowed="{is_disabled}" class:detector="{is_detector && !is_mini}" class:active="{show_positive && !is_mini}">
         <div class="inner-grid" class:mini="{is_mini}" class:detector="{is_detector && is_mini}" class:active="{show_positive && is_mini}">
             {#each grid_blocks.filter(block_filter_func) as block (block.id)}
-                <Block block={block} is_mini={is_mini} is_disabled={is_disabled} key_prefix={key_prefix}/>
+                <Block block={block} is_mini={is_mini} is_disabled={is_disabled} use_transitions={use_transitions} key_prefix={key_prefix}/>
             {/each}
         </div>
     </div>

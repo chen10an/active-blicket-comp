@@ -6,8 +6,6 @@
 // d_1 c_3
 
 const time_limit_seconds = 45;
-const quiz_bit_combos = ["100", "010", "001", "110", "101", "011", "111"];
-const score_ith_combo = Array(quiz_bit_combos.length).fill(true);
 
 const overview_2l = "Our study has 2 parts that last around 5-10min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
 const overview_3l = "Our study has 3 parts that last around 7-12min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
@@ -23,38 +21,46 @@ const qa_dict = {
 
 // level 1: 3 blocks, 2 blickets
 const conj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
-const disj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 1;
+const disj_activation_l1 = (arg0, arg1, arg2) => arg0 >= 1;
+const quiz_bit_combos_l1 = ["100", "010", "001", "110", "101", "011", "111"];
+const score_ith_combo_l1 = Array(quiz_bit_combos_l1.length).fill(true);
 const conj_l1 = {
     "Task": {collection_id: "level_1", activation: conj_activation_l1, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_1", activation: conj_activation_l1, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_1", activation: conj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 const disj_l1 = {
     "Task": {collection_id: "level_1", activation: disj_activation_l1, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_1", activation: disj_activation_l1, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_1", activation: disj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 
 // level 2: 6 blocks, 3 blickets
 const conj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 + arg2 >= 2;
 const disj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 + arg2 >= 1;
+// 5 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, all blocks; 3rd combo includes a conjunction of the 2nd
+const quiz_bit_combos_l2 = ["100011", "010101", "110010", "011100", "111111"];
+const score_ith_combo_l2 = Array(quiz_bit_combos_l1.length).fill(true);
 const conj_l2 = {
     "Task": {collection_id: "level_2", activation: conj_activation_l2, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_2", activation: conj_activation_l2, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_2", activation: conj_activation_l2, quiz_bit_combos: quiz_bit_combos_l2, score_ith_combo: score_ith_combo_l2}
 };
 const disj_l2 = {
     "Task": {collection_id: "level_2", activation: disj_activation_l2, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_2", activation: disj_activation_l2, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_2", activation: disj_activation_l2, quiz_bit_combos: quiz_bit_combos_l2, score_ith_combo: score_ith_combo_l2}
 };
 
 // level 3: 9 blocks, 4 blickets
 const conj_activation_l3 = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 + arg2 + arg3 >= 2;
 const disj_activation_l3 = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 + arg2 + arg3 >= 1;
+// 5 quiz bit combos: 3 blocks 1 blicket x2, 3 blocks 2 blickets x2, all blocks; 3rd combo includes a conjunction of the 2nd
+const quiz_bit_combos_l3 = ["100000011", "010001100", "110010000", "001100001", "111111111"];
+const score_ith_combo_l3 = Array(quiz_bit_combos_l3.length).fill(true);
 const conj_l3 = {
     "Task": {collection_id: "level_3", activation: conj_activation_l3, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_3", activation: conj_activation_l3, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_3", activation: conj_activation_l3, quiz_bit_combos: quiz_bit_combos_l3, score_ith_combo: score_ith_combo_l3}
 };
 const disj_l3 = {
     "Task": {collection_id: "level_3", activation: disj_activation_l3, time_limit_seconds: time_limit_seconds},
-    "Quiz": {collection_id: "level_3", activation: disj_activation_l3, quiz_bit_combos: quiz_bit_combos, score_ith_combo: score_ith_combo}
+    "Quiz": {collection_id: "level_3", activation: disj_activation_l3, quiz_bit_combos: quiz_bit_combos_l3, score_ith_combo: score_ith_combo_l3}
 };
 
 const c1_c2_d3 = {

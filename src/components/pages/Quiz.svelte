@@ -166,7 +166,7 @@
 
         <h3>Do you think that these blocks are blickets?</h3>
         <p style="margin-top: 0;">Please move the blickets onto the blicket machine.</p>
-        <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true}/>
+        <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/>
 
         <h3>Will the blicket machine activate (light up with a green color)?</h3>
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
@@ -177,8 +177,8 @@
         </div>
         {#each quiz_block_combos as arr, i}
             <div class="qa">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} 
-                    copied_blocks_arr={arr} key_prefix="quiz" is_detector={true}/>
+                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} is_detector={true} use_transitions={false}/>
+                
                 <div class="answer-options">
                     {#each ACTIVATION_ANSWER_OPTIONS as option}
                         <label>

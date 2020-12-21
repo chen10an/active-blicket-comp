@@ -47,7 +47,6 @@
     /* The following styling assumes that this CoolWarmCaptcha component is nested within a CenteredCard component */
     .row-container {
         /* enough width for 6 blocks and some space between each grid */
-        width: calc(6*(var(--mini-block-length) + 2*var(--mini-block-margin)) + 2rem);
         
         display: flex;
         flex-direction: row;

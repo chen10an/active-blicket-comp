@@ -2,6 +2,8 @@
     export let block;  // object of the Block class
     export let is_mini;  // boolean, whether to show a mini-size blocks
     export let is_disabled;  // boolean, whether to disable clicking on the blocks
+
+    export let use_transitions = true;  // whether to use transitions for individual blocks
     export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
     import { send, receive } from '../../modules/crossfade.js';
@@ -14,12 +16,20 @@
     }
 </script>
 
-<div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
-class:mini="{is_mini}" class:disabled="{is_disabled}"
-in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
-on:click={() => click()}>
-    <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
-</div>
+{#if use_transitions}
+    <div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
+    class:mini="{is_mini}" class:disabled="{is_disabled}"
+    in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
+    on:click={() => click()}>
+        <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
+    </div>
+{:else}
+    <div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
+    class:mini="{is_mini}">
+        <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
+    </div>
+{/if}
+
 
 <style>
     .block {
