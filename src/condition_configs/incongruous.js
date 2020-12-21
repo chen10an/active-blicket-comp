@@ -15,8 +15,8 @@ const qa_dict = {
     "letter": {"question": "A block’s <em>letter</em> does <em>not</em> tell you whether it’s a blicket.", "correct_answer": true},
     "position": {"question": "A block’s <em>position</em> on the machine can influence whether the machine activates.", "correct_answer": false},
     "machine": {"question": "Only the blicket machine can help you figure out which blocks are blickets.", "correct_answer": true},
-    "time_limit": {"question": `You have a time limit of ${time_limit_seconds} seconds to figure out which blocks are blickets.`, "correct_answer": true},
-    "quiz": {"question": "You will be quizzed on your understanding of blickets and the blicket machine.", "correct_answer": true}
+    "time_limit": {"question": `You have a time limit of ${time_limit_seconds} seconds to play the blicket game and figure out which blocks are blickets.`, "correct_answer": true},
+    "quiz": {"question": "After each blicket game, will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
 };
 
 // level 1: 3 blocks, 2 blickets

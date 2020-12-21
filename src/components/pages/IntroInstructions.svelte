@@ -112,9 +112,9 @@
         <p>We'll tally your <b>quiz scores</b> on the bottom right corner of your screen.</p>
         
         <h3>The Blicket Game</h3>
-        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and only a <b>blicket machine</b> can help us identify these blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
+        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
 
-        <p>Here is an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
+        <p>Here's an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
         <div class="centering-container" style="padding: 0;">
             <GridDetectorPair collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} key_prefix="intro" show_negative_detector={show_dummy_negative}/>
         </div>
@@ -126,11 +126,11 @@
             </button>
         </div>
             
-        <p>Try clicking on the blocks (A, B and C) above! This allows us to move blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
+        <p>Try clicking on the blocks (A, B and C) above! This allows us to move any number of blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
             
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. It doesn’t matter where blocks are placed on the machine.</p>
 
-        <h3>Checking Your Understanding</h3>
+        <h3>Checking Your Understanding of the Instructions</h3>
         {#each Object.keys(qa_dict) as key}
             <div class="qa">
                 <p>{@html qa_dict[key].question}</p>
