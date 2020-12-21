@@ -1,7 +1,7 @@
 <script>
 	export let component_sequence;
 	export let experiment_id;
-	export let bonus_pounds_per_q;
+	export let bonus_val_per_q;
 
 	export let set_dev_mode = false;
 
@@ -19,7 +19,7 @@
 		block_dict,
 		current_score,
 		max_score,
-		bonus_pounds,
+		bonus_val,
 		dev_mode,
 		feedback,
 		honeypot_responses,
@@ -35,7 +35,7 @@
 	import { location, querystring } from 'svelte-spa-router';
 
 	dev_mode.set(set_dev_mode);
-	bonus_pounds.set(bonus_pounds_per_q);
+	bonus_val.set(bonus_val_per_q);
 
 	// TODO: remove after testing
 	$: console.log("block_dict: ", $block_dict);

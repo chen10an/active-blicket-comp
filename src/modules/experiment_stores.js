@@ -14,7 +14,8 @@ export const dev_mode = writable(false);
 // Write-able ints for the participant's score and bonus throughout the experiment
 export const max_score = writable(0);
 export const current_score = writable(0);
-export const bonus_pounds = writable(0);
+export const bonus_val = writable(0);
+export const bonus_currency_str = writable("$");
 
 // Write-able BlockGetter for consistently getting blocks in different components
 export const task_getter = writable(new BlockGetter(BLOCK_COLORS));

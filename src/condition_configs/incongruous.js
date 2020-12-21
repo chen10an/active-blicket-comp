@@ -7,8 +7,8 @@
 
 const time_limit_seconds = 45;
 
-const overview_2l = "Our study has 2 parts that last around 5-10min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
-const overview_3l = "Our study has 3 parts that last around 7-12min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
+const overview_2l = "Our study has 2 parts and lasts around 10min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
+const overview_3l = "Our study has 3 parts and lasts around 15min in total. Each part includes an interactive blicket game followed by a quiz about the game.";
 
 const qa_dict = {
     "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false},
@@ -16,7 +16,7 @@ const qa_dict = {
     "position": {"question": "A block’s <em>position</em> on the machine can influence whether the machine activates.", "correct_answer": false},
     "machine": {"question": "Only the blicket machine can help you figure out which blocks are blickets.", "correct_answer": true},
     "time_limit": {"question": `You have a time limit of ${time_limit_seconds} seconds to play the blicket game and figure out which blocks are blickets.`, "correct_answer": true},
-    "quiz": {"question": "After each blicket game, will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
+    "quiz": {"question": "After each blicket game, you will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
 };
 
 // level 1: 3 blocks, 2 blickets
@@ -64,7 +64,7 @@ const disj_l3 = {
 };
 
 const c1_c2_d3 = {
-    "PIS": {max_duration_str: "12 minutes"},
+    "PIS": {duration_str: "15 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
@@ -76,7 +76,7 @@ const c1_c2_d3 = {
 };
 
 const d1_d2_c3 = {
-    "PIS": {max_duration_str: "12 minutes"},
+    "PIS": {duration_str: "15 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,
@@ -88,7 +88,7 @@ const d1_d2_c3 = {
 };
 
 const c1_d3 = {
-    "PIS": {max_duration_str: "10 minutes"},
+    "PIS": {duration_str: "10 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
@@ -98,7 +98,7 @@ const c1_d3 = {
 };
 
 const d1_c3 = {
-    "PIS": {max_duration_str: "10 minutes"},
+    "PIS": {duration_str: "10 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,

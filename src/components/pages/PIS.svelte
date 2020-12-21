@@ -1,6 +1,5 @@
 <script>
-    export let max_duration_str = "10 minutes";
-
+    export let duration_str = "15 minutes";
     import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
@@ -24,13 +23,16 @@
     <p>You are invited to participate in an online study that involves observing, interacting with, and making judgments about simple stimuli on a web-based interface, such as geometric shapes and causal systems. Once you finish, we may have some questions about your experience (e.g., age, gender, feedback about how you approached the task). Your responses will be recorded.</p>
     <p>Specifically, we collect non-identifiable data about your responses during the study, including mouse clicks, keyboard presses, and answers to questionnaires. We do not record your audio or video. We may also collect minimal identifiable information about your worker ID and IP address to prevent repeat participation. The identifiable information will only be stored in a secure database and only for the duration of data collection. This information will be stripped from the datasets prior to any academic publications.</p>
 
-    <p>Your session should last for up to {max_duration_str}. You will be given full instructions shortly.</p>
+    <p>Your session should last around {duration_str}. You will be given full instructions shortly.</p>
+
+    <h3>Compensation.</h3>
+    <p>You will be paid for your participation in this study in accordance with the MTurk HIT description.</p>
 
     <h3>Are there any risks associated with taking part?</h3>
     <p>There are no significant risks associated with participation.</p>
 
     <h3>Are there any benefits associated with taking part?</h3>
-    <p>There are no tangible benefits to you. However, you will be contributing to our knowledge of human learning and inference.</p>
+    <p>Other than the payment mentioned, there are no tangible benefits to you. However, you will be contributing to our knowledge of human learning and inference.</p>
 
     <h3>What will happen to the results of this study?</h3>
     <p>The results of this study may be summarized in published articles, reports and presentations. Quotes or key findings will be anonymized: We will remove any information that could, in our assessment, allow anyone to identify you. With your consent, information can also be used for future research. Your anonymized data may be publicly released and other data may be archived for a minimum of 2 years.</p>

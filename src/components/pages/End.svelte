@@ -3,7 +3,7 @@
     export let chunk_error = null;
 
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import { current_score, max_score, bonus_pounds } from '../../modules/experiment_stores.js';
+    import { current_score, max_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
 </script>
 
 {#if is_trouble}
@@ -23,8 +23,9 @@
 {:else}
     <CenteredCard has_button={false}>
         <h3 style="margin-bottom: 0">Thank you for participating!</h3>
-        <p style="color: green;">Your final score is {$current_score}/{$max_score}, which results in a total bonus of £{$current_score*$bonus_pounds}/{$max_score*$bonus_pounds}</p>
-        <p>Your Prolific completion code is: B524F5F1</p>
+        <p style="color: green;">Your final score is {$current_score}/{$max_score}, which results in a total bonus of {$bonus_currency_str}{+($current_score*$bonus_val).toFixed(3)}.</p>
+        <!-- TODO: make mturk completion code -->
+        <p style="margin-top: 0;">Your Prolific completion code is: B524F5F1</p>
         <img src="/images/thankyou.jpg" alt="dog biting a thank you card">
         <span class="attribution"><br/>Photo by <a href="https://unsplash.com/@howier?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Howie R</a> on <a href="https://unsplash.com/s/photos/thank-you?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>
     </CenteredCard>

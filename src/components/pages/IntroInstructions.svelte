@@ -20,7 +20,7 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_pounds } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_score } from '../../modules/experiment_stores.js';
     import { BlockGetter } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -109,7 +109,7 @@
             
         <p>{@html overview}</p>
 
-        <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you will earn a <b>bonus of £{$bonus_pounds}</b> for each correct quiz question.</p>
+        <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you will earn a <b>bonus of {$bonus_currency_str}{$bonus_val}</b> for each correct quiz answer. You can earn a total bonus up to {$bonus_currency_str}{+($max_score*$bonus_val).toFixed(3)}.</p>
         
         <h3>The Blicket Game</h3>
         <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
