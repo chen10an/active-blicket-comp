@@ -2,7 +2,7 @@
     // the parent component needs to bind the following props:
     export let passed = false;
 
-    import BlockGrid from './BlockGrid.svelte';
+    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import { block_dict } from '../../modules/experiment_stores.js';
     import { Block, BlockGetter } from '../../modules/block_classes.js';
 
@@ -36,18 +36,11 @@
 </script>
 
 <div class="row-container">
-    <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => !block.state}
-        key_prefix="captcha" is_detector={false}/>
-    
-    <BlockGrid collection_id={"captcha"} is_mini={true} is_disabled={false} block_filter_func={block => block.state}
-        key_prefix="captcha" is_detector={true}/>
+    <GridDetectorPair collection_id="captcha" is_mini={true} is_disabled={false} key_prefix="captcha"/>
 </div>
 
 <style>
-    /* The following styling assumes that this CoolWarmCaptcha component is nested within a CenteredCard component */
-    .row-container {
-        /* enough width for 6 blocks and some space between each grid */
-        
+    .row-container {        
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
