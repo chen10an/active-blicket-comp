@@ -50,9 +50,10 @@
     }
 
     .block.mini {
-        width: var(--mini-block-length);
-        height: var(--mini-block-length);
-        margin: var(--mini-block-margin);
+        /* the mini block matches the size of a regular block when the regular block dimensions become smaller than the default mini dimensions */
+        width: min(var(--mini-block-length), var(--block-length));
+        height: min(var(--mini-block-length), var(--block-length));
+        margin: min(var(--mini-block-margin), var(--block-margin));
         border-radius: 5px;
     }
 
@@ -61,10 +62,10 @@
     }
 
     .block-letter {
-        font-size: 2em;
+        font-size: 2.5em;
     }
 
     .block-letter.mini {
-        font-size: 16px;
+        font-size: min(16px, 2.5em);
     }
 </style>

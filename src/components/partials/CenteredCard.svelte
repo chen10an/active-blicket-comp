@@ -28,10 +28,10 @@
 
 <style>
     .col-container {
-        max-width: 30rem;
-        min-height: 10rem;
-        margin: 1rem;
-        padding: 2rem;
+        max-width: 500px;
+        min-height: 200px;
+        margin: 5px;
+        padding: 30px;
 
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);

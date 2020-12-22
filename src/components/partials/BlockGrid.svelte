@@ -161,10 +161,11 @@
     }
 
     .inner-grid.mini {
+        /* the mini block grid matches the size of a regular block grid when the regular block grid dimensions become smaller than the default mini dimensions */
         /* enough space for 3x3 mini blocks */
-        width: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
-        height: calc(3*(var(--mini-block-length) + 2*var(--mini-block-margin)));
-        margin: 0 var(--mini-block-container-margin);
+        width: calc(min(3*(var(--mini-block-length) + 2*var(--mini-block-margin)), 3*(var(--block-length) + 2*var(--block-margin))));
+        height: calc(min(3*(var(--mini-block-length) + 2*var(--mini-block-margin)), 3*(var(--block-length) + 2*var(--block-margin))));
+        margin: 0 min(var(--mini-block-container-margin), var(--block-container-margin));
 
         border: solid;
         border-color: var(--light-gray);
