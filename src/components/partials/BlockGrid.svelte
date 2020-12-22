@@ -32,7 +32,7 @@
 <div class="container">
     <!-- The regular grid has an outer grid while the mini version does not. -->
     <div class:outer-flex="{!is_mini}" class:not-allowed="{is_disabled}" class:detector="{is_detector && !is_mini}" class:active="{show_positive && !is_mini}">
-        <div class="inner-grid" class:mini="{is_mini}" class:detector="{is_detector && is_mini}" class:active="{show_positive && is_mini}">
+        <div class="inner-grid" class:mini="{is_mini}" class:not-allowed="{is_mini && is_disabled}" class:detector="{is_mini && is_detector}" class:active="{is_mini && show_positive}">
             {#each grid_blocks.filter(block_filter_func) as block (block.id)}
                 <Block block={block} is_mini={is_mini} is_disabled={is_disabled} use_transitions={use_transitions} key_prefix={key_prefix}/>
             {/each}
@@ -225,7 +225,7 @@
         font-size: 1.7em;
     }
 
-    .outer-flex.not-allowed, .overlay.not-allowed {
+    .not-allowed {
         cursor: not-allowed;
     }
 </style>

@@ -25,7 +25,7 @@
     </div>
 {:else}
     <div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
-    class:mini="{is_mini}">
+    class:mini="{is_mini}" class:disabled="{is_disabled}">
         <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
     </div>
 {/if}
