@@ -167,7 +167,7 @@
     function countDownSeconds() {
         if (instructions_seconds > 0) {
             instructions_seconds = Math.max(instructions_seconds - 1, 0);
-        } else if (instructions_seconds == 0) {
+        } else if (instructions_seconds === 0) {
             clearInterval(instructions_interval);
             show_instructions = false;
             if (replay_sequence) {  // if not null
@@ -178,13 +178,21 @@
             instructions_seconds = -1;
         } else {
             // Count down in seconds until 0, at which time the task ends
-            if (time_limit_seconds == 0) {
+            if (time_limit_seconds === 0) {
                 // the time limit has been reached --> end the task (see the markup)
                 clearInterval(count_down_interval);
                 has_ended = true;
-            }
 
-            time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
+                // return all block states back to false
+                for (let i=0; i < $block_dict[collection_id].length; i++) {
+                    block_dict.update(dict => {
+                        dict[collection_id][i].off();
+                        return dict;
+                    });
+                }
+            } else {
+                time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
+            }
         }
     }
 
