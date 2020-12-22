@@ -97,14 +97,18 @@
 				waited_for_chunks_ms = 0;
 			}
 		},
-		(e) => {
-			if (wait_for_chunks_interval !== null) {  // override any waiting
-				clearInterval(wait_for_chunks_interval);
-			}
+		(e) => {}
+		// **remove this error handling for now to allow for unstable internet between messages**
+		// (but note that the message callback does have its own error handling)
+		// TODO: instead of removing, consider counting errors before sending participant to the error page
 
-			current_component = End;
-			current_props = {chunk_error: JSON.stringify(e)};
-		}
+		// 	if (wait_for_chunks_interval !== null) {  // override any waiting
+		// 		clearInterval(wait_for_chunks_interval);
+		// 	}
+
+		// 	current_component = End;
+		// 	current_props = {chunk_error: JSON.stringify(e)};
+		// }
 	);
 
 	onDestroy(() => {
@@ -147,15 +151,16 @@
 	let is_trouble = false;
 	let passed_intro = false;
 
-	if (!$dev_mode) {
-		// use local storage to prevent repeated visits to the experiment website
-		if (localStorage.getItem("visited")) {  // true and not null
-			current_component = DontRepeat;
-			current_props = {};
-		} else {
-			localStorage.setItem("visited", true);
-		}
-	}
+	// comment out localstorage for now in favor of webblicket's repeat blocking
+	// if (!$dev_mode) {
+	// 	// use local storage to prevent repeated visits to the experiment website
+	// 	if (localStorage.getItem("visited")) {  // true and not null
+	// 		current_component = DontRepeat;
+	// 		current_props = {};
+	// 	} else {
+	// 		localStorage.setItem("visited", true);
+	// 	}
+	// }
 
 	function handleContinue(event) {
 		if (event.detail && event.detail.trouble) {  // force the end of the experiment
