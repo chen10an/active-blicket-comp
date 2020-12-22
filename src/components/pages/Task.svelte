@@ -93,7 +93,7 @@
         blocks_copy.sort((a, b) => a.id - b.id);
 
         // the randomly assigned id then becomes the argument position in `activation`
-        let block_states = blocks_copy.map(block => block.state)
+        let block_states = blocks_copy.map(block => block.state);
 
         // change the detector's response and turn off button interactions
         if (activation(...block_states)) {

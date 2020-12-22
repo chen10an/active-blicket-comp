@@ -54,7 +54,7 @@
             correct_activation_answers: [],
             score_ith_activation_answer: score_ith_combo,
             activation_score: 0,
-            blicket_answer_blocks: [],
+            blicket_answer_combo: "",
             free_response_0: "",
             free_response_1: ""
         };
@@ -120,14 +120,16 @@
         }
         current_score.update(score => score += $quiz_data_dict[collection_id].activation_score);
 
-        // make a deep copy of the blocks used in the blicket questions and record them in the quiz data
-        for (let i=0; i < $block_dict[collection_id].length; i++) {
-            let block_copy = $block_dict[collection_id][i].copy();
-            quiz_data_dict.update(dict => {
-                dict[collection_id].blicket_answer_blocks.push(block_copy);
-                return dict;
-            });
-        }
+        // copy the array of block objects and sort by the randomly assigned id
+        let blocks_copy = [...$block_dict[collection_id]];
+        blocks_copy.sort((a, b) => a.id - b.id);
+        // the randomly assigned id then becomes the argument position in `activation`
+        let block_states = blocks_copy.map(block => block.state);
+        // record the combo representation of the participant's blicket answers
+        quiz_data_dict.update(dict => {
+            dict[collection_id].blicket_answer_combo = new Combo(block_states.map(state => state ? "1" : "0").join(""));
+            return dict;
+        });
     }
 
     // event dispatcher for communicating with parent components
