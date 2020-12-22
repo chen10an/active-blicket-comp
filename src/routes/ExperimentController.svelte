@@ -151,16 +151,15 @@
 	let is_trouble = false;
 	let passed_intro = false;
 
-	// comment out localstorage for now in favor of webblicket's repeat blocking
-	// if (!$dev_mode) {
-	// 	// use local storage to prevent repeated visits to the experiment website
-	// 	if (localStorage.getItem("visited")) {  // true and not null
-	// 		current_component = DontRepeat;
-	// 		current_props = {};
-	// 	} else {
-	// 		localStorage.setItem("visited", true);
-	// 	}
-	// }
+	if (!$dev_mode) {
+		// use local storage to prevent repeated visits to the experiment website
+		if (localStorage.getItem("visited")) {  // true and not null
+			current_component = DontRepeat;
+			current_props = {};
+		} else {
+			localStorage.setItem("visited", true);
+		}
+	}
 
 	function handleContinue(event) {
 		if (event.detail && event.detail.trouble) {  // force the end of the experiment
