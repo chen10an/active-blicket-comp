@@ -10,11 +10,11 @@ import click
 )
 @click.option(
     "--earliest_datetime",
-    help="A UTC datetime with a format that can be parsed by pandas.Timestamp, e.g. 'YYYY-mm-dd' or 'YYYY-mm-dd HH:MM:SS'.",
+    help="A UTC datetime with a format that can be parsed by pandas.Timestamp, e.g. 'YYYY-mm-dd' or 'YYYY-mm-dd HH:MM:SS'. This option specifies the earliest (non-inclusive) ending time (when the participant finished the experiment) to consider.",
 )
 @click.option(
     "--save_path",
-    help="Full path for saving a csv that matches MTurk workerIDs to bonuses.",
+    help="Full path for saving a csv.",
 )
 def main(experiment_version, earliest_datetime, save_path):
     """Join MTurk worker IDs with their experiment data (including their bonus amounts) and 
@@ -27,12 +27,12 @@ def main(experiment_version, earliest_datetime, save_path):
 
     # load relevant data sets
     with open(f'../ignore/data/data_{experiment_version}.json') as f:
-        rlist = json.load(f)
+        data_list = json.load(f)
     with open(f'../ignore/data/mturk_worker_ids_{experiment_version}.tsv') as f:
         id_df = pd.read_csv(f, sep='\t')
 
     # parse json to find relevant score data for calculating bonuses
-    end = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, route: route, end_time: timestamp, score: score, max_score: max_score}", rlist)
+    end = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, route: route, end_time: timestamp, score: score, max_score: max_score}", data_list)
     end_df = pd.DataFrame(end)
     end_df = end_df[pd.to_datetime(end_df.end_time, unit='ms') > earliest_datetime] 
     end_df.reset_index(inplace=True, drop=True)
