@@ -16,8 +16,6 @@ earliest_datetime = pd.Timestamp(earliest_datetime)
 # load relevant data sets
 with open(f'../ignore/data/data_{experiment_version}.json') as f:
     data_list = json.load(f)
-with open(f'../ignore/data/mturk_worker_ids_{experiment_version}.tsv') as f:
-    id_df = pd.read_csv(f, sep='\t')
 
 quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, score: score, max_score: max_score, quiz_data: quiz_data}", data_list)
 
