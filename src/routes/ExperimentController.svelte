@@ -1,6 +1,7 @@
 <script>
 	export let component_sequence;
 	export let experiment_id;
+	export let condition_name;
 	export let bonus_val_per_q;
 
 	export let set_dev_mode = false;
@@ -187,6 +188,7 @@
 					sessionId: session_id,
 					timestamp: Date.now(),
 					route: route,
+					condition_name: condition_name,
 					passed_intro: passed_intro,
 					seq_key: next_key,
 					is_trouble: is_trouble,

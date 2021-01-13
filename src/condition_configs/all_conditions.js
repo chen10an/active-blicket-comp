@@ -1,9 +1,16 @@
-// this config file specifies the following incongruous experiment conditions
-// (where the last task has a different causal relationship from the preceding tasks):
+// this config file specifies the following 8 experiment conditions:
+
+// mismatched (where the last task has a different causal relationship from the preceding tasks):
 // c_1 c_2 d_3
 // d_1 d_2 c_3
 // c_1 d_3
 // d_1 c_3
+
+// matched (where the last task has the same causal relationship as the preceding tasks):
+// c_1 c_2 c_3
+// d_1 d_2 d_3
+// c_1 c_3
+// d_1 d_3
 
 const time_limit_seconds = 45;
 
@@ -19,7 +26,7 @@ const qa_dict = {
     "quiz": {"question": "After each blicket game, you will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
 };
 
-// level 1: 3 blocks, 2 blickets
+// level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive
 const conj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
 const disj_activation_l1 = (arg0, arg1, arg2) => arg0 >= 1;
 const quiz_bit_combos_l1 = ["100", "010", "001", "110", "101", "011", "111"];
@@ -63,6 +70,10 @@ const disj_l3 = {
     "Quiz": {collection_id: "level_3", activation: disj_activation_l3, quiz_bit_combos: quiz_bit_combos_l3, score_ith_combo: score_ith_combo_l3}
 };
 
+
+// Define all 8 conditions:
+
+// mismatched:
 const c1_c2_d3 = {
     "PIS": {duration_str: "15 minutes"},
     "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
@@ -107,4 +118,54 @@ const d1_c3 = {
     "End": {code_suffix: "D1C3"}
 };
 
-export {c1_c2_d3, d1_d2_c3, c1_d3, d1_c3}
+// matched:
+const c1_c2_c3 = {
+    "PIS": {duration_str: "15 minutes"},
+    "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
+    "Task_1": conj_l1.Task,
+    "Quiz_1": conj_l1.Quiz,
+    "Task_2": conj_l2.Task,
+    "Quiz_2": conj_l2.Quiz,
+    "Task_3": conj_l3.Task,
+    "Quiz_3": {...conj_l3.Quiz, is_last: true},
+    "End": {code_suffix: "C1C2C3"}
+};
+
+const d1_d2_d3 = {
+    "PIS": {duration_str: "15 minutes"},
+    "IntroInstructions": {collection_id: "intro", overview: overview_3l, qa_dict: qa_dict},
+    "Task_1": disj_l1.Task,
+    "Quiz_1": disj_l1.Quiz,
+    "Task_2": disj_l2.Task,
+    "Quiz_2": disj_l2.Quiz,
+    "Task_3": disj_l3.Task,
+    "Quiz_3": {...disj_l3.Quiz, is_last: true},
+    "End": {code_suffix: "D1D2D3"}
+};
+
+const c1_c3 = {
+    "PIS": {duration_str: "10 minutes"},
+    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "Task_1": conj_l1.Task,
+    "Quiz_1": conj_l1.Quiz,
+    "Task_3": conj_l3.Task,
+    "Quiz_3": {...conj_l3.Quiz, is_last: true},
+    "End": {code_suffix: "C1C3"}
+};
+
+const d1_d3 = {
+    "PIS": {duration_str: "10 minutes"},
+    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "Task_1": disj_l1.Task,
+    "Quiz_1": disj_l1.Quiz,
+    "Task_3": disj_l3.Task,
+    "Quiz_3": {...disj_l3.Quiz, is_last: true},
+    "End": {code_suffix: "D1D3"}
+};
+
+export {
+    // mismatched conditions 0, 1, 2, 3
+    c1_c2_d3, d1_d2_c3, c1_d3, d1_c3,
+    // matched conditions 4, 5, 6, 7
+    c1_c2_c3, d1_d2_d3, c1_c3, d1_d3
+}
