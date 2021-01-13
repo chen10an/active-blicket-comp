@@ -19,10 +19,10 @@
             collection_id = ["TEST_collection"];
         }
         if (activation === undefined) {
-            activation = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
+            activation = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 >= 2;
         }
         if (time_limit_seconds === undefined) {
-            time_limit_seconds = 60;
+            time_limit_seconds = 3;
         }
     }
 
@@ -152,14 +152,6 @@
         clearInterval(count_down_interval);
         clearInterval(animation_interval);
 
-        // return all block states back to false
-        for (let i=0; i < $block_dict[collection_id].length; i++) {
-            block_dict.update(dict => {
-                dict[collection_id][i].off();
-                return dict;
-            });
-        }
-
         has_ended = true;
     }
 
@@ -182,14 +174,6 @@
                 // the time limit has been reached --> end the task (see the markup)
                 clearInterval(count_down_interval);
                 has_ended = true;
-
-                // return all block states back to false
-                for (let i=0; i < $block_dict[collection_id].length; i++) {
-                    block_dict.update(dict => {
-                        dict[collection_id][i].off();
-                        return dict;
-                    });
-                }
             } else {
                 time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
             }

@@ -40,6 +40,14 @@
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
+    // Return all block states back to false (after Task)
+    for (let i=0; i < $block_dict[collection_id].length; i++) {
+        block_dict.update(dict => {
+            dict[collection_id][i].off();
+            return dict;
+        });
+    }
+
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
 
