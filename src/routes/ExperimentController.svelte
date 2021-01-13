@@ -220,6 +220,7 @@
 						sessionId: session_id,
 						timestamp: Date.now(),
 						route: route,
+						condition_name: condition_name,
 						passed_intro: passed_intro,
 						seq_key: prev_key
 					});
