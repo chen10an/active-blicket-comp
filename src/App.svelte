@@ -21,7 +21,7 @@
 			component: ExperimentController,
 			props: {
 				component_sequence: ALL_SEQ[i],
-				experiment_id: "active_blicket_comp_100-mturk",
+				experiment_id: "active_blicket_comp_101-mturk",
 				bonus_val_per_q: bonus_val_arr[i],
 				set_dev_mode: false
 			}

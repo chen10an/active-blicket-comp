@@ -1,8 +1,8 @@
 {
-  "name": "active-blicket-comp-app",
-  "version": "1.0.0",
+  "name": "active-blicket-comp",
+  "version": "1.0.1-mturk",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c && grunt",
     "dev": "concurrently --kill-others \"rollup -c -w\" \"grunt watch\"",
     "start": "sirv public",
     "deploy": "node ./scripts/gh-pages.js",
