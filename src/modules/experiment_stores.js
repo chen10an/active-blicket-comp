@@ -1,6 +1,6 @@
 // This file contains variables that need to be consistent between all variables within a single experiment
 
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { BlockGetter } from './block_classes.js';
 
 // Read-only constants
@@ -16,6 +16,10 @@ export const max_score = writable(0);
 export const current_score = writable(0);
 export const bonus_val = writable(0);
 export const bonus_currency_str = writable("$");
+
+// Derive the current total running bonus and max possible bonus to 3 decimal points
+export const current_total_bonus = derived([current_score, bonus_val], ([$current_score, $bonus_val]) => +($current_score*$bonus_val).toFixed(3));  // unary + to turn string back to number
+export const max_total_bonus = derived([max_score, bonus_val], ([$max_score, $bonus_val]) => +($max_score*$bonus_val).toFixed(3));
 
 // Write-able BlockGetter for consistently getting blocks in different components
 export const task_getter = writable(new BlockGetter(BLOCK_COLORS));

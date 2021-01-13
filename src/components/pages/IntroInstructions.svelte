@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode, num_cont_clicks } from '../../modules/experiment_stores.js';
+    import { dev_mode } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
 
     export let collection_id = "intro";
@@ -20,7 +20,7 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_score } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks } from '../../modules/experiment_stores.js';
     import { BlockGetter } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -109,7 +109,7 @@
         <h3>Overview</h3>
         <p>{@html overview}</p>
 
-        <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you'll earn a bonus of {$bonus_currency_str}{$bonus_val} for each correct quiz answer. You can earn a <b>total bonus up to {$bonus_currency_str}{+($max_score*$bonus_val).toFixed(3)}</b>.</p>
+        <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you'll earn a bonus of {$bonus_currency_str}{$bonus_val} for each correct quiz answer. You can earn a <b>total bonus up to {$bonus_currency_str}{$max_total_bonus}</b>.</p>
         
         <h3>The Blicket Game</h3>
         <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>

@@ -24,7 +24,8 @@
 		feedback,
 		honeypot_responses,
 		num_cont_clicks,
-		reset_experiment_stores
+		reset_experiment_stores,
+		current_total_bonus
 	} from '../modules/experiment_stores.js';
 	import { ChunksIncremental } from '../modules/ChunksIncremental.js';
 
@@ -195,6 +196,8 @@
 					quiz_data: $quiz_data_dict,
 					score: $current_score,
 					max_score: $max_score,
+					bonus_per_q: $bonus_val,
+					total_bonus: $current_total_bonus,
 					blocks: $block_dict,
 					feedback: $feedback
 				};

@@ -35,7 +35,7 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
+    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, bonus_val, bonus_currency_str, current_total_bonus } from '../../modules/experiment_stores.js';
     import { Combo } from '../../modules/block_classes.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
@@ -179,7 +179,7 @@
             <span style="font-size: xx-large;">
                 Your bonus here: {$bonus_currency_str}{+($quiz_data_dict[collection_id].activation_score*$bonus_val).toFixed(3)}
             </span>
-            <p>Your total running bonus: {$bonus_currency_str}{+($current_score*$bonus_val).toFixed(3)}</p>
+            <p>Your total running bonus: {$bonus_currency_str}{$current_total_bonus}</p>
         </div>
         {#each quiz_block_combos as arr, i}
             <div class="qa">
