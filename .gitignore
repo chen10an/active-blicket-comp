@@ -5,3 +5,5 @@ ignore/
 .vscode/
 
 .DS_Store
+*.ipynb
+/analysis/scripts/__pycache__/
