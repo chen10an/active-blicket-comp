@@ -1,9 +1,10 @@
 import os
 import json
 import pandas as pd
+import numpy as np
 import jmespath
 
-def get_dfs(experiment_version, data_dir_path):
+def get_end_id_bonus_dfs(experiment_version, data_dir_path):
     """Get useful dataframes from experiment data files.
 
     Load different experiment data files and join MTurk workerIds with their associated chunks data (including their bonus amounts).
@@ -58,4 +59,110 @@ def get_mturk_batch_df(batch_dir_path):
     if (len(all_batch_df.WorkerId.unique()) != all_batch_df.shape[0]):
         print("ohno these batches have repeated WorkerIds")
 
+    print(f"There are {all_batch_df.shape[0]} unique workers in these batches.")
+
     return all_batch_df
+
+def get_prediction_df(experiment_version, data_dir_path):
+    """Return a dataframe containing the score for each activation question and the total score, indexed by (condition, quiz level, session ID)"""
+    
+    # load chunks
+    with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
+        data_list = json.load(f)
+
+    # query chunks json for quiz-related data
+    quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, quiz_data: quiz_data, is_trouble: is_trouble}", data_list)
+
+    if experiment_version == '100-mturk':
+        # this was before I added the condition name to the sent chunks
+        # so define a mapping from routes to condition names
+        route_to_condition = {
+            '/conditions/0': 'c1_c2_d3',
+            '/conditions/1': 'd1_d2_c3',
+            '/conditions/2': 'c1_d3',
+            '/conditions/3': 'd1_c3'
+        }
+
+    # prepare a dict to be converted into a dataframe indexed by (experiment condition, quiz level, session ID)
+    reshaped_dict = {}
+    for session in quiz:
+        # skip sessions that probably encountered technical issues
+        if session['is_trouble']:
+            continue
+
+        if experiment_version == '100-mturk':
+            # this was before I added the condition name to the sent chunks
+            condition_name = route_to_condition[session['route']]
+        else:
+            condition_name = session['condition_name']
+
+        # don't consider sessions where I haven't implemented condition_name
+        # (except for experiment 100-mturk)
+        if condition_name is None:
+            continue
+
+        # consider different quiz levels for different experiment conditions
+        level_nums = [1, 3]
+
+        if len(condition_name.split('_')) == 3:
+            level_nums.append(2)
+            level_nums.sort()
+        else:
+            # there should only be 3 or 2 parts in a condition name
+            assert len(condition_name.split('_')) == 2    
+
+        for i in level_nums:
+            level_dict = session['quiz_data'][f'level_{i}']
+            activation_score = level_dict['activation_score']
+            answered_correctly = np.equal(level_dict['activation_answer_groups'], level_dict['correct_activation_answers'])
+            total_correct = np.sum(answered_correctly)
+
+            # sanity check that the total score calculated from individual questions is the same as the recorded total score for activation prediction questions
+            assert total_correct == level_dict['activation_score']
+
+            # prep the index and columns for the resulting dataframe
+            index = (condition_name, i, session['sessionId'])  # (experiment condition, quiz level, session ID)
+            cols = np.concatenate([answered_correctly, [total_correct]])
+            reshaped_dict[index] = cols
+
+    quiz_df = pd.DataFrame(reshaped_dict).T
+    quiz_df.index.set_names(['condition', 'level', 'session_id'], inplace=True)
+    quiz_df.columns = ['q1_point', 'q2_point', 'q3_point', 'q4_point', 'q5_point', 'q6_point', 'q7_point', 'total_points']
+
+    print(f"{experiment_version}:")
+    # there should only be quiz levels 1,2,3
+    assert set(quiz_df.index.get_level_values('level').unique()) == set([1, 2, 3])
+    print("Passed: we only have quiz levels 1, 2, 3.")
+    print(f"Unique experiment conditions: {list(quiz_df.index.get_level_values('condition').unique())}")
+    print(f"Num unique sessions (recorded at End component, where is_trouble=False): {len(quiz_df.index.get_level_values('session_id').unique())}")
+    print("\n")
+
+    return quiz_df
+
+def get_filtered_id_df(experiment_version, data_dir_path):
+    """Return a df with valid participant IDs and session IDs.
+    
+    The returned df can then be used to filter other dfs for valid participants and sessions, e.g.
+    `df.merge(filtered_id_df, on='session_id', how='inner')`
+    """
+
+    with open(os.path.join(data_dir_path, f'd_mturk_worker_ids_{experiment_version}.tsv')) as f:
+        id_df = pd.read_csv(f, sep='\t')
+
+    print(f"{experiment_version}:")
+    print(f"Number of rows in the raw participant ID file: {id_df.shape[0]}")
+
+    # filter out...
+    # ... all of my "test" worker IDs and any empty (na) IDs
+    filtered_df = id_df[~id_df.participant_id.str.contains('test', case=False, regex=False, na=True)]
+    # ... any empty string IDs
+    filtered_df = filtered_df[filtered_df.participant_id != '']
+    # ... unsuccessful session IDs (participant probably tried the link several times)
+    filtered_df = filtered_df[filtered_df.session_id != 'NO_SESSION_ID']
+
+    print(f"Number unique filtered participant IDs: {len(filtered_df.participant_id.unique())}")
+    print(f"Number total filtered participant IDs: {len(filtered_df.participant_id)}")
+    # for 101-mturk: num unique filtered is 223 vs total is 224, which is ok because my digging shows one participant was glitchily dispatched twice (two session ids with the same dispatch time)
+    print("\n")
+
+    return filtered_df
