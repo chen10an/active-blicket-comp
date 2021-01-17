@@ -63,23 +63,15 @@ def get_mturk_batch_df(batch_dir_path):
 
     return all_batch_df
 
-def get_quiz_df(experiment_version, data_dir_path, q_type):
-    """Return a dataframe containing quiz data for either activation prediction questions or is-a-blicket questions, indexed by (condition, quiz level, session ID)
-    
-    :param q_type: "prediction" or "blicket"
-    """
+def get_quiz_df(experiment_version, data_dir_path):
+    """Return a dataframe containing quiz data for activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID)"""
 
-    assert q_type in ['prediction', 'blicket']
-    
     # load chunks
     with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
         data_list = json.load(f)
 
     # query chunks json for quiz-related data
-    if q_type == 'prediction':
-        quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, quiz_data: quiz_data, is_trouble: is_trouble}", data_list)
-    elif q_type == 'blicket':
-        quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, blicket_answers: quiz_data.*.blicket_answer_combo | [*].bitstring}", data_list)
+    quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, quiz_data: quiz_data, blicket_answers: quiz_data.*.blicket_answer_combo | [*].bitstring}", data_list)
 
 
     if experiment_version == '100-mturk':
@@ -92,9 +84,15 @@ def get_quiz_df(experiment_version, data_dir_path, q_type):
             '/conditions/3': 'd1_c3'
         }
 
-    # prepare a dict to be converted into a dataframe indexed by (experiment condition, quiz level, session ID)
-    reshaped_dict = {}
+    # prepare a dicts to converted into dataframes indexed by (experiment condition, quiz level, session ID)
+    # separate prediction vs blicket df creation because they have different datatypes: int vs string
+    pred_reshaped_dict = {}
+    blicket_reshaped_dict = {}
     for session in quiz:
+        # don't consider sessions before this time because the chunk fields were still in development and no real participants had done the experiment yet
+        if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
+            continue
+
         # skip sessions that probably encountered technical issues
         if session['is_trouble']:
             continue
@@ -116,7 +114,7 @@ def get_quiz_df(experiment_version, data_dir_path, q_type):
         if len(condition_name.split('_')) == 3:
             level_nums.append(2)
             
-            # when q_type=blicket, sorting is important for making sure the index i below matches bitstrings to the correct level number:
+            # sorting is especially important for making sure the index i below matches blicket answer bitstrings to the correct level number:
             level_nums.sort()
         else:
             # there should only be 3 or 2 parts in a condition name
@@ -126,29 +124,31 @@ def get_quiz_df(experiment_version, data_dir_path, q_type):
             l_num = level_nums[i]
             # prep the index for the resulting dataframe
             index = (condition_name, l_num, session['sessionId'])  # (experiment condition, quiz level, session ID)
-            if q_type == 'prediction':
-                level_dict = session['quiz_data'][f'level_{l_num}']
-                activation_score = level_dict['activation_score']
-                answered_correctly = np.equal(level_dict['activation_answer_groups'], level_dict['correct_activation_answers'])
-                total_correct = np.sum(answered_correctly)
 
-                # sanity check that the total score calculated from individual questions is the same as the recorded total score for activation prediction questions
-                assert total_correct == level_dict['activation_score']
+            level_dict = session['quiz_data'][f'level_{l_num}']
+            activation_score = level_dict['activation_score']
+            answered_correctly = np.equal(level_dict['activation_answer_groups'], level_dict['correct_activation_answers'])
+            total_correct = np.sum(answered_correctly)
 
-                # prep cols for the resulting dataframe
-                cols = np.concatenate([answered_correctly, [total_correct]])
-                reshaped_dict[index] = cols
-            elif q_type == 'blicket':
-                # don't consider sessions before this time because the blicket_answers did not have the correct bitstring format yet
-                if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
-                    continue
+            # sanity check that the total score calculated from individual questions is the same as the recorded total score for activation prediction questions
+            assert total_correct == level_dict['activation_score']
 
-                # prep cols for the resulting dataframe
-                reshaped_dict[index] = [session['blicket_answers'][i]]
+            # prep cols for the resulting dataframe
+            pred_reshaped_dict[index] = np.concatenate([answered_correctly, [total_correct]])
+            blicket_reshaped_dict[index] = [session['blicket_answers'][i]]
 
+    # int df
+    pred_df = pd.DataFrame(pred_reshaped_dict).T
+    pred_df.index.set_names(['condition', 'level', 'session_id'], inplace=True)
+    pred_df.columns = ['q1_point', 'q2_point', 'q3_point', 'q4_point', 'q5_point', 'q6_point', 'q7_point', 'total_points']
 
-    quiz_df = pd.DataFrame(reshaped_dict).T
-    quiz_df.index.set_names(['condition', 'level', 'session_id'], inplace=True)
+    # str df
+    blicket_df = pd.DataFrame(blicket_reshaped_dict).T
+    blicket_df.index.set_names(['condition', 'level', 'session_id'], inplace=True)
+    blicket_df.columns = ['blicket_answer']
+
+    # join pred and blicket dfs together on their common index
+    quiz_df = pred_df.join(blicket_df, how='inner')
 
     print(f"{experiment_version}:")
     # there should only be quiz levels 1,2,3
@@ -158,24 +158,18 @@ def get_quiz_df(experiment_version, data_dir_path, q_type):
     print(f"Num unique sessions (recorded at End component, where is_trouble=False): {len(quiz_df.index.get_level_values('session_id').unique())}")
     print("\n")
 
-    if q_type == 'prediction':
-        quiz_df.columns = ['q1_point', 'q2_point', 'q3_point', 'q4_point', 'q5_point', 'q6_point', 'q7_point', 'total_points']
-    elif q_type == 'blicket':
-        quiz_df.columns = ['blicket_answer']
-        # put in the correct answers
-        # level 1
-        quiz_df.loc[pd.IndexSlice[['d1_d2_d3', 'd1_d3', 'd1_d2_c3', 'd1_c3'], 1, :], 'correct_answer'] = '100'  # 1 blicket for disjunctive level 1
-        quiz_df.loc[pd.IndexSlice[['c1_c2_c3', 'c1_c3', 'c1_c2_d3', 'c1_d3'], 1, :], 'correct_answer'] = '110'  # 2 blickets for conjunctive level 1
+    # put in the correct blicket answers
+    # level 1
+    quiz_df.loc[pd.IndexSlice[['d1_d2_d3', 'd1_d3', 'd1_d2_c3', 'd1_c3'], 1, :], 'correct_answer'] = '100'  # 1 blicket for disjunctive level 1
+    quiz_df.loc[pd.IndexSlice[['c1_c2_c3', 'c1_c3', 'c1_c2_d3', 'c1_d3'], 1, :], 'correct_answer'] = '110'  # 2 blickets for conjunctive level 1
+    # level 2
+    quiz_df.loc[pd.IndexSlice[:, 2, :], 'correct_answer'] = '111000'  # 6 blocks, 3 blickets for both disj and conj
+    # level 3
+    quiz_df.loc[pd.IndexSlice[:, 3, :], 'correct_answer'] = '111100000'  # 9 blocks, 4 blickets for both disj and conj
 
-        # level 2
-        quiz_df.loc[pd.IndexSlice[:, 2, :], 'correct_answer'] = '111000'  # 6 blocks, 3 blickets for both disj and conj
-
-        # level 3
-        quiz_df.loc[pd.IndexSlice[:, 3, :], 'correct_answer'] = '111100000'  # 9 blocks, 4 blickets for both disj and conj
-
-        # add metrics into the dataframe
-        metrics_df = quiz_df.apply(lambda df: get_blicket_metrics(participant_ans=df.blicket_answer, correct_ans=df.correct_answer, return_series=True), axis=1)
-        quiz_df = quiz_df.join(metrics_df)
+    # add blicket metrics into the dataframe
+    metrics_df = quiz_df.apply(lambda df: get_blicket_metrics(participant_ans=df.blicket_answer, correct_ans=df.correct_answer, return_series=True), axis=1)
+    quiz_df = quiz_df.join(metrics_df)
 
     return quiz_df
 
@@ -242,3 +236,33 @@ assert get_blicket_metrics(participant_ans='111', correct_ans='100') == (1/3, 1,
 assert get_blicket_metrics(participant_ans='011', correct_ans='100') == (0, 0, 0)
 assert get_blicket_metrics(participant_ans='000', correct_ans='100') == (2/3, 0, None)
 assert get_blicket_metrics(participant_ans='000', correct_ans='000') == (1, None, None)
+
+def get_full_quiz_df(data_dir_path):
+    """Return a dataframe containing a filtered and concatenated quiz data for activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID)"""
+
+    df0 = get_quiz_df(experiment_version='100-mturk', data_dir_path=data_dir_path)
+    df1 = get_quiz_df(experiment_version='101-mturk', data_dir_path=data_dir_path)
+
+    # load valid participant IDs
+    fid0_df = get_filtered_id_df(experiment_version='100-mturk', data_dir_path=data_dir_path)
+    fid1_df = get_filtered_id_df(experiment_version='101-mturk', data_dir_path=data_dir_path)
+
+    # get intersection of sessions with activation prediction answers and sessions with valid participant IDs
+    fdf0 = df0.reset_index().merge(fid0_df, on='session_id', how='inner')
+    fdf1 = df1.reset_index().merge(fid1_df, on='session_id', how='inner')
+    # sanity checks
+    for key, df in {'Filtered 100-mturk quiz data': fdf0, 'Filtered 101-mturk quiz data': fdf1}.items():
+        print(f"{key}:")
+        assert all(df.groupby('session_id').condition.nunique() == 1)
+        print("Passed: Each session only has 1 experiment condition.")
+        assert len(df.participant_id.unique()) == len(df['session_id'].unique())
+        print(f"Passed: Unique participant IDs and unique session IDs have the same count ({len(df.participant_id.unique())}).")
+        print("\n")
+
+    # concat data from both experiment versions
+    f_all_df = pd.concat([fdf0, fdf1])
+    f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
+
+    print(f"The resulting filtered and concatenated quiz dataframe has {len(f_all_df.index.get_level_values('session_id').unique())} unique sessions/participants.")
+
+    return f_all_df
