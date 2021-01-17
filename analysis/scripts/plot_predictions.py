@@ -1,16 +1,19 @@
-import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import helperfuns
 
+DATA_DIR_PATH ='../ignore/data/'
+Q_SAVE_PATH = '../ignore/paper/imgs/per_q_activation_scores.pdf'
+OVERALL_SAVE_PATH = '../ignore/paper/imgs/overall_activation_scores.pdf'
+
 # load activation prediction answers
-pred0_df = helperfuns.get_prediction_df(experiment_version='100-mturk', data_dir_path='../ignore/data/')
-pred1_df = helperfuns.get_prediction_df(experiment_version='101-mturk', data_dir_path='../ignore/data/')
+pred0_df = helperfuns.get_quiz_df(experiment_version='100-mturk', data_dir_path=DATA_DIR_PATH, q_type='prediction')
+pred1_df = helperfuns.get_quiz_df(experiment_version='101-mturk', data_dir_path=DATA_DIR_PATH, q_type='prediction')
 
 # load valid participant IDs
-fid0_df = helperfuns.get_filtered_id_df(experiment_version='100-mturk', data_dir_path='../ignore/data/')
-fid1_df = helperfuns.get_filtered_id_df(experiment_version='101-mturk', data_dir_path='../ignore/data/')
+fid0_df = helperfuns.get_filtered_id_df(experiment_version='100-mturk', data_dir_path=DATA_DIR_PATH)
+fid1_df = helperfuns.get_filtered_id_df(experiment_version='101-mturk', data_dir_path=DATA_DIR_PATH)
 
 # get intersection of sessions with activation prediction answers and sessions with valid participant IDs
 fpred0_df = pred0_df.reset_index().merge(fid0_df, on='session_id', how='inner')
@@ -55,9 +58,8 @@ for i in range(len(groups)):
             axs[j, i].get_xaxis().set_visible(False)
 
 f.tight_layout()
-save_path = '../ignore/paper/imgs/per_q_activation_scores.pdf'
-f.savefig(save_path)
-print(f"Saved to {save_path}!")
+f.savefig(Q_SAVE_PATH)
+print(f"Saved to {Q_SAVE_PATH}!")
 
 # mean_totals = quiz_df.groupby(level=['condition', 'level']).total_points.mean()
 # mean_totals = pd.DataFrame(mean_totals)
@@ -78,6 +80,6 @@ for i in range(len(groups)):
         axs[i].get_yaxis().set_visible(False)
 
 f.tight_layout()
-save_path = '../ignore/paper/imgs/overall_activation_scores.pdf'
-f.savefig(save_path)
-print("Saved to {save_path}!")
+
+f.savefig(OVERALL_SAVE_PATH)
+print(f"Saved to {OVERALL_SAVE_PATH}!")
