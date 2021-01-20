@@ -4,6 +4,28 @@ import pandas as pd
 import numpy as np
 import jmespath
 
+# %%
+def load_data(experiment_version, data_dir_path='../ignore/data/'):
+    """Return a list of dicts (chunks) and df of MTurk worker IDs corresponding to a specific experiment version."""
+    with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
+        data_list = json.load(f)
+
+    if experiment_version == '101-mturk':
+        # for versions 101, 102 and 103, I managed to write all their data to 101 chunks while having their dispatched worker IDs stored in different files...
+        id_file_list = [os.path.join(data_dir_path, f'd_mturk_worker_ids_{v}.tsv') for v in ['101-mturk', '102-mturk', '103-mturk']]
+    else: 
+        id_file_list = [os.path.join(data_dir_path, f'd_mturk_worker_ids_{experiment_version}.tsv')]
+    
+    # combine id files if there are several
+    dfs = []
+    for id_file in id_file_list:
+        with open(id_file) as f:
+            dfs.append(pd.read_csv(f, sep='\t'))
+
+    id_df = pd.concat(dfs, ignore_index=True)
+
+    return data_list, id_df
+
 def get_end_id_bonus_dfs(experiment_version, data_dir_path):
     """Get useful dataframes from experiment data files.
 
@@ -14,11 +36,7 @@ def get_end_id_bonus_dfs(experiment_version, data_dir_path):
 
     :return: tuple of (chunks_df, workerid_df, bonus_df)
     """
-    # load relevant data sets
-    with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
-        data_list = json.load(f)
-    with open(os.path.join(data_dir_path, f'd_mturk_worker_ids_{experiment_version}.tsv')) as f:
-        id_df = pd.read_csv(f, sep='\t')
+    data_list, id_df = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
     # parse json to find relevant score data for calculating bonuses
     end = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, route: route, condition_name: condition_name, end_time: timestamp, score: score, max_score: max_score, bonus_per_q: bonus_per_q, total_bonus: total_bonus}", data_list)
@@ -43,7 +61,7 @@ def get_end_id_bonus_dfs(experiment_version, data_dir_path):
 
     return (end_df, id_df, bonus_df)
 
-def get_mturk_batch_df(batch_dir_path):
+def load_mturk_batch_df(batch_dir_path):
     """Return one dataframe from a directory of batch csvs downloaded from MTurk's batch review UI
     """
     batch_file_paths = [os.path.join(batch_dir_path, f) for f in os.listdir(batch_dir_path) if os.path.isfile(os.path.join(batch_dir_path, f))]
@@ -67,8 +85,7 @@ def get_quiz_df(experiment_version, data_dir_path):
     """Return a dataframe containing quiz data for activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID)"""
 
     # load chunks
-    with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
-        data_list = json.load(f)
+    data_list, _ = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
     # query chunks json for quiz-related data
     quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, quiz_data: quiz_data, blicket_answers: quiz_data.*.blicket_answer_combo | [*].bitstring}", data_list)
@@ -180,8 +197,7 @@ def get_filtered_id_df(experiment_version, data_dir_path):
     `df.merge(filtered_id_df, on='session_id', how='inner')`
     """
 
-    with open(os.path.join(data_dir_path, f'd_mturk_worker_ids_{experiment_version}.tsv')) as f:
-        id_df = pd.read_csv(f, sep='\t')
+    _, id_df = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
     print(f"{experiment_version}:")
     print(f"Number of rows in the raw participant ID file: {id_df.shape[0]}")
