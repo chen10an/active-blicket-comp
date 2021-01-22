@@ -4,6 +4,15 @@ import pandas as pd
 import numpy as np
 import jmespath
 
+# mapping used for experiment version 100-mturk
+# (this was before I added the condition name to the sent chunks)
+ROUTE_TO_CONDITION = {
+    '/conditions/0': 'c1_c2_d3',
+    '/conditions/1': 'd1_d2_c3',
+    '/conditions/2': 'c1_d3',
+    '/conditions/3': 'd1_c3'
+}
+
 def load_data(experiment_version, data_dir_path='../ignore/data/'):
     """Return a list of dicts (chunks) and df of MTurk worker IDs corresponding to a specific experiment version."""
     with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
@@ -90,17 +99,6 @@ def get_quiz_df(experiment_version, data_dir_path):
     # query chunks json for quiz-related data
     quiz = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, quiz_data: quiz_data, blicket_answers: quiz_data.*.blicket_answer_combo | [*].bitstring}", data_list)
 
-
-    if experiment_version == '100-mturk':
-        # this was before I added the condition name to the sent chunks
-        # so define a mapping from routes to condition names
-        route_to_condition = {
-            '/conditions/0': 'c1_c2_d3',
-            '/conditions/1': 'd1_d2_c3',
-            '/conditions/2': 'c1_d3',
-            '/conditions/3': 'd1_c3'
-        }
-
     # prepare a dicts to converted into dataframes indexed by (experiment condition, quiz level, session ID)
     # separate prediction vs blicket df creation because they have different datatypes: int vs string
     pred_reshaped_dict = {}
@@ -116,7 +114,7 @@ def get_quiz_df(experiment_version, data_dir_path):
 
         if experiment_version == '100-mturk':
             # this was before I added the condition name to the sent chunks
-            condition_name = route_to_condition[session['route']]
+            condition_name = ROUTE_TO_CONDITION[session['route']]
         else:
             condition_name = session['condition_name']
 
@@ -212,7 +210,7 @@ def get_filtered_id_df(experiment_version, data_dir_path):
 
     print(f"Number unique filtered participant IDs: {len(filtered_df.participant_id.unique())}")
     print(f"Number total filtered participant IDs: {len(filtered_df.participant_id)}")
-    # for 101-mturk: num unique filtered is 223 vs total is 224, which is ok because my digging shows one participant was glitchily dispatched twice (two session ids with the same dispatch time)
+    # for 101-mturk: num unique filtered is one less than the total, which is ok because my digging shows one participant was glitchily dispatched twice (two session ids with the same dispatch time)
     print("-----\n")
 
     return filtered_df
@@ -253,11 +251,25 @@ assert get_blicket_metrics(participant_ans='011', correct_ans='100') == (0, 0, 0
 assert get_blicket_metrics(participant_ans='000', correct_ans='100') == (2/3, 0, None)
 assert get_blicket_metrics(participant_ans='000', correct_ans='000') == (1, None, None)
 
-def get_full_quiz_df(data_dir_path):
-    """Return a dataframe containing a filtered and concatenated quiz data for activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID)"""
+def get_full_df(data_type, data_dir_path='../ignore/data/'):
+    """Return a filtered and concatenated dataframe across all participants and experiment versions.
+    
+    For data type "quiz":
+    The dataframe contains both activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID).
 
-    df0 = get_quiz_df(experiment_version='100-mturk', data_dir_path=data_dir_path)
-    df1 = get_quiz_df(experiment_version='101-mturk', data_dir_path=data_dir_path)
+    For data type "task_3":
+    The dataframe contains task/intervention data in phase 3 only, indexed by (condition, session ID). 
+    """
+
+    assert data_type in ['quiz', 'task_3']
+
+    if data_type == 'quiz':
+        get_df = lambda v: get_quiz_df(experiment_version=v, data_dir_path=data_dir_path)
+    elif data_type == 'task_3':
+        get_df = lambda v: get_task_3_df(experiment_version=v, data_dir_path=data_dir_path)
+
+    df0 = get_df('100-mturk')
+    df1 = get_df('101-mturk')
 
     # load valid participant IDs
     fid0_df = get_filtered_id_df(experiment_version='100-mturk', data_dir_path=data_dir_path)
@@ -274,10 +286,16 @@ def get_full_quiz_df(data_dir_path):
         assert len(df.participant_id.unique()) == len(df['session_id'].unique())
         print(f"Passed: Unique participant IDs and unique session IDs have the same count ({len(df.participant_id.unique())}).")
         print("\n")
+        # 101-mturk: the full task (phase 3) data has 3 less participants than the full quiz (all phases) data
+        # because 3 participants did not try any interventions/combos in phase 3 :(
 
     # concat data from both experiment versions
     f_all_df = pd.concat([fdf0, fdf1])
-    f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
+
+    if data_type == 'quiz':
+        f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
+    elif data_type == 'task_3':
+        f_all_df = f_all_df.set_index(['condition', 'session_id'])
 
     print(f"The resulting filtered and concatenated quiz dataframe has {len(f_all_df.index.get_level_values('session_id').unique())} unique sessions/participants.")
     print("-----\n")
@@ -286,7 +304,7 @@ def get_full_quiz_df(data_dir_path):
 
 def save_full_design_matrix(data_dir_path='../ignore/data/', save_path='../ignore/output/design_matrix.csv'):
     """Save and return a design matrix (including the response variable) for plotting and fitting models."""
-    quiz_df = get_full_quiz_df(data_dir_path=data_dir_path)
+    quiz_df = get_full_df(data_dir_path=data_dir_path, data_type='quiz')
 
     # filter to only level 3 and get blicket accuracy and total prediction points
     design_df = quiz_df.loc[pd.IndexSlice[:, 3, :]][['accuracy', 'total_points']]
@@ -316,3 +334,48 @@ def save_full_design_matrix(data_dir_path='../ignore/data/', save_path='../ignor
     print("-----\n")
 
     return design_df
+
+def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
+    """Get intervention (block combinations) data in phase 3"""
+
+    # load chunks
+    data_list, _ = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
+
+    # query chunks json for task-related data
+    task_3 = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, task_data_3: task_data.level_3.all_combos, blicket_answers_3: quiz_data.level_3.blicket_answer_combo.bitstring}", data_list)
+
+    reshaped_dict = {}
+    for session in task_3:
+        # don't consider sessions before this time because the chunk fields were still in development and no real participants had done the experiment yet
+        if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
+            continue
+
+        # skip sessions that probably encountered technical issues
+        if session['is_trouble']:
+            continue
+
+        if experiment_version == '100-mturk':
+            # this was before I added the condition name to the sent chunks
+            condition_name = ROUTE_TO_CONDITION[session['route']]
+        else:
+            condition_name = session['condition_name']
+
+        # don't consider sessions where I haven't implemented condition_name
+        # (except for experiment 100-mturk)
+        if condition_name is None:
+            continue
+
+        # prep the index for the resulting dataframe
+        partial_index = (condition_name, session['sessionId'])  # (experiment condition, session ID)
+
+        timestamps = jmespath.search("[*].timestamp", session['task_data_3'])
+        combos = jmespath.search("[*].bitstring", session['task_data_3'])
+        for i in range(len(timestamps)):
+            full_index = partial_index + (timestamps[i],)
+            reshaped_dict[full_index] = np.array(list(combos[i])).astype(int)
+
+    task_3_df = pd.DataFrame(reshaped_dict).T
+    task_3_df.index.set_names(['condition', 'session_id', 'timestamp'], inplace=True)
+    task_3_df.columns = [f'id_{i}' for i in range(9)]
+
+    return task_3_df
