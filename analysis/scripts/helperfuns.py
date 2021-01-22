@@ -4,15 +4,14 @@ import pandas as pd
 import numpy as np
 import jmespath
 
-# %%
 def load_data(experiment_version, data_dir_path='../ignore/data/'):
     """Return a list of dicts (chunks) and df of MTurk worker IDs corresponding to a specific experiment version."""
     with open(os.path.join(data_dir_path, f'chunks_{experiment_version}.json')) as f:
         data_list = json.load(f)
 
     if experiment_version == '101-mturk':
-        # for versions 101, 102 and 103, I managed to write all their data to 101 chunks while having their dispatched worker IDs stored in different files...
-        id_file_list = [os.path.join(data_dir_path, f'd_mturk_worker_ids_{v}.tsv') for v in ['101-mturk', '102-mturk', '103-mturk']]
+        # for versions 101, 102, 103, 104, I managed to write all their data to 101 chunks while having their dispatched worker IDs stored in different files...
+        id_file_list = [os.path.join(data_dir_path, f'd_mturk_worker_ids_{v}.tsv') for v in ['101-mturk', '102-mturk', '103-mturk', '104-mturk']]
     else: 
         id_file_list = [os.path.join(data_dir_path, f'd_mturk_worker_ids_{experiment_version}.tsv')]
     
@@ -78,6 +77,7 @@ def load_mturk_batch_df(batch_dir_path):
         print("ohno these batches have repeated WorkerIds")
 
     print(f"There are {all_batch_df.shape[0]} unique workers in these batches.")
+    print("-----\n")
 
     return all_batch_df
 
@@ -173,7 +173,7 @@ def get_quiz_df(experiment_version, data_dir_path):
     print("Passed: we have exactly quiz levels 1, 2, 3.")
     print(f"Unique experiment conditions: {list(quiz_df.index.get_level_values('condition').unique())}")
     print(f"Num unique sessions (recorded at End component, where is_trouble=False): {len(quiz_df.index.get_level_values('session_id').unique())}")
-    print("\n")
+    print("-----\n")
 
     # put in the correct blicket answers
     # level 1
@@ -213,7 +213,7 @@ def get_filtered_id_df(experiment_version, data_dir_path):
     print(f"Number unique filtered participant IDs: {len(filtered_df.participant_id.unique())}")
     print(f"Number total filtered participant IDs: {len(filtered_df.participant_id)}")
     # for 101-mturk: num unique filtered is 223 vs total is 224, which is ok because my digging shows one participant was glitchily dispatched twice (two session ids with the same dispatch time)
-    print("\n")
+    print("-----\n")
 
     return filtered_df
 
@@ -280,5 +280,39 @@ def get_full_quiz_df(data_dir_path):
     f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
 
     print(f"The resulting filtered and concatenated quiz dataframe has {len(f_all_df.index.get_level_values('session_id').unique())} unique sessions/participants.")
+    print("-----\n")
 
     return f_all_df
+
+def save_full_design_matrix(data_dir_path='../ignore/data/', save_path='../ignore/output/design_matrix.csv'):
+    """Save and return a design matrix (including the response variable) for plotting and fitting models."""
+    quiz_df = get_full_quiz_df(data_dir_path=data_dir_path)
+
+    # filter to only level 3 and get blicket accuracy and total prediction points
+    design_df = quiz_df.loc[pd.IndexSlice[:, 3, :]][['accuracy', 'total_points']]
+
+    design_df['total_points'] = design_df['total_points'] / 7  # turn points into accuracy (max points is 7)
+
+    # match=1 when function in phase 3 matches with functions in previous phases
+    # match=0 when function in phase 3 does NOT match with functions in previous phases
+    design_df.loc[['d1_d2_d3', 'c1_c2_c3', 'd1_d3', 'c1_c3'], 'match'] = 1
+    design_df.loc[['d1_d2_c3', 'c1_c2_d3', 'd1_c3', 'c1_d3'], 'match'] = 0
+    assert set(design_df.match.unique()) == set([1, 0])  # check that all rows have been filled
+
+    # has_phase_2=1 when condition has all phases 1,2,3
+    # has_phase_2=0 when condition only has phases 1,3
+    design_df.loc[['d1_d2_d3', 'c1_c2_c3', 'd1_d2_c3', 'c1_c2_d3'], 'has_phase_2'] = 1
+    design_df.loc[['d1_d3', 'c1_c3', 'd1_c3', 'c1_d3'], 'has_phase_2'] = 0
+    assert set(design_df.has_phase_2.unique()) == set([1, 0])  # check that all rows have been filled
+
+    # is_d3=1 for disjunctive phase 3
+    # is_d3=0 for conjunctive phases 3
+    design_df.loc[['d1_d2_d3', 'c1_c2_d3', 'd1_d3', 'c1_d3'], 'is_d3'] = 1
+    design_df.loc[['c1_c2_c3', 'd1_d2_c3', 'c1_c3', 'd1_c3'], 'is_d3'] = 0
+    assert set(design_df.is_d3.unique()) == set([1, 0])  # check that all rows have been filled
+
+    design_df.to_csv(save_path)
+    print(f"Saved the design matrix to {save_path}!")
+    print("-----\n")
+
+    return design_df
