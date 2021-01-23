@@ -1,0 +1,60 @@
+---
+title: "Unequal Variance Two-Group T-Tests for Performance"
+output: rmarkdown::github_document
+---
+
+## Imports and helper function
+
+```{r message=FALSE, warning=FALSE}
+library(data.table)
+library(magrittr)
+
+quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
+fquizDT <- fread(file="../ignore/output/f_quiz_design_matrix.csv")
+
+pairs <- list(c('c1_c2_d3', 'd1_d2_d3'), c('c1_d3', 'd1_d3'), c('d1_d2_c3', 'c1_c2_c3'), c('d1_c3', 'c1_c3'))
+
+compare <- function (DT, col) {
+  tVals <- c()
+  pVals <- c()
+  isSignificant <- c()
+  for (pair in pairs) {
+    mismatched <- DT[condition == pair[1]]
+    matched <- DT[condition == pair[2]]
+    test <- t.test(mismatched[[col]], matched[[col]], alternative = "two.sided", paired = FALSE, var.equal = FALSE)
+    
+    tVals <- c(tVals, test$statistic)
+    pVals <- c(pVals, test$p.value)
+    isSignificant <- c(isSignificant, test$p.value <= 0.05)
+  }
+  
+  data.table(
+    pair=sapply(pairs, function (vec) paste(vec, collapse = " <> ")),
+    t=tVals,
+    p=pVals,
+    isSignificant=isSignificant
+  )
+}
+```
+
+## Blicket Accuracy Comparisons
+### Full data set
+```{r}
+compare(quizDT, "accuracy")
+```
+
+### Filtered data set
+```{r}
+compare(fquizDT, "accuracy")
+```
+
+## Activation Prediction Accuracy Comparisons
+### Full data set
+```{r}
+compare(quizDT, "total_points")
+```
+### Filtered data set
+```{r}
+compare(fquizDT, "total_points")
+```
+

@@ -7,3 +7,4 @@ ignore/
 .DS_Store
 *.ipynb
 /analysis/scripts/__pycache__/
+/analysis/scripts/*.html

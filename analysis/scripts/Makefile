@@ -1,4 +1,4 @@
-all: data vars plots paper
+all: data vars plots stats paper
 
 data:
 	python save_sessions.py
@@ -13,6 +13,10 @@ plots:
 	python plot_blicket_metrics.py
 	python plot_predictions.py
 	python plot_interventions.py
+
+stats:
+	Rscript -e 'library(rmarkdown); rmarkdown::render("t_tests.Rmd", "rmarkdown::github_document")'
+	Rscript -e 'library(rmarkdown); rmarkdown::render("glms.Rmd", "rmarkdown::github_document")'
 
 paper:
 	cd ../ignore/paper; latexmk -pdf -cd -outdir=./aux main
