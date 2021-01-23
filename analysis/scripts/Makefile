@@ -1,4 +1,9 @@
-all: vars plots paper
+all: data vars plots paper
+
+data:
+	python save_sessions.py
+	python save_quiz_design_matrix.py
+	python save_task_design_matrix.py
 
 vars:
 	python calc_participation_vars.py
@@ -7,6 +12,7 @@ vars:
 plots:
 	python plot_blicket_metrics.py
 	python plot_predictions.py
+	python plot_interventions.py
 
 paper:
 	cd ../ignore/paper; latexmk -pdf -cd -outdir=./aux main
