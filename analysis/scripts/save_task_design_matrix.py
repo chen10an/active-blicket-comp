@@ -28,6 +28,8 @@ first_num_per_session = num_blocks.groupby(level=['startswith', 'condition', 'se
 
 design_df = pd.DataFrame(first_num_per_session, columns=['first_num_blocks'])
 design_df.loc[:,'is_singleton'] = (design_df.first_num_blocks == 1).astype(int)
+design_df.loc[:, 'startswith_d'] = (design_df.index.get_level_values('startswith').str.startswith('d1')).astype(int)
+design_df.loc[:, 'has_phase_2'] = (design_df.index.get_level_values('startswith').str.endswith('2')).astype(int)
 
 # filtered version excluding participants who did not classify any blocks as blickets
 f_design_df = design_df.loc[design_df.index.get_level_values('session_id').isin(filtered_sessions)]
