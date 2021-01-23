@@ -258,7 +258,7 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
     The dataframe contains both activation prediction questions and is-a-blicket questions, indexed by (condition, quiz level, session ID).
 
     For data type "task_3":
-    The dataframe contains task/intervention data in phase 3 only, indexed by (condition, session ID). 
+    The dataframe contains task/intervention data in phase 3 only, indexed by (condition, session ID, timestamp). 
     """
 
     assert data_type in ['quiz', 'task_3']
@@ -295,7 +295,7 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
     if data_type == 'quiz':
         f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
     elif data_type == 'task_3':
-        f_all_df = f_all_df.set_index(['condition', 'session_id'])
+        f_all_df = f_all_df.set_index(['condition', 'session_id', 'timestamp'])
 
     print(f"The resulting filtered and concatenated quiz dataframe has {len(f_all_df.index.get_level_values('session_id').unique())} unique sessions/participants.")
     print("-----\n")
@@ -342,9 +342,10 @@ def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
     data_list, _ = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
     # query chunks json for task-related data
-    task_3 = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, task_data_3: task_data.level_3.all_combos, blicket_answers_3: quiz_data.level_3.blicket_answer_combo.bitstring}", data_list)
+    task_3 = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, task_data_3: task_data.level_3.all_combos, blicket_answer_3: quiz_data.level_3.blicket_answer_combo.bitstring}", data_list)
 
-    reshaped_dict = {}
+    # start creating rows for the resulting dataframe
+    rows = []
     for session in task_3:
         # don't consider sessions before this time because the chunk fields were still in development and no real participants had done the experiment yet
         if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
@@ -366,16 +367,26 @@ def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
             continue
 
         # prep the index for the resulting dataframe
-        partial_index = (condition_name, session['sessionId'])  # (experiment condition, session ID)
+        partial_index = [condition_name, session['sessionId']]
 
         timestamps = jmespath.search("[*].timestamp", session['task_data_3'])
         combos = jmespath.search("[*].bitstring", session['task_data_3'])
+        
         for i in range(len(timestamps)):
-            full_index = partial_index + (timestamps[i],)
-            reshaped_dict[full_index] = np.array(list(combos[i])).astype(int)
+            full_index = partial_index + [timestamps[i]]
+            
+            # use numpy to change type to int
+            # then change back list so we can have multi-type rows
+            current_combo = np.array(list(combos[i])).astype(int)
+            current_combo = list(current_combo)
 
-    task_3_df = pd.DataFrame(reshaped_dict).T
-    task_3_df.index.set_names(['condition', 'session_id', 'timestamp'], inplace=True)
-    task_3_df.columns = [f'id_{i}' for i in range(9)]
+            rows.append(full_index + current_combo + [session['blicket_answer_3']])
+
+    task_3_df = pd.DataFrame(rows, columns=
+        ['condition', 'session_id', 'timestamp'] +
+        [f'id_{i}' for i in range(9)] +
+        ['blicket_answer'])
+    
+    task_3_df.set_index(['condition', 'session_id', 'timestamp'], inplace=True)
 
     return task_3_df

@@ -7,7 +7,7 @@ import helperfuns
 DATA_DIR_PATH ='../ignore/data/'
 SAVE_PATH = '../ignore/paper/imgs/blicket_metrics.pdf'
 
-quiz_df = helperfuns.get_full_quiz_df(data_dir_path=DATA_DIR_PATH)
+quiz_df = helperfuns.get_full_df(data_type='quiz', data_dir_path=DATA_DIR_PATH)
 
 f, axs = plt.subplots(3, 2, sharey=True, figsize=(7, 7))
 groups = [['c1_c2_c3', 'c1_c3', 'd1_d2_c3', 'd1_c3'], ['d1_d2_d3', 'd1_d3', 'c1_c2_d3', 'c1_d3']]

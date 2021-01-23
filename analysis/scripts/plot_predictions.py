@@ -7,7 +7,7 @@ DATA_DIR_PATH ='../ignore/data/'
 Q_SAVE_PATH = '../ignore/paper/imgs/per_q_activation_scores.pdf'
 OVERALL_SAVE_PATH = '../ignore/paper/imgs/overall_activation_scores.pdf'
 
-quiz_df = helperfuns.get_full_quiz_df(data_dir_path=DATA_DIR_PATH)
+quiz_df = helperfuns.get_full_df(data_type='quiz', data_dir_path=DATA_DIR_PATH)
 
 # mean_per_q = quiz_df.groupby(level=['condition', 'level'])['q1_point', 'q2_point', 'q3_point', 'q4_point', 'q5_point', 'q6_point', 'q7_point'].mean()
 # mean_per_q
