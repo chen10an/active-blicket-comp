@@ -1,6 +1,6 @@
 ---
 title: "General Linear Models for Predicting Performance and Interventions"
-output: html_notebook
+output: rmarkdown::github_document
 ---
 
 ## Imports and helper function
