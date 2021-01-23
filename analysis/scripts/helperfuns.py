@@ -302,39 +302,6 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
 
     return f_all_df
 
-def save_full_design_matrix(data_dir_path='../ignore/data/', save_path='../ignore/output/design_matrix.csv'):
-    """Save and return a design matrix (including the response variable) for plotting and fitting models."""
-    quiz_df = get_full_df(data_dir_path=data_dir_path, data_type='quiz')
-
-    # filter to only level 3 and get blicket accuracy and total prediction points
-    design_df = quiz_df.loc[pd.IndexSlice[:, 3, :]][['accuracy', 'total_points']]
-
-    design_df['total_points'] = design_df['total_points'] / 7  # turn points into accuracy (max points is 7)
-
-    # match=1 when function in phase 3 matches with functions in previous phases
-    # match=0 when function in phase 3 does NOT match with functions in previous phases
-    design_df.loc[['d1_d2_d3', 'c1_c2_c3', 'd1_d3', 'c1_c3'], 'match'] = 1
-    design_df.loc[['d1_d2_c3', 'c1_c2_d3', 'd1_c3', 'c1_d3'], 'match'] = 0
-    assert set(design_df.match.unique()) == set([1, 0])  # check that all rows have been filled
-
-    # has_phase_2=1 when condition has all phases 1,2,3
-    # has_phase_2=0 when condition only has phases 1,3
-    design_df.loc[['d1_d2_d3', 'c1_c2_c3', 'd1_d2_c3', 'c1_c2_d3'], 'has_phase_2'] = 1
-    design_df.loc[['d1_d3', 'c1_c3', 'd1_c3', 'c1_d3'], 'has_phase_2'] = 0
-    assert set(design_df.has_phase_2.unique()) == set([1, 0])  # check that all rows have been filled
-
-    # is_d3=1 for disjunctive phase 3
-    # is_d3=0 for conjunctive phases 3
-    design_df.loc[['d1_d2_d3', 'c1_c2_d3', 'd1_d3', 'c1_d3'], 'is_d3'] = 1
-    design_df.loc[['c1_c2_c3', 'd1_d2_c3', 'c1_c3', 'd1_c3'], 'is_d3'] = 0
-    assert set(design_df.is_d3.unique()) == set([1, 0])  # check that all rows have been filled
-
-    design_df.to_csv(save_path)
-    print(f"Saved the design matrix to {save_path}!")
-    print("-----\n")
-
-    return design_df
-
 def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
     """Get intervention (block combinations) data in phase 3"""
 
