@@ -7,6 +7,7 @@ data:
 
 vars:
 	python calc_participation_vars.py
+	python calc_mean_time.py
 	python make_latex_vars.py
 
 plots:

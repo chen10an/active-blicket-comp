@@ -1,5 +1,6 @@
 # %%
 import pandas as pd
+import numpy as np
 import json
 import re
 import pickle
@@ -42,11 +43,19 @@ for index, val in f_cond_df.items():
     clean_command = 'f' + re.sub('\d', '', index).replace('_', '') + 'N'  # remove all underscores and numbers to create a valid latex command
     my_vars[clean_command] = val
 
-# TODO: calculate mean completion time from start and end data for filtered participants only
-my_vars['completionTime'] = '10-15min'
+# %%
+end_df_0, _, _= helperfuns.get_end_id_bonus_dfs(experiment_version='100-mturk', data_dir_path=DATA_DIR_PATH)
+end_df_1, _, _ = helperfuns.get_end_id_bonus_dfs(experiment_version='101-mturk', data_dir_path=DATA_DIR_PATH)
+end_df = pd.concat([end_df_0, end_df_1])
 
-# TODO: mean bonus
+# %%
+# filter to real participants (e.g. not my tests) who we use the data for
+end_df = end_df[end_df.sessionId.isin(all_sessions)]
+mean_bonus = np.round(end_df.total_bonus.mean(), 2)
+mean_total_comp = mean_bonus + 1.5
+my_vars['totalComp'] = mean_total_comp
 
+# %%
 save_path = os.path.join(OUTPUT_DIR_PATH, 'my_vars.json')
 with open(save_path, 'w') as f:
     json.dump(my_vars, f, indent=4)

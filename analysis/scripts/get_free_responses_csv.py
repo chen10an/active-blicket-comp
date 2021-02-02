@@ -24,7 +24,7 @@ def main(experiment_version, earliest_datetime, save_path):
     earliest_datetime = pd.Timestamp(earliest_datetime)
 
     # load relevant data sets
-    with open(f'../ignore/data/data_{experiment_version}.json') as f:
+    with open(f'../ignore/data/chunks_{experiment_version}.json') as f:
         data_list = json.load(f)
     
     response = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, score: score, max_score: max_score, level_1_machine: quiz_data.level_1.free_response_0, level_1_strategy: quiz_data.level_1.free_response_1, level_2_machine: quiz_data.level_2.free_response_0, level_2_strategy: quiz_data.level_2.free_response_1, level_3_machine: quiz_data.level_3.free_response_0, level_3_strategy: quiz_data.level_3.free_response_1, feedback: feedback}", data_list)
