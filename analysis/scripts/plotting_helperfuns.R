@@ -3,7 +3,7 @@ library(ggthemes)
 library(ggsci)
 library(ggpubr)
 library(RColorBrewer)
-library(patchwork)
+library(cowplot)
 
 myColors <- brewer.pal(n = 8, "Dark2")[2:3]
 myGreen <- brewer.pal(n = 8, "Dark2")[1]
@@ -15,7 +15,7 @@ theme_mine <- function() {
       plot.margin = margin(0.1, 0.1, 0.1, 0.1, unit = "cm"),
       plot.title = element_text(size=12, , margin = margin(0, 0, 0.1, 0, unit = "cm"), hjust = 0),
       # axes
-      axis.text=element_text(size=8),
+      axis.text=element_text(size=9),
       axis.title=element_text(size=10),
       # legend
       legend.position = "bottom",

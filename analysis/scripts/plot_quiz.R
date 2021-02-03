@@ -38,31 +38,47 @@ plotLine <- function(col) {
     geom_line(position = dodge) +
     scale_linetype_manual(values=c(1,5), name = "Data", labels = c("Full", "Filtered")) +
     geom_point(size=2, position = dodge) +
-    geom_errorbar(aes(ymin = !!col-!!se_col, ymax = !!col+!!se_col), position = dodge, width = 0.2) +
+    geom_errorbar(aes(ymin = !!col-!!se_col, ymax = !!col+!!se_col, group = interaction( is_filtered, is_d3)), position = dodge, width = 0.2, linetype="solid") + # see second answer in https://stackoverflow.com/questions/9968976/group-by-two-columns-in-ggplot2 for interaction grouping (which allows ggplot figure out how to dodge errorbars consistently with other vars)
     facet_grid(. ~ has_phase_2, labeller = labeller(has_phase_2 = facetLabs)) +
     geom_hline(yintercept=0.5, linetype="dotted", color = myGreen, size = 1) +  # chance level
     scale_x_continuous(breaks = c(0,1), name = "Match of Functional Form", labels = c("Different", "Same")) +
     ylim(0.5, 1) +
-    ylab("Accuracy") +
+    ylab("Mean Accuracy") +
     scale_colour_manual(values=myColors, name = "Phase 3 Function", labels = c("D3", "C3"))+
     theme_mine()
   
   p
 }
 
-predPlot <- plotLine("total_points") + ggtitle("Activation Prediction")
-blicketPlot <- plotLine("accuracy") + ggtitle("Blicket Classification")
+predPlot <- plotLine("total_points") + ggtitle("Activation Prediction") + theme(plot.title = element_text(size=11))
+predPlot
 
-finalPlot <- blicketPlot + predPlot + 
-  plot_layout(guides='collect', widths = unit(9, 'cm'), heights = unit(4, 'cm')) + 
-  plot_annotation(tag_levels = 'a', title = "Match of Functional Form and Performance in Phase 3") & 
-  theme(legend.position='bottom', plot.tag = element_text(face = 'bold'))
+blicketPlot <- plotLine("accuracy") + ggtitle("Blicket Classification") + theme(plot.title = element_text(size=11))
 
+blicketPlota <- blicketPlot + theme(legend.position = "none")
+predPlota <- predPlot + theme(legend.position = "none")
+# shared legend
+legend <- get_legend(blicketPlot)
+
+# top row
+top_row <- plot_grid(blicketPlota, predPlota, align = 'h', labels = "AUTO", label_size = 12)
+# then combine with the legend for final plot
+finalPlot <- plot_grid(top_row, legend, ncol = 1, rel_heights = c(1,0.15))
 finalPlot
 
-overallDims <- getOverallCms(finalPlot)
+save_plot(filename = "../ignore/paper/imgs/quiz.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 3.1)
 
-ggsave(filename = '../ignore/paper/imgs/patched_quiz.pdf', plot = finalPlot, width = overallDims[1], height = overallDims[2], units = "cm")
+# patchwork version
+# finalPlot <- blicketPlot + predPlot + 
+#   plot_layout(guides='collect', widths = unit(9, 'cm'), heights = unit(4, 'cm')) + 
+#   plot_annotation(tag_levels = 'a', title = "Match of Functional Form and Performance in Phase 3") & 
+#   theme(legend.position='bottom', plot.tag = element_text(face = 'bold'))
+# 
+# finalPlot
+# 
+# overallDims <- getOverallCms(finalPlot)
+# 
+# ggsave(filename = '../ignore/paper/imgs/patched_quiz.pdf', plot = finalPlot, width = overallDims[1], height = overallDims[2], units = "cm")
 
 # Violin Variant -----
 # temp <- copy(allQuizDT)
