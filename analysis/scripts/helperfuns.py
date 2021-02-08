@@ -1,3 +1,4 @@
+# %%
 import os
 import json
 import pandas as pd
@@ -251,6 +252,7 @@ assert get_blicket_metrics(participant_ans='011', correct_ans='100') == (0, 0, 0
 assert get_blicket_metrics(participant_ans='000', correct_ans='100') == (2/3, 0, None)
 assert get_blicket_metrics(participant_ans='000', correct_ans='000') == (1, None, None)
 
+# %%
 def get_full_df(data_type, data_dir_path='../ignore/data/'):
     """Return a filtered and concatenated dataframe across all participants and experiment versions.
     
@@ -261,12 +263,13 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
     The dataframe contains task/intervention data in phase 3 only, indexed by (condition, session ID, timestamp). 
     """
 
-    assert data_type in ['quiz', 'task_3']
+    assert data_type in ['quiz', 'task_1', 'task_3']
 
     if data_type == 'quiz':
         get_df = lambda v: get_quiz_df(experiment_version=v, data_dir_path=data_dir_path)
-    elif data_type == 'task_3':
-        get_df = lambda v: get_task_3_df(experiment_version=v, data_dir_path=data_dir_path)
+    elif data_type.startswith('task_'):
+        level = int(data_type.split('_')[1])
+        get_df = lambda v: get_task_df(experiment_version=v, level=level, data_dir_path=data_dir_path)
 
     df0 = get_df('100-mturk')
     df1 = get_df('101-mturk')
@@ -294,7 +297,7 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
 
     if data_type == 'quiz':
         f_all_df = f_all_df.set_index(['condition', 'level', 'session_id'])
-    elif data_type == 'task_3':
+    elif data_type.startswith('task_'):
         f_all_df = f_all_df.set_index(['condition', 'session_id', 'timestamp'])
 
     print(f"The resulting filtered and concatenated quiz dataframe has {len(f_all_df.index.get_level_values('session_id').unique())} unique sessions/participants.")
@@ -302,18 +305,22 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
 
     return f_all_df
 
-def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
-    """Get intervention (block combinations) data in phase 3"""
+# %%
+def get_task_df(experiment_version, level, data_dir_path='../ignore/data/'):
+    """Get intervention (block combinations) data in level/phase 1 or 3"""
+
+    # TODO: support for task 2
+    assert level in [1,3]
 
     # load chunks
     data_list, _ = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
     # query chunks json for task-related data
-    task_3 = jmespath.search("[?seq_key=='End'].{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, task_data_3: task_data.level_3.all_combos, blicket_answer_3: quiz_data.level_3.blicket_answer_combo.bitstring}", data_list)
+    task = jmespath.search(f"[?seq_key=='End'].{{sessionId: sessionId, end_time: timestamp, route: route, condition_name: condition_name, score: score, max_score: max_score, is_trouble: is_trouble, task_data_{level}: task_data.level_{level}.all_combos, blicket_answer_{level}: quiz_data.level_{level}.blicket_answer_combo.bitstring}}", data_list)
 
     # start creating rows for the resulting dataframe
     rows = []
-    for session in task_3:
+    for session in task:
         # don't consider sessions before this time because the chunk fields were still in development and no real participants had done the experiment yet
         if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
             continue
@@ -336,8 +343,8 @@ def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
         # prep the index for the resulting dataframe
         partial_index = [condition_name, session['sessionId']]
 
-        timestamps = jmespath.search("[*].timestamp", session['task_data_3'])
-        combos = jmespath.search("[*].bitstring", session['task_data_3'])
+        timestamps = jmespath.search("[*].timestamp", session[f'task_data_{level}'])
+        combos = jmespath.search("[*].bitstring", session[f'task_data_{level}'])
         
         for i in range(len(timestamps)):
             full_index = partial_index + [timestamps[i]]
@@ -347,13 +354,15 @@ def get_task_3_df(experiment_version, data_dir_path='../ignore/data/'):
             current_combo = np.array(list(combos[i])).astype(int)
             current_combo = list(current_combo)
 
-            rows.append(full_index + current_combo + [session['blicket_answer_3']])
+            rows.append(full_index + current_combo + [session[f'blicket_answer_{level}']])
 
-    task_3_df = pd.DataFrame(rows, columns=
+    num_blocks = level*3  # 3 blocks in l1, 6 in l2, 9 in l3
+    task_df = pd.DataFrame(rows, columns=
         ['condition', 'session_id', 'timestamp'] +
-        [f'id_{i}' for i in range(9)] +
+        [f'id_{i}' for i in range(num_blocks)] +
         ['blicket_answer'])
     
-    task_3_df.set_index(['condition', 'session_id', 'timestamp'], inplace=True)
+    task_df.set_index(['condition', 'session_id', 'timestamp'], inplace=True)
 
-    return task_3_df
+    return task_df
+# %%
