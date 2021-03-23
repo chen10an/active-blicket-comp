@@ -8,3 +8,4 @@ ignore/
 *.ipynb
 /analysis/scripts/__pycache__/
 /analysis/scripts/*.html
+__pycache__/

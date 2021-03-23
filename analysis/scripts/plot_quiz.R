@@ -44,7 +44,7 @@ plotLine <- function(col) {
     scale_x_continuous(breaks = c(0,1), name = "Match of Functional Form", labels = c("Different", "Same")) +
     ylim(0.5, 1) +
     ylab("Mean Accuracy") +
-    scale_colour_manual(values=myColors, name = "Phase 3 Function", labels = c("D3", "C3"))+
+    scale_colour_manual(values=myColors, name = "Phase 3 Form", labels = c("D3", "C3"))+
     theme_mine()
   
   p

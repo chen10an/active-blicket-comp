@@ -79,7 +79,7 @@ plotLine <- function(col) {
     facet_grid(is_d3 ~ ., labeller = labeller(is_d3 = facetLabs)) +
     scale_x_continuous(breaks = seq(1, 9, by = 1)) +
     scale_y_continuous(breaks = seq(0.6, 1.0, by = 0.2), limits = c(0.47, 1)) +
-    scale_colour_manual(values=myColors, name = "Phase 3\nFunction", labels = c("D3", "C3")) +
+    scale_colour_manual(values=myColors, name = "Phase 3 Form", labels = c("D3", "C3")) +
     guides(shape = FALSE) +
     xlab("Num. Blocks in First intervention (Phase 3)") +
     ylab("Mean Accuracy") +
@@ -90,7 +90,7 @@ plotLine <- function(col) {
 blicketPlot <- plotLine("accuracy") + ggtitle("Blicket Classification") + theme(plot.title = element_text(size=11))
 blicketPlot
 
-predPlot <- plotLine("total_points") + ggtitle("Activity Prediction") + theme(plot.title = element_text(size=11))
+predPlot <- plotLine("total_points") + ggtitle("Activation Prediction") + theme(plot.title = element_text(size=11))
 
 numBlocksPlot <- numBlocksPlot + ggtitle("First Intervention in Phase 3") + theme(plot.title = element_text(size=11))
 

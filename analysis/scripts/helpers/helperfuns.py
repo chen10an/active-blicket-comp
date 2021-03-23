@@ -263,7 +263,7 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
     The dataframe contains task/intervention data in phase 3 only, indexed by (condition, session ID, timestamp). 
     """
 
-    assert data_type in ['quiz', 'task_1', 'task_3']
+    assert data_type in ['quiz', 'task_1', 'task_2', 'task_3']
 
     if data_type == 'quiz':
         get_df = lambda v: get_quiz_df(experiment_version=v, data_dir_path=data_dir_path)
@@ -309,9 +309,6 @@ def get_full_df(data_type, data_dir_path='../ignore/data/'):
 def get_task_df(experiment_version, level, data_dir_path='../ignore/data/'):
     """Get intervention (block combinations) data in level/phase 1 or 3"""
 
-    # TODO: support for task 2
-    assert level in [1,3]
-
     # load chunks
     data_list, _ = load_data(experiment_version=experiment_version, data_dir_path=data_dir_path)
 
@@ -321,6 +318,10 @@ def get_task_df(experiment_version, level, data_dir_path='../ignore/data/'):
     # start creating rows for the resulting dataframe
     rows = []
     for session in task:
+        # for the second level, don't consider short conditions that do not have a second level
+        if level == 2 and session['task_data_2'] is None:
+            continue
+        
         # don't consider sessions before this time because the chunk fields were still in development and no real participants had done the experiment yet
         if pd.to_datetime(session['end_time'], unit='ms') <= pd.Timestamp('2020-12-29 17:12:28'):
             continue

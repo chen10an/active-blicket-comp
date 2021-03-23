@@ -11,28 +11,52 @@ library(magrittr)
 
 quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
 fquizDT <- fread(file="../ignore/output/f_quiz_design_matrix.csv")
+taskDT <- fread(file = '../ignore/output/task_design_matrix.csv')
+ftaskDT <- fread(file = '../ignore/output/f_task_design_matrix.csv')
 
-pairs <- list(c('c1_c2_d3', 'd1_d2_d3'), c('c1_d3', 'd1_d3'), c('d1_d2_c3', 'c1_c2_c3'), c('d1_c3', 'c1_c3'))
+# join quiz and tasks
+joinedDT <- taskDT[quizDT, on="session_id", nomatch=0]
+fjoinedDT <- ftaskDT[fquizDT, on="session_id", nomatch=0]
 
 compare <- function (DT, col) {
+  pairs <- list(c('c1_c2_d3', 'd1_d2_d3'), c('c1_d3', 'd1_d3'), c('d1_d2_c3', 'c1_c2_c3'), c('d1_c3', 'c1_c3'))
+  
   tVals <- c()
+  dfs <- c()
   pVals <- c()
   isSignificant <- c()
+  mismatchedMean <- c()
+  mismatchedSD <- c()
+  matchedMean <- c()
+  matchedSD <- c()
   for (pair in pairs) {
     mismatched <- DT[condition == pair[1]]
     matched <- DT[condition == pair[2]]
     test <- t.test(mismatched[[col]], matched[[col]], alternative = "two.sided", paired = FALSE, var.equal = FALSE)
     
     tVals <- c(tVals, test$statistic)
+    dfs <- c(dfs, test$parameter[["df"]])
+    
     pVals <- c(pVals, test$p.value)
     isSignificant <- c(isSignificant, test$p.value <= 0.05)
+    
+    mismatchedMean <- c(mismatchedMean, mean(mismatched[[col]]))
+    mismatchedSD <- c(mismatchedSD, sd(mismatched[[col]]))
+    
+    matchedMean <- c(matchedMean, mean(matched[[col]]))
+    matchedSD <- c(matchedSD, sd(matched[[col]]))
   }
   
   data.table(
     pair=sapply(pairs, function (vec) paste(vec, collapse = " <> ")),
-    t=tVals,
-    p=pVals,
-    isSignificant=isSignificant
+    tVals=round(tVals, 2),
+    dfs=round(dfs, 2),
+    pVals=round(pVals, 3),
+    isSignificant=isSignificant,
+    mismatchedMean=round(mismatchedMean, 2),
+    mismatchedSD=round(mismatchedSD, 2),
+    matchedMean=round(matchedMean, 2),
+    matchedSD=round(matchedSD, 2)
   )
 }
 ```
@@ -58,3 +82,11 @@ compare(quizDT, "total_points")
 compare(fquizDT, "total_points")
 ```
 
+## First intervention after conjunctive training has more blocks than after disjunctive training
+```{r}
+t.test(joinedDT[startswith_d==0]$first_num_blocks, joinedDT[startswith_d==1]$first_num_blocks, alternative = "two.sided")
+```
+
+```{r}
+t.test(fjoinedDT[startswith_d==0]$first_num_blocks, fjoinedDT[startswith_d==1]$first_num_blocks, alternative = "two.sided")
+```
