@@ -9,3 +9,5 @@ ignore/
 /analysis/scripts/__pycache__/
 /analysis/scripts/*.html
 __pycache__/
+
+.Rhistory

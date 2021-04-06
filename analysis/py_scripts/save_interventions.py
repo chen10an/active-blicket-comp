@@ -2,7 +2,7 @@
 import pandas as pd
 import pickle
 
-from scripts.helpers import helperfuns
+import helperfuns
 
 DATA_DIR_PATH ='ignore/data/'
 
