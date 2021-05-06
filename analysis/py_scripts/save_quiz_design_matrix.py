@@ -1,4 +1,4 @@
-# %%
+## %%
 import pandas as pd
 import pickle
 
@@ -6,14 +6,18 @@ import helperfuns
 
 DATA_DIR_PATH ='../ignore/data/'
 SAVE_PATH = '../ignore/output/quiz_design_matrix.csv'
-F_SAVE_PATH = '../ignore/output/f_quiz_design_matrix.csv'
+# F_SAVE_PATH = '../ignore/output/f_quiz_design_matrix.csv'
+F_SAVE_PATH = '../ignore/output/nine_combo_quiz_design_matrix.csv'
 
-with open('../ignore/output/filtered_sessions.pickle', 'rb') as f:
+# with open('../ignore/output/filtered_sessions.pickle', 'rb') as f:
+#     filtered_sessions = pickle.load(f)
+
+with open('../ignore/output/nine_combo_sessions.pickle', 'rb') as f:
     filtered_sessions = pickle.load(f)
 
 quiz_df = helperfuns.get_full_df(data_dir_path=DATA_DIR_PATH, data_type='quiz')
 
-# %%
+## %%
 # filter to only level 3 and get blicket accuracy and total prediction points
 design_df = quiz_df.loc[pd.IndexSlice[:, 3, :]][['accuracy', 'total_points']]
 
@@ -40,11 +44,11 @@ assert set(design_df.is_d3.unique()) == set([1, 0])  # check that all rows have 
 # filtered version
 f_design_df = design_df[design_df.index.get_level_values('session_id').isin(filtered_sessions)]
 
-# %%
+## %%
 design_df.to_csv(SAVE_PATH)
 print(f"Saved the full design matrix to {SAVE_PATH}!")
 
-# %%
+## %%
 
 f_design_df.to_csv(F_SAVE_PATH)
 print(f"Saved the filtered design matrix to {F_SAVE_PATH}!")

@@ -1,4 +1,4 @@
-# %%
+## %%
 import pandas as pd
 import pickle
 
@@ -6,15 +6,18 @@ import helperfuns
 
 DATA_DIR_PATH ='../ignore/data/'
 SAVE_PATH = '../ignore/output/task_design_matrix.csv'
-F_SAVE_PATH = '../ignore/output/f_task_design_matrix.csv'
+# F_SAVE_PATH = '../ignore/output/f_task_design_matrix.csv'
+F_SAVE_PATH = '../ignore/output/nine_combo_task_design_matrix.csv'
 
-with open('../ignore/output/filtered_sessions.pickle', 'rb') as f:
+# with open('../ignore/output/filtered_sessions.pickle', 'rb') as f:
+#     filtered_sessions = pickle.load(f)
+with open('../ignore/output/nine_combo_sessions.pickle', 'rb') as f:
     filtered_sessions = pickle.load(f)
 
 task_3_df = helperfuns.get_full_df(data_type='task_3', data_dir_path=DATA_DIR_PATH
 )
 
-# %%
+## %%
 # group conditions by which functional form they start with
 task_3_df.loc[['c1_c2_c3', 'c1_c2_d3'], 'startswith'] = 'c1_c2'
 task_3_df.loc[['d1_d2_d3', 'd1_d2_c3'], 'startswith'] = 'd1_d2'
@@ -35,11 +38,11 @@ design_df.loc[:, 'has_phase_2'] = (design_df.index.get_level_values('startswith'
 f_design_df = design_df.loc[design_df.index.get_level_values('session_id').isin(filtered_sessions)]
 
 
-# %%
+## %%
 design_df.to_csv(SAVE_PATH)
 print(f"Saved the full task design matrix to {SAVE_PATH}!")
 
-# %%
+## %%
 
 f_design_df.to_csv(F_SAVE_PATH)
 print(f"Saved the filtered task design matrix to {F_SAVE_PATH}!")
