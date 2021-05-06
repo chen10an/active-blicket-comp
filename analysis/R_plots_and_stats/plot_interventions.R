@@ -4,9 +4,9 @@ library(magrittr)
 source("plotting_helperfuns.R")
 
 quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
-fquizDT <- fread(file="../ignore/output/f_quiz_design_matrix.csv")
+fquizDT <- fread(file="../ignore/output/nine_combo_quiz_design_matrix.csv")
 taskDT <- fread(file = '../ignore/output/task_design_matrix.csv')
-ftaskDT <- fread(file = '../ignore/output/f_task_design_matrix.csv')
+ftaskDT <- fread(file = '../ignore/output/nine_combo_task_design_matrix.csv')
 
 joinedDT <- copy(taskDT[quizDT, on="session_id", nomatch=0])
 fjoinedDT <- copy(ftaskDT[fquizDT, on="session_id", nomatch=0])
@@ -27,17 +27,17 @@ allTaskDT[, is_filtered := factor(is_filtered, levels = c(0, 1))]
 allTaskDT[, startswith := factor(startswith, levels = c("c1_c2", "c1", "d1", "d1_d2"))]
 allTaskDT[, startswith_d := factor(startswith_d, levels = c(0, 1))]
 
-numBlocksPlot <- ggplot(allTaskDT,aes(x = startswith, y = first_num_blocks, fill = is_filtered, shape = is_filtered)) +
-  geom_boxplot(outlier.shape=NA) + 
-  geom_point(position=position_jitterdodge(jitter.width=0.5), size=1) +
+numBlocksPlot <- ggplot(allTaskDT,aes(x = startswith, y = first_num_blocks, fill = is_filtered)) +
+  geom_boxplot(outlier.shape=NA, position=position_dodge(width = 1), fatten=1.2) + 
+  geom_quasirandom(dodge.width=1, size=1, alpha=0.4) +
   scale_shape_manual(values=c(16,1)) +
-  scale_y_continuous(breaks = round(seq(min(allTaskDT$first_num_blocks), max(allTaskDT$first_num_blocks), by = 1), 1)) +
+  # scale_y_continuous(breaks = round(seq(min(allTaskDT$first_num_blocks), max(allTaskDT$first_num_blocks), by = 1), 1)) +
   scale_x_discrete(labels = c("C1 C2", "C1", "D1", "D1 D2")) +
   # scale_color_grey(start = 0, end = 0.5) +
   scale_fill_brewer(palette = "Paired", direction = -1, name = "Data", labels = c("Full", "Filtered")) +
-  scale_y_continuous(breaks = seq(1, 9, by = 2)) +
   xlab("Preceding Phases") +
   ylab("Number of Blocks") +
+  scale_y_continuous(breaks = seq(1, 9, by = 2)) +
   guides(shape = FALSE) +
   theme_mine() +
   theme(legend.position = "right", legend.direction = "vertical")
@@ -65,7 +65,7 @@ plotLine <- function(col) {
   # for passing col names as a string contained in a variable, see https://stackoverflow.com/questions/22309285/how-to-use-a-variable-to-specify-column-name-in-ggplot
   
   # plotting params
-  dodge <- position_dodge(width = 0.5)
+  dodge <- position_dodge(width = 0.7)
   
   # line plot with error bars, grouped by d3 vs c3 and full vs filtered data
   p <- ggplot(summDT, aes(x = first_num_blocks, y = !!col, color = is_d3, shape = is_filtered, linetype = is_filtered)) +
@@ -87,10 +87,10 @@ plotLine <- function(col) {
   
   p
 }
-blicketPlot <- plotLine("accuracy") + ggtitle("Blicket Classification") + theme(plot.title = element_text(size=11))
+blicketPlot <- plotLine("accuracy") + ggtitle("Blicket Classification") + theme(plot.title = element_text(size=11), legend.margin = margin(0.1, 0.1, 0.5, 0.1, unit = "cm"))
 blicketPlot
 
-predPlot <- plotLine("total_points") + ggtitle("Activation Prediction") + theme(plot.title = element_text(size=11))
+predPlot <- plotLine("total_points") + ggtitle("Activation Prediction") + theme(plot.title = element_text(size=11), legend.margin = margin(0.1, 0.1, 0.5, 0.1, unit = "cm"))
 
 numBlocksPlot <- numBlocksPlot + ggtitle("First Intervention in Phase 3") + theme(plot.title = element_text(size=11))
 
@@ -102,13 +102,15 @@ legend <- get_legend(blicketPlot)
 # first align the top-row plot (numBlocksPlot) with the left-most plot of the
 # bottom row (blicketPlota)
 plots <- align_plots(numBlocksPlot, blicketPlota, align = 'v', axis = 'l')
-# then build the bottom row
-bottom_row <- plot_grid(plots[[2]], predPlota, labels = c('B', 'C'), label_size = 12)
+# then build the top row
+top_row <- plot_grid(plots[[2]], predPlota, labels = c('A', 'B'), label_size = 12)
+bottom_row <- plot_grid(plots[[1]], labels = c('C'), label_size = 12)
 # then combine with the top row for final plot
-finalPlot <- plot_grid(plots[[1]], bottom_row, legend, ncol = 1, rel_heights = c(0.8,1,0.15), labels = c('A'), label_size = 12)
+finalPlot <- plot_grid(top_row, legend, bottom_row, ncol = 1, rel_heights = c(1, 0.2, 0.8))
 finalPlot
 
-save_plot(filename = "../ignore/paper/imgs/interventions_detailed.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 1.9)
+
+save_plot(filename = "../ignore/paper/imgs/nine_combo_interventions_detailed.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 1.8)
 
 # patchwork version (was too finicky to achieve the same space-efficient layout as cowplot)
 # finalPlot <- (numBlocksPlot) /

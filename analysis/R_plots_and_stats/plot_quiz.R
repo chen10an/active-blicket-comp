@@ -4,7 +4,7 @@ library(magrittr)
 source("plotting_helperfuns.R")
 
 quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
-fquizDT <- fread(file="../ignore/output/f_quiz_design_matrix.csv")
+fquizDT <- fread(file="../ignore/output/nine_combo_quiz_design_matrix.csv")
 
 # combine (rowwise) full and filtered data sets for the sake of plotting
 quizDT[, is_filtered := 0]
@@ -66,7 +66,7 @@ top_row <- plot_grid(blicketPlota, predPlota, align = 'h', labels = "AUTO", labe
 finalPlot <- plot_grid(top_row, legend, ncol = 1, rel_heights = c(1,0.15))
 finalPlot
 
-save_plot(filename = "../ignore/paper/imgs/quiz.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 3.1)
+save_plot(filename = "../ignore/paper/imgs/nine_combo_quiz.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 3.1)
 
 # patchwork version
 # finalPlot <- blicketPlot + predPlot + 
