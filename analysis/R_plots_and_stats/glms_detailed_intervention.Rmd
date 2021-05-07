@@ -31,6 +31,9 @@ mCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
 
 print.data.frame(getMetrics(mCombo))
 ```
+```{r}
+mCombo$df.residual
+```
 
 ```{r}
 fmCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
@@ -39,6 +42,9 @@ fmCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
 )
 
 print.data.frame(getMetrics(fmCombo))
+```
+```{r}
+fmCombo$df.residual
 ```
 
 ## Predict Performance from First Intervention

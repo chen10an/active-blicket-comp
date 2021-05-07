@@ -40,6 +40,12 @@ print.data.frame(getMetrics(mCombo))
     ## 4 startswith_d:has_phase_2  -2.3681     0.6601 -3.5874   0.0004
 
 ``` r
+mCombo$df.residual
+```
+
+    ## [1] 205
+
+``` r
 fmCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
              data = ftaskDT,
              family = gaussian()
@@ -53,6 +59,12 @@ print.data.frame(getMetrics(fmCombo))
     ## 2             startswith_d  -0.8259     0.5444 -1.5170   0.1321
     ## 3              has_phase_2   1.7762     0.5528  3.2129   0.0017
     ## 4 startswith_d:has_phase_2  -1.9613     0.7837 -2.5026   0.0138
+
+``` r
+fmCombo$df.residual
+```
+
+    ## [1] 112
 
 ## Predict Performance from First Intervention
 
