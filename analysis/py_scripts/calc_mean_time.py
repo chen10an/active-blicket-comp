@@ -57,7 +57,7 @@ diff = joined_df.end_time - joined_df.start_time
 # mean completion time (end-start) excluding time for reading instructions
 mean_completion_min = diff.mean() / pd.Timedelta('1min')
 mean_completion_min = np.round(mean_completion_min, 2)  # 2 decimal places
-my_vars['completionTime'] = f'{mean_completion_min}min'
+my_vars['completionTime'] = f'{mean_completion_min} minutes'
 
 # %%
 save_path = os.path.join(OUTPUT_DIR_PATH, 'my_vars.json')

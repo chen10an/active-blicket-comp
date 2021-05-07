@@ -1,0 +1,93 @@
+---
+title: "General Linear Models for Detailed First Intervention"
+output: rmarkdown::github_document
+---
+
+This file considers the actual number of blocks, instead of just the is_singleton indicator, in the first phase 3 intervention.
+
+## Imports and helper function
+```{r message=FALSE, warning=FALSE}
+library(data.table)
+library(magrittr)
+
+getMetrics <- function (glmSumm) {
+  metrics <- summary(glmSumm)$coefficients %>% as.data.table(keep.rownames = TRUE)
+  metrics[, (2:ncol(metrics)) := lapply(.SD, function(x) round(x, 4)), .SDcols=2:ncol(metrics)]
+  metrics
+}
+
+quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
+fquizDT <- fread(file="../ignore/output/nine_combo_quiz_design_matrix.csv")
+taskDT <- fread(file = '../ignore/output/task_design_matrix.csv')
+ftaskDT <- fread(file = '../ignore/output/nine_combo_task_design_matrix.csv')
+```
+
+## Predict First Intervention from Length and Functional Form
+```{r}
+mCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
+             data = taskDT,
+             family = gaussian()
+)
+
+print.data.frame(getMetrics(mCombo))
+```
+
+```{r}
+fmCombo <- glm(first_num_blocks ~ startswith_d * has_phase_2,
+             data = ftaskDT,
+             family = gaussian()
+)
+
+print.data.frame(getMetrics(fmCombo))
+```
+
+## Predict Performance from First Intervention
+```{r}
+# join quiz and tasks
+joinedDT <- taskDT[quizDT, on="session_id", nomatch=0]
+fjoinedDT <- ftaskDT[fquizDT, on="session_id", nomatch=0]
+```
+
+### Blicket classification accuracy:
+```{r}
+mComboBlicket <- glm(accuracy ~ first_num_blocks*is_d3,
+             data = joinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(9, nrow(joinedDT))  # 9 block classifications
+)
+
+print.data.frame(getMetrics(mComboBlicket))
+```
+
+### **Filtered** blicket classification accuracy:
+```{r}
+fmComboBlicket <- glm(accuracy ~ first_num_blocks*is_d3,
+             data = fjoinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(9, nrow(fjoinedDT))  # 9 block classifications
+)
+
+print.data.frame(getMetrics(fmComboBlicket))
+```
+
+### Activation Prediction Accuracy
+```{r}
+mComboPred <- glm(total_points ~ first_num_blocks*is_d3,
+             data = joinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(7, nrow(joinedDT))  # 7 prediction questions
+)
+
+print.data.frame(getMetrics(mComboPred))
+```
+
+### **Filtered** Activation Prediction Accuracy
+```{r}
+fmComboPred <- glm(total_points ~ first_num_blocks*is_d3,
+             data = fjoinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(7, nrow(fjoinedDT))  # 7 prediction questions
+)
+
+print.data.frame(getMetrics(fmComboPred))
+```

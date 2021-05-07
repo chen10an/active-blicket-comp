@@ -18,7 +18,7 @@ with open(os.path.join(OUTPUT_DIR_PATH, 'my_vars.json')) as f:
 # full data set (because all participants have nonempty quiz answers by design)
 quiz_df = helperfuns.get_full_df(data_type = 'quiz', data_dir_path=DATA_DIR_PATH)
 
-with open(os.path.join(OUTPUT_DIR_PATH, 'filtered_sessions.pickle'), 'rb') as f:
+with open(os.path.join(OUTPUT_DIR_PATH, 'nine_combo_sessions.pickle'), 'rb') as f:
     filtered_sessions = pickle.load(f)
 
 with open(os.path.join(OUTPUT_DIR_PATH, 'all_sessions.pickle'), 'rb') as f:
