@@ -1,0 +1,132 @@
+---
+title: "General Linear Models for Predicting Performance and Interventions (with >=9 filter)"
+output: rmarkdown::github_document
+---
+
+## Imports and helper function
+```{r message=FALSE, warning=FALSE}
+library(data.table)
+library(magrittr)
+
+getMetrics <- function (glmSumm) {
+  metrics <- summary(glmSumm)$coefficients %>% as.data.table(keep.rownames = TRUE)
+  metrics[, (2:ncol(metrics)) := lapply(.SD, function(x) round(x, 4)), .SDcols=2:ncol(metrics)]
+  metrics
+}
+
+quizDT <- fread(file="../ignore/output/quiz_design_matrix.csv")
+fquizDT <- fread(file="../ignore/output/nine_combo_quiz_design_matrix.csv")
+taskDT <- fread(file = '../ignore/output/task_design_matrix.csv')
+ftaskDT <- fread(file = '../ignore/output/nine_combo_task_design_matrix.csv')
+```
+
+## Predict Performance from Match, Length, and Functional Form
+### Blicket classification accuracy
+```{r}
+mBlicket <- glm(accuracy ~ match * has_phase_2 + is_d3,
+             data = quizDT,
+             family = binomial(link = "logit"), 
+             weights = rep(9, nrow(quizDT))  # phase 3 has 9 block classification questions, i.e. 9 correct/incorrect trials
+)
+print.data.frame(getMetrics(mBlicket))
+```
+
+### **Filtered** blicket classification accuracy
+```{r}
+fmBlicket <- glm(accuracy ~ match * has_phase_2 + is_d3,
+                data = fquizDT,
+                family = binomial(link = "logit"), 
+                weights = rep(9, nrow(fquizDT))  # phase 3 has 9 block classification questions, i.e. 9 correct/incorrect trials
+)
+print.data.frame(getMetrics(fmBlicket))
+```
+
+### Activation prediction accuracy
+```{r}
+mPred <- glm(total_points ~ match * has_phase_2 + is_d3,
+             data = quizDT,
+             family = binomial(link = "logit"), 
+             weights = rep(7, nrow(quizDT))  # 7 prediction questions
+)
+print.data.frame(getMetrics(mPred))
+```
+
+### **Filtered** activation prediction accuracy
+```{r}
+fmPred <- glm(total_points ~ match * has_phase_2 + is_d3,
+             data = fquizDT,
+             family = binomial(link = "logit"), 
+             weights = rep(7, nrow(fquizDT))  # 7 prediction questions
+)
+
+print.data.frame(getMetrics(fmPred))
+```
+
+## Predict First Intervention from Length and Functional Form
+```{r}
+mCombo <- glm(is_singleton ~ startswith_d * has_phase_2,
+             data = taskDT,
+             family = binomial(link = "logit")
+)
+
+print.data.frame(getMetrics(mCombo))
+```
+```{r}
+fmCombo <- glm(is_singleton ~ startswith_d * has_phase_2,
+             data = ftaskDT,
+             family = binomial(link = "logit")
+)
+
+print.data.frame(getMetrics(fmCombo))
+```
+
+## Predict Performance from First Intervention
+```{r}
+# join quiz and tasks
+joinedDT <- taskDT[quizDT, on="session_id", nomatch=0]
+fjoinedDT <- ftaskDT[fquizDT, on="session_id", nomatch=0]
+```
+
+### Blicket classification accuracy:
+```{r}
+mComboBlicket <- glm(accuracy ~ is_singleton*is_d3,
+             data = joinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(9, nrow(joinedDT))  # 9 block classifications
+)
+
+print.data.frame(getMetrics(mComboBlicket))
+```
+
+### **Filtered** blicket classification accuracy:
+```{r}
+fmComboBlicket <- glm(accuracy ~ is_singleton*is_d3,
+             data = fjoinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(9, nrow(fjoinedDT))  # 9 block classifications
+)
+
+print.data.frame(getMetrics(fmComboBlicket))
+```
+
+### Activation Prediction Accuracy
+```{r}
+mComboPred <- glm(total_points ~ is_singleton*is_d3,
+             data = joinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(7, nrow(joinedDT))  # 7 prediction questions
+)
+
+print.data.frame(getMetrics(mComboPred))
+```
+
+### **Filtered** Activation Prediction Accuracy
+```{r}
+fmComboPred <- glm(total_points ~ is_singleton*is_d3,
+             data = fjoinedDT,
+             family = binomial(link = "logit"),
+             weights = rep(7, nrow(fjoinedDT))  # 7 prediction questions
+)
+
+print.data.frame(getMetrics(fmComboPred))
+```
