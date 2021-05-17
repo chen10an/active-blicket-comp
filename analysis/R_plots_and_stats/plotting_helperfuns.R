@@ -5,9 +5,11 @@ library(ggpubr)
 library(RColorBrewer)
 library(cowplot)
 library(ggbeeswarm)
+library(ggridges)
 
 myColors <- brewer.pal(n = 8, "Dark2")[2:3]
 myGreen <- brewer.pal(n = 8, "Dark2")[1]
+myGray <- brewer.pal(n = 8, "Dark2")[8]
 
 theme_mine <- function() {
   theme_few() %+replace%

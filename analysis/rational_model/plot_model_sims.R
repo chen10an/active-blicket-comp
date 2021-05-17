@@ -7,40 +7,66 @@ s + '
 import utils._
 import learner._
 '
+grid <- fread("cache/bias-shape=5-scale=0.1_gain-shape=100-scale=0.1_grid.csv")
 
-MODELNAME <- "simpPragMarg-0.9"
-PHASES <- c("d3")
+MODELNAME <- "sigPrag-5-0.1-100-0.1"
+PRIORSTR <- 'PriorMaker.makeSigmoidPrior(bgToP, blocksMap(phaseNum), true)'
+LEARNERSTR <- "new PhaseLearner(makePrior(phaseNum))"
+PHASES <- c("c2") #, "d2", "c2")
+NSIMS <- 1
+NINTERVENTIONS <- 15
+
+# check all phases are formatted correctly
+stopifnot(all(grepl("[cd]{1}[123]{1}", PHASES)))
+
 s + '
-// prior
-val ss1 = SimpleSpace(0.9, Set("0", "1", "2").map(Block(_)), true)
-val ss2 = SimpleSpace(0.9, Set("0", "1", "2", "3", "4", "5").map(Block(_)), true)
-val ss3 = SimpleSpace(0.9, Set("0", "1", "2", "3", "4", "5", "6", "7", "8").map(Block(_)), true)
+val blocksMap = Map[Int, Set[Block]](
+ 1 -> Set("0", "1", "2").map(Block(_)),
+ 2 -> Set("0", "1", "2", "3", "4", "5").map(Block(_)),
+ 3 -> Set("0", "1", "2", "3", "4", "5", "6", "7", "8").map(Block(_))
+)
 
-val p1Learner = new PhaseLearner(ss1.hypsDist) with structInfoGain
-val p2Learner = new PhaseLearner(ss2.hypsDist) with structInfoGain
-val p3Learner = new PhaseLearner(ss3.hypsDist) with structInfoGain
+val disj = Fform("disj", (n: Int) => if(n >= 1) 1.0 else 0.0)
+val conj = Fform("conj", (n: Int) => if(n >= 2) 1.0 else 0.0)
+'
 
-val d1sim = Simulator(p1Learner, Set("0").map(Block(_)), ss1.disj)
-val c1sim = Simulator(p1Learner, Set("0", "1").map(Block(_)), ss1.conj)
+# create a lookup table for the joint gamma densities of biases and gains
+s + 'var bgToP = Map.empty[(Double, Double),Double]'
+s(grid = as.matrix(grid)) * '
+bgToP = grid.map(arr => (arr(0), arr(1)) -> arr(2)).toMap
+'
 
-val d2sim = Simulator(p2Learner, Set("0", "1", "2").map(Block(_)), ss2.disj)
-val c2sim = Simulator(p2Learner, Set("0", "1", "2").map(Block(_)), ss2.conj)
+s + sprintf('
+def makePrior(phaseNum: Int) = {
+  %s
+}
+', PRIORSTR)
 
-val d3sim = Simulator(p3Learner, Set("0", "1", "2", "3").map(Block(_)), ss3.disj)
-val c3sim = Simulator(p3Learner, Set("0", "1", "2", "3").map(Block(_)), ss3.conj)
+s + sprintf('
+def makeLearner(phaseNum: Int) = {
+  %s
+}
+', LEARNERSTR)
+
+s + '
+val d1sim = Simulator(makeLearner(1), Set("0").map(Block(_)), disj)
+val c1sim = Simulator(makeLearner(1), Set("0", "1").map(Block(_)), conj)
+
+val d2sim = Simulator(makeLearner(2), Set("0", "1", "2").map(Block(_)), disj)
+val c2sim = Simulator(makeLearner(2), Set("0", "1", "2").map(Block(_)), conj)
+
+// val d3sim = Simulator(makeLearner(3), Set("0", "1", "2", "3").map(Block(_)), disj)
+// val c3sim = Simulator(makeLearner(3), Set("0", "1", "2", "3").map(Block(_)), conj)
 
 var simResults = Array.empty[Array[(Event, Double)]]
 var allBlocks = Set.empty[Block]
 '
 
-# check all phases are formatted correctly
-stopifnot(all(grepl("[cd]{1}[123]{1}", PHASES)))
-
 for (phase in PHASES) {
   simstring <- sprintf('
-simResults = %ssim.run(30, 20)
-allBlocks = ss%s.allBlocks
-', phase, substr(phase, 2,2))
+simResults = %ssim.run(%i, %i)
+allBlocks = blocksMap(%s)
+', phase, NSIMS, NINTERVENTIONS, substr(phase, 2,2))
   
   print(simstring)
   
