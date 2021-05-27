@@ -19,6 +19,7 @@ class ChunksIncremental {
         // We want to send any messages that accumulated while the connection might have been down.
         this.wso.onopen = () => this.sendAll();
         this.wso.onmessage = event => {
+            // note that I deserialize here! this is not done in the original chunksincremental
             const message = JSON.parse(event.data);
             if (message.status == "SUCCESS") {
                 this.completedChunks += 1;

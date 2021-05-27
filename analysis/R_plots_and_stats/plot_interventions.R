@@ -81,7 +81,7 @@ plotLine <- function(col) {
     scale_y_continuous(breaks = seq(0.6, 1.0, by = 0.2), limits = c(0.47, 1)) +
     scale_colour_manual(values=myColors, name = "Phase 3 Form", labels = c("D3", "C3")) +
     guides(shape = FALSE) +
-    xlab("Num. Blocks in First intervention (Phase 3)") +
+    xlab("Num. Blocks in First Intervention (Phase 3)") +
     ylab("Mean Accuracy") +
     theme_mine()
   
@@ -110,7 +110,7 @@ finalPlot <- plot_grid(top_row, legend, bottom_row, ncol = 1, rel_heights = c(1,
 finalPlot
 
 
-save_plot(filename = "../ignore/paper/imgs/nine_combo_interventions_detailed.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 1.8)
+save_plot(filename = "../ignore/paper/imgs/nine_combo_interventions_detailed.pdf", plot = finalPlot, base_height = NULL, base_width = 8, base_asp = 1.9)
 
 # patchwork version (was too finicky to achieve the same space-efficient layout as cowplot)
 # finalPlot <- (numBlocksPlot) /

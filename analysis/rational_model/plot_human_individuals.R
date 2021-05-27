@@ -12,6 +12,8 @@ for (i in 1:length(phaseDT)) {
  phaseDT[[i]][, nthIntervention := rowid(session_id)]
 }
 
+phaseDT[[2]][, max(nthIntervention), by=session_id]$V1 %>% hist()
+
 # TODO: scale height of graph for different phases
 # TODO: if I make outcome into a factor maybe both T/F will be used for fill color even when only one is present in the individual's data
 

@@ -50,4 +50,4 @@ stopifnot(sum(grid$jointP, na.rm = TRUE) == 1)
 grid <- grid[!is.na(jointP)]
 
 grid[, row.names := NULL]
-fwrite(grid, file = sprintf("cache/bias-shape=%i-scale=%.1f_gain-shape=%i-scale=%.1f_grid.csv", biasShape, biasScale, gainShape, gainScale))
+fwrite(grid, file = sprintf("cache/bias-shape=%i-scale=%.2f_gain-shape=%i-scale=%.2f_grid.csv", biasShape, biasScale, gainShape, gainScale))

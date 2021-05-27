@@ -5,7 +5,7 @@ library(rscala)
 source("../R_plots_and_stats/plotting_helperfuns.R")
 
 # featDT <- fread("p1_features.csv")
-CSVPATH <- "cache/p2_dc-0.9.csv"
+CSVPATH <- "cache/p2_sigStruct-5-0.1-100-0.1.csv"
 
 featDT <- fread(CSVPATH)
 filename <- sub("\\.csv", "", basename(CSVPATH))
