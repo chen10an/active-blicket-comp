@@ -7,14 +7,16 @@
 	import { bonus_currency_str, dev_mode } from './modules/experiment_stores.js';
 
 	import {
-		// mismatched conditions 0, 1, 2, 3
-		c1_c2_d3, d1_d2_c3, c1_d3, d1_c3,
-		// matched conditions 4, 5, 6, 7
-		c1_c2_c3, d1_d2_d3, c1_c3, d1_d3
+    // disj conditions 0, 1
+    d1_c2, nd1_c2,
+    // conj conditions 2, 3
+    c1_c2, nc1_c2,
+    // conj3 conditions 4, 5
+    cc1_c2, ncc1_c2
 	} from './condition_configs/all_conditions.js';
 
 	// configure the experiment conditions and bonuses
-	const ALL_SEQ = [c1_c2_d3, d1_d2_c3, c1_d3, d1_c3, c1_c2_c3, d1_d2_d3, c1_c3, d1_d3];
+	const ALL_SEQ = [d1_c2, nd1_c2, c1_c2, nc1_c2, cc1_c2, ncc1_c2]
 	const ALL_SEQ_NAMES = ["c1_c2_d3", "d1_d2_c3", "c1_d3", "d1_c3", "c1_c2_c3", "d1_d2_d3", "c1_c3", "d1_d3"];
 	const bonus_val_arr = [0.05, 0.05, 0.075, 0.075, 0.05, 0.05, 0.075, 0.075];  // bonus per activation quiz question for each condition
 	bonus_currency_str.set("$");
