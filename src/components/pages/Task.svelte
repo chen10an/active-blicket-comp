@@ -6,6 +6,7 @@
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation;  // lambda function that represents the causal relationship
     export let fixed_num_interventions;  // fixed num. interventions
+    export let min_time_seconds;  // minimum time before participant can continue
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
 
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
@@ -25,6 +26,10 @@
         if (fixed_num_interventions === undefined) {
             fixed_num_interventions = 3;
         }
+        
+        if (min_time_seconds === undefined) {
+            min_time_seconds = 10;
+        }
     }
 
     // Imports
@@ -41,6 +46,7 @@
 
     onDestroy(() => {
         clearInterval(instructions_interval);
+        clearInterval(min_time_interval);
         clearInterval(animation_interval);
     });
 
@@ -61,6 +67,7 @@
 
     let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
     let show_instructions = true;
+    let min_time_interval;  // count down to when the participant can continue
     let has_ended = false;  // whether this task has ended
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
@@ -150,6 +157,7 @@
 
     function cont() {
         clearInterval(instructions_interval);
+        clearInterval(min_time_interval);
         clearInterval(animation_interval);
 
         has_ended = true;
@@ -164,11 +172,22 @@
             show_instructions = false;
             if (replay_sequence) {  // if not null
                 animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // start the animation
+            } else {
+                min_time_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS)  // start the count down
             }
             instructions_seconds = -1;
+        } else {
+            // Count down in seconds until 0, at which time the participant can continue
+            if (min_time_seconds === 0) {
+                // the time limit has been reached --> end the task (see the markup)
+                clearInterval(min_time_interval);
+                min_time_seconds = -1;
+            } else {
+                min_time_seconds = Math.max(min_time_seconds - 1, 0);
+            }
         }
     }
-
+    
     // If given a replay_sequence array, let the participant watch a non-interactive replay of block animations
     if (replay_sequence) {
         disable_task = true;
@@ -277,6 +296,7 @@
                     Recording of {replay_person_name}'s blicket game:                
                 {:else}
                     Remaining tries: <b>{fixed_num_interventions - all_block_combos.length}</b>
+                    Minimum time: <b>{Math.max(min_time_seconds, 0)}</b>
                 {/if}
             </span>
         </div>
@@ -321,7 +341,7 @@
             </div>
 
             <!-- Continue button -->
-            <button disabled="{(all_block_combos.length < fixed_num_interventions) && disable_replay_cont}" on:click="{cont}">
+            <button disabled="{(min_time_seconds > -1) && (all_block_combos.length < fixed_num_interventions) && disable_replay_cont}" on:click="{cont}">
                 Continue to the quiz
             </button>
             <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>

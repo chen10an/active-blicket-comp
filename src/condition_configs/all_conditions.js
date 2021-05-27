@@ -14,6 +14,8 @@
 
 const fixed_num_interventions_l1 = 10;
 const fixed_num_interventions_l2 = 20;
+const min_time_seconds_l1 = 30;
+const min_time_seconds_l2 = 60;
 
 const overview_2l = `Our study has 2 parts and lasts around 10min in total. Each part includes an interactive "blicket game" (with a TODO: limit) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
 const overview_3l = `Our study has 3 parts and lasts around 15min in total. Each part includes an interactive "blicket game" (with a TODO: limit) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
@@ -43,29 +45,29 @@ const quiz_bit_combos_l1 = ["100", "010", "001", "110", "101", "011", "111"];
 const score_ith_combo_l1 = Array(quiz_bit_combos_l1.length).fill(true);
 
 const disj_l1 = {
-    "Task": {collection_id: "level_1", activation: disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: disj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 const noisy_disj_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: noisy_disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: noisy_disj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 
 const conj_l1 = {
-    "Task": {collection_id: "level_1", activation: conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: conj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 const noisy_conj_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: noisy_conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: noisy_conj_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 
 const conj3_l1 = {
-    "Task": {collection_id: "level_1", activation: conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: conj3_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 const noisy_conj3_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1},
+    "Task": {collection_id: "level_1", activation: noisy_conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
     "Quiz": {collection_id: "level_1", activation: noisy_conj3_activation_l1, quiz_bit_combos: quiz_bit_combos_l1, score_ith_combo: score_ith_combo_l1}
 };
 
@@ -75,7 +77,7 @@ const conj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 +
 const quiz_bit_combos_l2 = ["100011", "010101", "110010", "011100", "000011", "000111", "111111"];
 const score_ith_combo_l2 = Array(quiz_bit_combos_l2.length).fill(true);
 const conj_l2 = {
-    "Task": {collection_id: "level_2", activation: conj_activation_l2, fixed_num_interventions: fixed_num_interventions_l2},
+    "Task": {collection_id: "level_2", activation: conj_activation_l2, fixed_num_interventions: fixed_num_interventions_l2, min_time_seconds: min_time_seconds_l2},
     "Quiz": {collection_id: "level_2", activation: conj_activation_l2, quiz_bit_combos: quiz_bit_combos_l2, score_ith_combo: score_ith_combo_l2}
 };
 
