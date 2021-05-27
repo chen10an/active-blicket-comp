@@ -27,8 +27,12 @@ const qa_dict = {
 };
 
 // level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive
+const noise_level = 0.75;
 const conj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
 const disj_activation_l1 = (arg0, arg1, arg2) => arg0 >= 1;
+const noisy_conj_activation_l1 = (arg0, arg1, arg2) => (arg0 + arg1 >= 2) ? Math.random() < noise_level : false;
+const noisy_disj_activation_l1 = (arg0, arg1, arg2) => (arg0 >= 1) ? Math.random() < noise_level : false;
+
 const quiz_bit_combos_l1 = ["100", "010", "001", "110", "101", "011", "111"];
 const score_ith_combo_l1 = Array(quiz_bit_combos_l1.length).fill(true);
 const conj_l1 = {

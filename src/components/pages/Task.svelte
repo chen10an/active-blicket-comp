@@ -19,10 +19,11 @@
             collection_id = ["TEST_collection"];
         }
         if (activation === undefined) {
-            activation = (arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) => arg0 + arg1 >= 2;
+            let noise_level = 0.75;
+            activation = (arg0) => (arg0 >= 1) ? Math.random() < noise_level : false;
         }
         if (time_limit_seconds === undefined) {
-            time_limit_seconds = 3;
+            time_limit_seconds = 1000;
         }
     }
 
@@ -251,12 +252,18 @@
         // hide the combo grid first to avoid a clunky disappearance from using `all_block_combos = []` only
         hide_all_combos = true;
         await tick();
-
+        
         all_block_combos = [];
 
         hide_all_combos = false;
         animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
     }
+
+   // copy show_positive_detector so that the history of block combos don't change dynamically
+   function copy_show_positive_detector() {
+       let copy = show_positive_detector
+       return copy;
+   }
 
 </script>
 
@@ -311,7 +318,8 @@
                         <div class:invisible={hide_all_combos}
                         in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
-                            <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true} show_positive={activation(...block_arr.map(block => block.state))}/>                                
+                            <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true}
+                                                         show_positive={copy_show_positive_detector()}/>  <!-- copy the primitive value so that it doesn't change dynamically when show_positive_detector changes -->
                         </div>
                     {/each}
                 </div>
