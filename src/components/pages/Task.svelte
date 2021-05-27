@@ -5,7 +5,7 @@
     // Props
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation;  // lambda function that represents the causal relationship
-    export let time_limit_seconds;  // time limit in seconds
+    export let fixed_num_interventions;  // fixed num. interventions
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
 
     // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
@@ -22,8 +22,8 @@
             let noise_level = 0.75;
             activation = (arg0) => (arg0 >= 1) ? Math.random() < noise_level : false;
         }
-        if (time_limit_seconds === undefined) {
-            time_limit_seconds = 1000;
+        if (fixed_num_interventions === undefined) {
+            fixed_num_interventions = 3;
         }
     }
 
@@ -41,7 +41,6 @@
 
     onDestroy(() => {
         clearInterval(instructions_interval);
-        clearInterval(count_down_interval);
         clearInterval(animation_interval);
     });
 
@@ -62,13 +61,12 @@
 
     let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
     let show_instructions = true;
-    let count_down_interval;  // task count down
     let has_ended = false;  // whether this task has ended
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
-    let disable_all = false;  // when true, participants cannot interact with buttons
+    let disable_task = false;  // when true, participants cannot interact with the task (blocks + detector)
     
-    // all block combinations that the participant has tried; use arrays to maintain order
+    // history of all block combinations that the participant has tried; use arrays to maintain order
     let all_block_combos = [];  // list of lists of block objects
     task_data_dict.update(dict => {
         dict[collection_id] = {
@@ -103,7 +101,7 @@
             show_negative_detector = true;
         }
         if (replay_sequence === null) {
-            disable_all = true;
+            disable_task = true;
         } else {
             unpress_their_test_button = false;
         }
@@ -137,8 +135,10 @@
         await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
 
         if (replay_sequence === null) {
-            // enable button interactions only for interactive task
-            disable_all = false;
+            if (all_block_combos.length < fixed_num_interventions) {
+                // enable button interactions only for interactive task when there are interventions left
+                disable_task = false;
+            }
         } else {
             unpress_their_test_button = true;
         }
@@ -150,7 +150,6 @@
 
     function cont() {
         clearInterval(instructions_interval);
-        clearInterval(count_down_interval);
         clearInterval(animation_interval);
 
         has_ended = true;
@@ -165,25 +164,14 @@
             show_instructions = false;
             if (replay_sequence) {  // if not null
                 animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // start the animation
-            } else {
-                count_down_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the task count down
             }
             instructions_seconds = -1;
-        } else {
-            // Count down in seconds until 0, at which time the task ends
-            if (time_limit_seconds === 0) {
-                // the time limit has been reached --> end the task (see the markup)
-                clearInterval(count_down_interval);
-                has_ended = true;
-            } else {
-                time_limit_seconds = Math.max(time_limit_seconds - 1, 0);
-            }
         }
     }
 
     // If given a replay_sequence array, let the participant watch a non-interactive replay of block animations
     if (replay_sequence) {
-        disable_all = true;
+        disable_task = true;
 
         // derive block combinations from the bit strings in replay_sequence
         var replay_block_combos = [];
@@ -276,7 +264,7 @@
                 <p><b>Can you figure out which blocks are blickets in their game?</b> Remember, only the blicket machine's responses can help you identify blickets.</p>
                 <p>A recording of their blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
             {:else}
-                <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{time_limit_seconds} seconds</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+                <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{fixed_num_interventions} tries</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
                 <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
             {/if}
         </CenteredCard>
@@ -288,7 +276,7 @@
                 {#if replay_sequence}
                     Recording of {replay_person_name}'s blicket game:                
                 {:else}
-                    Remaining time: <b>{time_limit_seconds}s</b>
+                    Remaining tries: <b>{fixed_num_interventions - all_block_combos.length}</b>
                 {/if}
             </span>
         </div>
@@ -297,10 +285,10 @@
     <div class="centering-container" style="margin-top: 3rem;"
     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
         <div class="col-container">
-            <GridDetectorPair collection_id={collection_id} is_disabled={disable_all} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
+            <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
 
             <!-- Button for testing the detector -->
-            <button disabled="{disable_all}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
+            <button disabled="{disable_task}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
                 {#if replay_sequence}
                     Their blicket machine test button
                 {:else}
@@ -330,13 +318,12 @@
                 <button disabled="{disable_replay_again}" on:click="{replay_again}">
                     Replay recording ({remaining_replays} {remaining_replays == 1 ? "time" : "times"} remaining)
                 </button>
-
-                <!-- Continue button for the replay -->
-                <button disabled="{disable_replay_cont}" on:click="{cont}">
-                    Continue to the quiz
-                </button>
             </div>
 
+            <!-- Continue button -->
+            <button disabled="{(all_block_combos.length < fixed_num_interventions) && disable_replay_cont}" on:click="{cont}">
+                Continue to the quiz
+            </button>
             <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
         </div>
     </div>
