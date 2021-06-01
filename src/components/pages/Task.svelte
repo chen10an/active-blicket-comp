@@ -9,11 +9,6 @@
     export let min_time_seconds;  // minimum time before participant can continue
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
 
-    // array of bit strings representing animations to play for the participant (without allowing the participant to interact with the blocks),
-    // defaults to null
-    export let replay_sequence = null;  // ["100", "100", "100", "010", "101", "101"];
-    export let replay_person_name = "someone";
-
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
         if (collection_id === undefined) {
@@ -55,10 +50,6 @@
     const COUNT_DOWN_INTERVAL_MS = 1000;  // milliseconds passed to setInterval, used for counting down until the time limit
     const FLIP_DURATION_MS = 300;  // duration of animation in milliseconds
 
-    // milliseconds passed to setInterval, used for replaying block animations,
-    // make sure this is sufficiently larger than the crossfade duration
-    const ANIMATION_INTERVAL_MS = 750;
-
     // Get blocks corresponding to each argument to the `activation` function
     block_dict.update(dict => {
         dict[collection_id] = $task_getter.get(activation.length);
@@ -78,17 +69,9 @@
     task_data_dict.update(dict => {
         dict[collection_id] = {
             all_combos: [],  // list of Combo objects
-            replay_sequence: replay_sequence
         };
         return dict;
     });
-
-    // replay-specific variables:
-    let unpress_their_test_button = true;  // use for changing the appearance of the test button during replay
-    let disable_replay_cont = true;  // whether the continue button can be clicked on
-    let disable_replay_again = true;  // whether the replay again button can be clicked on
-    let remaining_replays = 3;  // number of times the replay button can be clicked
-    let hide_all_combos = false;  // whether to hide all previous combos
 
     // Click handler functions
     async function test() {
@@ -107,11 +90,8 @@
         } else {
             show_negative_detector = true;
         }
-        if (replay_sequence === null) {
-            disable_task = true;
-        } else {
-            unpress_their_test_button = false;
-        }
+        
+        disable_task = true;
 
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
@@ -119,13 +99,12 @@
         // create the bitstring representation where character i corresponds to the block with id=i
         let bitstring = block_states.map(state => state ? "1" : "0").join("");
         let combo = new Combo(bitstring);
-        if (replay_sequence === null) {  // only record block combinations (for server) on interactive task
-            // create and store a Combo object from the current bitstring
-            task_data_dict.update(dict => {
-                dict[collection_id].all_combos.push(combo);
-                return dict;
-            });
-        }
+        // record block combinations (for server) on interactive task
+        // create and store a Combo object from the current bitstring
+        task_data_dict.update(dict => {
+            dict[collection_id].all_combos.push(combo);
+            return dict;
+        });
 
         // append a deep copy of blocks_copy where states are set according to the bitstring combo
         all_block_combos = [combo.set_block_states(blocks_copy), ...all_block_combos];  // add to front
@@ -141,13 +120,9 @@
         // wait for crossfade transition
         await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
 
-        if (replay_sequence === null) {
-            if (all_block_combos.length < fixed_num_interventions) {
-                // enable button interactions only for interactive task when there are interventions left
-                disable_task = false;
-            }
-        } else {
-            unpress_their_test_button = true;
+        if (all_block_combos.length < fixed_num_interventions) {
+            // enable button interactions only for interactive task when there are interventions left
+            disable_task = false;
         }
 
         // revert to the default detector background color
@@ -170,11 +145,7 @@
         } else if (instructions_seconds === 0) {
             clearInterval(instructions_interval);
             show_instructions = false;
-            if (replay_sequence) {  // if not null
-                animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);  // start the animation
-            } else {
-                min_time_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS)  // start the count down
-            }
+            min_time_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS)  // start the count down
             instructions_seconds = -1;
         } else {
             // Count down in seconds until 0, at which time the participant can continue
@@ -188,84 +159,6 @@
         }
     }
     
-    // If given a replay_sequence array, let the participant watch a non-interactive replay of block animations
-    if (replay_sequence) {
-        disable_task = true;
-
-        // derive block combinations from the bit strings in replay_sequence
-        var replay_block_combos = [];
-        for (const bitstring of replay_sequence) {
-            let combo = new Combo(bitstring);
-            let block_combo = combo.set_block_states($block_dict[collection_id]);
-            replay_block_combos.push(block_combo);
-        }
-
-        // filter each nested array to only contain blocks with state=true
-        for (let i=0; i < replay_block_combos.length; i++) {
-            replay_block_combos[i] = replay_block_combos[i].filter(block => block.state);
-        }
-        
-        // initializing variables for indexing replay_block_combos
-        var outer_dex = 0;
-        var animation_interval;
-    }
-
-    async function animateReplay() {
-        // Animate the blocks and the detector by changing their states and calling the test() function at regular intervals
-
-        if (outer_dex >= replay_block_combos.length) {  // outer_dex out of bound
-            clearInterval(animation_interval);
-            if (remaining_replays > 0) {
-                // allow the participant to replay the animations again
-                disable_replay_again = false;
-            }
-
-            // allow the participant to continue after the first replay
-            disable_replay_cont = false;
-        } else {
-            // simulataneously change all block states for one combo
-            let replay_combo = replay_block_combos[outer_dex];
-            block_dict.update(dict => {
-                for (let i=0; i < replay_combo.length; i++) {
-                    let replay_block = replay_combo[i];
-
-                    for (let j=0; j < dict[collection_id].length; j++) {
-                        if (dict[collection_id][j].id == replay_block.id) {
-                            dict[collection_id][j].state = replay_block.state;
-                        }
-                    }
-                }
-                return dict;
-            })
-
-            clearInterval(animation_interval);  // clear interval to wait for the following:
-            // wait another animation interval before testing the blicket machine
-            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
-            test();
-            // wait another animation interval before resuming the animation interval
-            await new Promise(r => setTimeout(r, ANIMATION_INTERVAL_MS));
-            animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
-
-            outer_dex += 1;
-        }
-    }
-
-    async function replay_again() {
-        // replay the animations again
-        outer_dex = 0;
-        disable_replay_again = true;
-        remaining_replays -= 1;
-
-        // hide the combo grid first to avoid a clunky disappearance from using `all_block_combos = []` only
-        hide_all_combos = true;
-        await tick();
-        
-        all_block_combos = [];
-
-        hide_all_combos = false;
-        animation_interval = setInterval(animateReplay, ANIMATION_INTERVAL_MS);
-    }
-
    // copy show_positive_detector so that the history of block combos don't change dynamically
    function copy_show_positive_detector() {
        let copy = show_positive_detector
@@ -277,27 +170,16 @@
 {#if !has_ended}
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
-            {#if replay_sequence}
-                <!-- Capitalize the first letter of replay_person_name for the start of the sentence -->
-                <p>{replay_person_name.charAt(0).toUpperCase() + replay_person_name.slice(1)} has been playing the blicket game.</p> 
-                <p><b>Can you figure out which blocks are blickets in their game?</b> Remember, only the blicket machine's responses can help you identify blickets.</p>
-                <p>A recording of their blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
-            {:else}
-                <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{fixed_num_interventions} tries</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
-                <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
-            {/if}
+            <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{fixed_num_interventions} tries</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+            <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
         </CenteredCard>
     </OverlayInstructions>
 
     {#if !show_instructions}
         <div class="top">
             <span class="info">
-                {#if replay_sequence}
-                    Recording of {replay_person_name}'s blicket game:                
-                {:else}
-                    Remaining tries: <b>{fixed_num_interventions - all_block_combos.length}</b>
-                    Minimum time: <b>{Math.max(min_time_seconds, 0)}</b>
-                {/if}
+                Remaining tries: <b>{fixed_num_interventions - all_block_combos.length}</b>
+                Minimum time: <b>{Math.max(min_time_seconds, 0)}</b>
             </span>
         </div>
     {/if}
@@ -308,16 +190,12 @@
             <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
 
             <!-- Button for testing the detector -->
-            <button disabled="{disable_task}" class:unpress="{replay_sequence && unpress_their_test_button}" on:click={test}>
-                {#if replay_sequence}
-                    Their blicket machine test button
-                {:else}
-                    Test the blicket machine
-                {/if}
+            <button disabled="{disable_task}" on:click={test}>
+                Test the blicket machine
             </button>
 
             <!-- Show all previously attempted block combinations -->
-            <h4 style="margin: 0;">{replay_sequence ? "Their" : "Your"} previous (scrollable) results from the blicket machine:</h4>
+            <h4 style="margin: 0;">Your previous (scrollable) results from the blicket machine:</h4>
             <span>Be ready to be quizzed about blickets and the blicket machine.</span>
             <div class="row-container">
                 <div id="all-combos">
@@ -333,15 +211,8 @@
                 </div>
             </div>
 
-            <div class:hide="{replay_sequence === null}">
-                <!-- Replay button -->
-                <button disabled="{disable_replay_again}" on:click="{replay_again}">
-                    Replay recording ({remaining_replays} {remaining_replays == 1 ? "time" : "times"} remaining)
-                </button>
-            </div>
-
             <!-- Continue button -->
-            <button disabled="{(min_time_seconds > -1) && (all_block_combos.length < fixed_num_interventions) && disable_replay_cont}" on:click="{cont}">
+            <button disabled="{(min_time_seconds > -1) && (all_block_combos.length < fixed_num_interventions)}" on:click="{cont}">
                 Continue to the quiz
             </button>
             <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
@@ -350,11 +221,7 @@
 {:else}
     <!-- Show when the time limit is reached and forward the continue event upward. -->
     <CenteredCard on:continue>
-        {#if replay_sequence}
-            <h3 style="text-align: center;">Based on the recording you just saw, the next part is a quiz about blickets and the blicket machine.</h3>
-        {:else}
-            <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just saw.</h3>
-        {/if}
+        <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just saw.</h3>
     </CenteredCard>
 {/if}
 
