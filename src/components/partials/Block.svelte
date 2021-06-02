@@ -6,21 +6,24 @@
     export let use_transitions = true;  // whether to use transitions for individual blocks
     export let key_prefix = "";  // send/receive transitions will apply between blocks with the same key_prefix and id
 
-    import { send, receive } from '../../modules/crossfade.js';
-    import { block_dict } from '../../modules/experiment_stores.js';
-
-    function click() {
+    // customizable function for what happens when the current block is clicked
+    export let click = (block) => {
         // When a block is clicked by the participant, reverse its state (true to false; false to true)
         block.flip();
         block_dict.set($block_dict);  // explicit update to trigger svelte's reactivity
     }
+
+    import { send, receive } from '../../modules/crossfade.js';
+    import { block_dict } from '../../modules/experiment_stores.js';
+
+    console.log(key_prefix.concat(String(block.id)))
 </script>
 
 {#if use_transitions}
     <div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
     class:mini="{is_mini}" class:disabled="{is_disabled}"
     in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
-    on:click={() => click()}>
+    on:click={() => click(block)}>
         <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
     </div>
 {:else}

@@ -16,10 +16,10 @@ class Block {
         }
         this.color = color;  // name of the css variable that contains the color (string)
 
-        if (typeof letter !== "string" || letter.length !== 1) {
-            throw new Error("The letter should be a string of length 1.")
+        if (typeof letter !== "string" || letter.length > 1) {
+            throw new Error("The letter should be a string of length <=1.")
         }
-        this.letter = letter;  // an upper-case letter (string)
+        this.letter = letter;  // an upper-case letter or empty (string)
 
         if (!Number.isInteger(position)) {
             throw new Error("The position should be an integer.")
@@ -159,4 +159,4 @@ class Combo {
     }
 }
 
-export {Block, BlockGetter, Combo};
+export {Block, BlockGetter, Combo, TOTAL_CSS_GRID_AREAS};

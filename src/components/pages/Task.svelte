@@ -5,7 +5,7 @@
     // Props
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let activation;  // lambda function that represents the causal relationship
-    export let fixed_num_interventions;  // fixed num. interventions
+    export let fixed_num_interventions;  // fixed number of interventions that participant has to perform before moving on
     export let min_time_seconds;  // minimum time before participant can continue
     export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
 
@@ -42,7 +42,6 @@
     onDestroy(() => {
         clearInterval(instructions_interval);
         clearInterval(min_time_interval);
-        clearInterval(animation_interval);
     });
 
     // Constants
@@ -133,7 +132,6 @@
     function cont() {
         clearInterval(instructions_interval);
         clearInterval(min_time_interval);
-        clearInterval(animation_interval);
 
         has_ended = true;
     }
@@ -201,8 +199,7 @@
                 <div id="all-combos">
                     <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
                     {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
-                        <div class:invisible={hide_all_combos}
-                        in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
+                        <div in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
                         animate:flip="{{duration: FLIP_DURATION_MS}}">
                             <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true}
                                                          show_positive={copy_show_positive_detector()}/>  <!-- copy the primitive value so that it doesn't change dynamically when show_positive_detector changes -->

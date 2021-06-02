@@ -150,7 +150,7 @@
         width: calc(3*(var(--block-length) + 2*var(--block-margin)));
         height: calc(3*(var(--block-length) + 2*var(--block-margin)));
 
-        /* 3x3 grid that blocks can be placed into according to their letter label */
+        /* 3x3 grid that blocks can be placed into according to their position attribute */
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
