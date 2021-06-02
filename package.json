@@ -1,6 +1,7 @@
 {
   "name": "active-blicket-comp",
-  "version": "1.0.1-mturk",
+  "version": "2.0.0-mturk",
+  "private": true,
   "scripts": {
     "build": "rollup -c && grunt",
     "dev": "concurrently --kill-others \"rollup -c -w\" \"grunt watch\"",
