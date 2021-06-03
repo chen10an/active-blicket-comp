@@ -15,8 +15,6 @@
 
     import { send, receive } from '../../modules/crossfade.js';
     import { block_dict } from '../../modules/experiment_stores.js';
-
-    console.log(key_prefix.concat(String(block.id)))
 </script>
 
 {#if use_transitions}
