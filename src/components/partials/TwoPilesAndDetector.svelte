@@ -49,11 +49,12 @@
         });
     }
 
-    // track where the next block (from either the blicket or nonblicket pile) should go next on the detector
-    let next_detector_pos = 0;
-    // whether to hide a warning that no more blickets/nonblickets can be added to the detector
-    let hide_limit_warning = true;
+    // Initialize variables
+    let next_detector_pos = 0;  // track where the next block (from either the blicket or nonblicket pile) should go next on the detector
+    let hide_limit_warning = true;  // whether to hide a warning that no more blickets/nonblickets can be added to the detector
+    let show_positive_detector = false;  // whether the detector should show a positive response
 
+    // Click handlers
     // customize block (id 0 or id NONBLICKET_START_DEX) response to clicking so that blocks from the same pile move onto the next position (i.e. next_detector_pos) on the detector
     function to_next_detector_pos(block) {
         // stop adding if the limit has been reached
@@ -92,6 +93,11 @@
         hide_limit_warning = true;
     }
 
+    // flip the response (boolean) of the detector
+    function flip_detector() {
+        show_positive_detector = !show_positive_detector;
+    }
+
 </script>
 
 <Block block={$block_dict[COMBINED_COLLECTION_ID][0]} is_mini={false} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)}/>
@@ -103,7 +109,10 @@
 </button>
 <p class:hide="{hide_limit_warning}" style="color: red;">You've reached the maximum number ({num_on_blocks_limit}) of blickets and non-blickets. You can press the "Reset" button to start over.</p>
 
-<BlockGrid collection_id={COMBINED_COLLECTION_ID} is_mini={false} is_disabled={true} block_filter_func={block => block.state} is_detector={false} />
+<BlockGrid collection_id={COMBINED_COLLECTION_ID} is_mini={false} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} />
+<button disabled="{is_disabled}" on:click="{flip_detector}">
+    {show_positive_detector ? "Deactivate" : "Activate"} the blicket machine
+</button>
 
 <!-- 
 TODO: might need to make this responsive so that the piles and detector are always visible together on the screen
