@@ -100,20 +100,46 @@
 
 </script>
 
-<Block block={$block_dict[COMBINED_COLLECTION_ID][0]} is_mini={false} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)}/>
+<div class="row-container">
+    <div class="col-container">
+        <Block block={$block_dict[COMBINED_COLLECTION_ID][0]} is_mini={false} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)}/>
 
-<Block block={$block_dict[COMBINED_COLLECTION_ID][NONBLICKET_START_DEX]} is_mini={false} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} />
+        <Block block={$block_dict[COMBINED_COLLECTION_ID][NONBLICKET_START_DEX]} is_mini={false} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} />
 
-<button disabled="{is_disabled}" on:click={combined_reset}>
-    Reset
-</button>
-<p class:hide="{hide_limit_warning}" style="color: red;">You've reached the maximum number ({num_on_blocks_limit}) of blickets and non-blickets. You can press the "Reset" button to start over.</p>
+        <button disabled="{is_disabled}" on:click={combined_reset} style="min-width: var(--block-length);">
+            Reset
+        </button>
+    </div>
 
-<BlockGrid collection_id={COMBINED_COLLECTION_ID} is_mini={false} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} />
-<button disabled="{is_disabled}" on:click="{flip_detector}">
-    {show_positive_detector ? "Deactivate" : "Activate"} the blicket machine
-</button>
+    <div class="col-container">
+        <BlockGrid collection_id={COMBINED_COLLECTION_ID} is_mini={false} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} />
+        
+        <button disabled="{is_disabled}" on:click="{flip_detector}">
+            {show_positive_detector ? "Deactivate" : "Activate"} the blicket machine
+        </button>
+    </div>
+</div>
+<div class="row-container">
+    <p class:hide="{hide_limit_warning}" style="color: red; margin: 0;">You've reached the maximum number ({num_on_blocks_limit}) of blickets and non-blickets. You can press the "Reset" button to start over.</p>
+</div>
 
 <!-- 
 TODO: might need to make this responsive so that the piles and detector are always visible together on the screen
 -->
+<style>
+    .row-container {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .col-container {
+        margin: 0 var(--block-container-margin);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
