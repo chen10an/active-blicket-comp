@@ -1,5 +1,9 @@
 <script>
     // Props
+    // parent component should bind this:
+    export let show_positive_detector = false;  // whether the participant wants the detector to show a positive response
+    
+    // input
     export let num_on_blocks_limit;  // limit on the _combined_ number of blickets and nonblickets that the participant can put onto the detector
     export let is_disabled;  // boolean for disabling clicking on the piles and detector
 
@@ -23,7 +27,7 @@
     // the combined num of blickets and nonblickets should not exceed the max number off blocks that can be placed on a detector / css grid
     console.assert(num_on_blocks_limit <= TOTAL_CSS_GRID_AREAS); 
 
-    const COMBINED_COLLECTION_ID = "blicket_nonblicket_pile";
+    const COMBINED_COLLECTION_ID = "blicket_nonblicket_piles";
     // [0..NONBLICKET_START_DEX) in block_dict contains blickets; [NONBLICKET_START_DEX..NON_BLICKET_START_DEX*2) in block_dict contains nonblickets
     const NONBLICKET_START_DEX = TOTAL_CSS_GRID_AREAS+1;
     // there are a total of TOTAL_CSS_GRID_AREAS+1 (above num_on_blocks_limit) blocks for each blicket/nonblicket pile, allowing the first (index 0) block in each pile to be used as the button for moving that pile's blocks to the detector
@@ -52,7 +56,6 @@
     // Initialize variables
     let next_detector_pos = 0;  // track where the next block (from either the blicket or nonblicket pile) should go next on the detector
     let hide_limit_warning = true;  // whether to hide a warning that no more blickets/nonblickets can be added to the detector
-    let show_positive_detector = false;  // whether the detector should show a positive response
 
     // Click handlers
     // customize block (id 0 or id NONBLICKET_START_DEX) response to clicking so that blocks from the same pile move onto the next position (i.e. next_detector_pos) on the detector
@@ -65,10 +68,10 @@
 
         // only the first block of each pile should call this function when clicked
         console.assert(block.id === 0 || block.id === NONBLICKET_START_DEX)
-            
-            // put block at the right position onto the detector
-            if (block.id === 0) {
-                $block_dict[COMBINED_COLLECTION_ID].filter(block => block.id < NONBLICKET_START_DEX && block.position === next_detector_pos)[0].flip();
+        
+        // put block at the right position onto the detector
+        if (block.id === 0) {
+            $block_dict[COMBINED_COLLECTION_ID].filter(block => block.id < NONBLICKET_START_DEX && block.position === next_detector_pos)[0].flip();
         } else if (block.id === NONBLICKET_START_DEX) {
             $block_dict[COMBINED_COLLECTION_ID].filter(block => block.id >= NONBLICKET_START_DEX && block.position === next_detector_pos)[0].flip();
         }

@@ -35,6 +35,8 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
+    import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
+    import Block from '../partials/Block.svelte';
     import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, bonus_val, bonus_currency_str, current_total_bonus } from '../../modules/experiment_stores.js';
     import { Combo } from '../../modules/block_classes.js';
     import { fade } from 'svelte/transition';
@@ -50,7 +52,21 @@
 
     // Constants
     const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
-
+    const BLICKET_ANSWER_OPTIONS = [
+        {id: -1, text: "Unselected"},
+        {id: 10, text: "10 — Definitely a blicket."}, 
+        {id: 9, text: "9"}, 
+        {id: 8, text: "8 — Almost sure this is a blicket."}, 
+        {id: 7, text: "7"}, 
+        {id: 6, text: "6"}, 
+        {id: 5, text: "5 — Equally likely to be a blicket or not."}, 
+        {id: 4, text: "4"},
+        {id: 3, text: "3"},
+        {id: 2, text: "2 — Almost sure this is NOT a blicket."},
+        {id: 1, text: "1"},
+        {id: 0, text: "0 — Definitely NOT a blicket."}
+    ]
+    
     // Initialize and store variables
     let hide_correct_answers = true;
     let scrollY = 0;
@@ -63,12 +79,17 @@
             score_ith_activation_answer: score_ith_combo,
             activation_score: 0,
             blicket_answer_combo: "",
+            blicket_answer_groups: [],
+            teaching_ex: [{detector_state: null, blocks: []}],
             free_response_0: "",
             free_response_1: ""
         };
 
         return dict;
     });
+
+    // TODO: remove
+    $: console.log($quiz_data_dict[collection_id].teaching_ex)
 
     // initialize the stored answers
     for (let i=0; i < quiz_bit_combos.length; i++) {
@@ -138,6 +159,8 @@
             dict[collection_id].blicket_answer_combo = new Combo(block_states.map(state => state ? "1" : "0").join(""));
             return dict;
         });
+
+        // TODO: store copy of blicket_nonblicket_piles blocks to maintain the participant's chosen block states
     }
 
     // event dispatcher for communicating with parent components
@@ -174,11 +197,30 @@
         <h2>Quiz about Blickets and the Blicket Machine</h2>
         <p><b>Your score (and resulting bonus)</b> will be calculated after you answer and submit all questions. Only the "Will the blicket machine activate?" section will be scored, but we hope that you'll sincerely answer all questions. After submitting, the scored questions will be labeled with checkmarks or crosses, and you'll receive a <b>bonus of {$bonus_currency_str}{$bonus_val}</b> for each checkmark.</p>
 
-        <h3>Which blocks do you think are blickets?</h3>
-        <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
-        <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/>
+        <h3>Do you think that these blocks are blickets?</h3>
+        <!-- Iterate over $block_dict, which orders blocks alphabetically -->
+        {#each $block_dict[collection_id] as block, i}
+            <div class="qa">
+                <Block block="{block}" is_mini="{false}" is_disabled="{true}"/> 
+                <div class="answer-options">
+                    <select bind:value={$quiz_data_dict[collection_id].blicket_answer_groups[i]} disabled="{!hide_correct_answers}">
+                        {#each BLICKET_ANSWER_OPTIONS as option}
+                            <option value={option.id}>
+                                {option.text}
+                            </option>
+                        {/each}
+                    </select>
+                </div>
+            </div>
+        {/each}
+        <!-- <h3>Which blocks do you think are blickets?</h3>
+             <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
+             <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/> -->
 
-        <h3>Will the blicket machine activate (light up with a green color)?</h3>
+        <h3>How would you teach someone else about the blicket machine?</h3>
+        <!-- TODO: see previous activation questions code for making several teaching questions -->
+        <TwoPilesAndDetector num_on_blocks_limit={$block_dict[collection_id].length} is_disabled={!hide_correct_answers} bind:show_positive_detector={$quiz_data_dict[collection_id].teaching_ex[0].detector_state}/>
+        
         <div class:hide="{hide_correct_answers}" style="color: green; text-align: center;">
             <span style="font-size: xx-large;">
                 Your score here: {$quiz_data_dict[collection_id].activation_score}/{score_ith_combo.filter(Boolean).length}
@@ -190,27 +232,27 @@
             <p>Your total running bonus: {$bonus_currency_str}{$current_total_bonus}</p>
         </div>
         {#each quiz_block_combos as arr, i}
-            <div class="qa">
-                <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} is_detector={true} use_transitions={false}/>
-                
-                <div class="answer-options">
-                    {#each ACTIVATION_ANSWER_OPTIONS as option}
-                        <label>
-                            <input type="radio" bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
-                            value={option == "Yes" ? true : false} disabled="{!hide_correct_answers}"> {option}
-                        </label>
-                    {/each}
+            <!-- <div class="qa">
+                 <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} copied_blocks_arr={arr} is_detector={true} use_transitions={false}/>
+                 
+                 <div class="answer-options">
+                 {#each ACTIVATION_ANSWER_OPTIONS as option} -->
+            <!-- <label>
+                 <input type="radio" bind:group={$quiz_data_dict[collection_id].activation_answer_groups[i]}
+                 value={option == "Yes" ? true : false} disabled="{!hide_correct_answers}"> {option}
+                 </label>
+                 {/each} -->
     
                     <!-- After the participants submit their answers, show a checkmark or cross to indicate whether the participant was correct. -->
-                    <div class:hide="{hide_correct_answers || !score_ith_combo[i]}">
-                        {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]}
-                            <span id="checkmark">&nbsp;&#10004</span><span><br>bonus: {$bonus_currency_str}{$bonus_val}</span>
-                        {:else}
-                            <span id="cross">&nbsp;&#10008</span>
-                        {/if}
-                    </div>
-                </div>
-            </div>
+            <!-- <div class:hide="{hide_correct_answers || !score_ith_combo[i]}">
+                 {#if $quiz_data_dict[collection_id].activation_answer_groups[i] === $quiz_data_dict[collection_id].correct_activation_answers[i]}
+                 <span id="checkmark">&nbsp;&#10004</span><span><br>bonus: {$bonus_currency_str}{$bonus_val}</span>
+                 {:else}
+                 <span id="cross">&nbsp;&#10008</span>
+                 {/if}
+                 </div>
+                 </div>
+                 </div> -->
         {/each}
 
         <h3>How do you think the blicket machine works?</h3>
