@@ -72,6 +72,11 @@
         return dict;
     });
 
+
+    // reactive declaraction of whether the participant can continue to the quiz:
+    // wait at least min_time_seconds and make at least fixed_num_interventions interventions
+    $: can_cont = (min_time_seconds <= -1) && (all_block_combos.length >= fixed_num_interventions)
+    
     // Click handler functions
     async function test() {
         // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
@@ -168,11 +173,12 @@
 {#if !has_ended}
     <OverlayInstructions show={show_instructions}>
         <CenteredCard has_button={false}>
-            <p><b>Can you figure out which blocks are blickets?</b> You will have <b>{fixed_num_interventions} tries</b> to play the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+            <p><b>Can you figure out which blocks are blickets?</b> Please test the blicket machine <b>{fixed_num_interventions} times</b> and spend <b>at least {min_time_seconds}s</b> in the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
             <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
         </CenteredCard>
     </OverlayInstructions>
 
+    <!--
     {#if !show_instructions}
         <div class="top">
             <span class="info">
@@ -181,6 +187,7 @@
             </span>
         </div>
     {/if}
+    -->
 
     <div class="centering-container" style="margin-top: 3rem;"
     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
@@ -189,7 +196,8 @@
 
             <!-- Button for testing the detector -->
             <button disabled="{disable_task}" on:click={test}>
-                Test the blicket machine
+                Test the blicket machine <br>
+                Remaining tests: <b>{fixed_num_interventions - all_block_combos.length}</b>
             </button>
 
             <!-- Show all previously attempted block combinations -->
@@ -209,9 +217,15 @@
             </div>
 
             <!-- Continue button -->
-            <button disabled="{(min_time_seconds > -1) && (all_block_combos.length < fixed_num_interventions)}" on:click="{cont}">
+            <button disabled="{!can_cont}" on:click="{cont}">
                 Continue to the quiz
             </button>
+            <p class:hide="{can_cont}" style="color: red;">You will be able to continue after
+                {all_block_combos.length < fixed_num_interventions ? (fixed_num_interventions - all_block_combos.length) + " more tests" : ""}
+                {(all_block_combos.length < fixed_num_interventions) && (min_time_seconds > -1) ? " and  " : ""}
+                {min_time_seconds > -1 ? Math.max(min_time_seconds, 0) + " more seconds" : ""}
+            </p>
+            
             <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
         </div>
     </div>
