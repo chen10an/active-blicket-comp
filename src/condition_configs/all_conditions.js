@@ -30,16 +30,48 @@ const qa_dict = {
 };
 
 // level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive
-const noise_level = 0.75;
 
 const disj_activation_l1 = (arg0, arg1, arg2) => arg0 >= 1;
-const noisy_disj_activation_l1 = (arg0, arg1, arg2) => (arg0 >= 1) ? Math.random() < noise_level : false;
+const noisy_disj_activation_l1 = function(arg0, arg1, arg2) {
+    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=0.9 (when noise at 1 blicket is ~0.75)
+    
+    let num_blickets = arg0;  // non-neg integer
+    if (num_blickets == 1) {
+        return Math.random() < 0.75;  // noise
+    } else if (num_blickets > 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 const conj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
-const noisy_conj_activation_l1 = (arg0, arg1, arg2) => (arg0 + arg1 >= 2) ? Math.random() < noise_level : false;
+const noisy_conj_activation_l1 = function(arg0, arg1, arg2) {
+    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=1.9 (when noise at 2 blickets is ~0.75)
+    
+    let num_blickets = arg0 + arg1;  // non-neg integer
+    if (num_blickets == 2) {
+        return Math.random() < 0.75;  // noise
+    } else if (num_blickets > 2) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 const conj3_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 + arg2 >= 3;
-const noisy_conj3_activation_l1 = (arg0, arg1, arg2) => (arg0 + arg1 + arg2 >= 3) ? Math.random() < noise_level : false;
+const noisy_conj3_activation_l1 = function(arg0, arg1, arg2) {
+    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=2.9 (when noise at 3 blickets is ~0.75)
+    
+    let num_blickets = arg0 + arg1 + arg2;  // non-neg integer
+    if (num_blickets == 3) {
+        return Math.random() < 0.75;  // noise
+    } else if (num_blickets > 3) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 const quiz_bit_combos_l1 = ["100", "010", "001", "110", "101", "011", "111"];
 const score_ith_combo_l1 = Array(quiz_bit_combos_l1.length).fill(true);
