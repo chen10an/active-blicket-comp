@@ -124,11 +124,11 @@
 	const progress = tweened(0, {duration: 500, easing: cubicOut});
 	let progress_inc = 1/(Object.keys(component_sequence).length - 1);  // how much to increment the progress bar for each component
 
-	// update the total quiz score based on the props to the Quiz component
+	// update the max possible quiz score based on the props to the Quiz component
 	let max_quiz_score = 0;
 	for (const key in component_sequence) {
 		if (key.split("_")[0] == "Quiz") {
-			max_quiz_score += component_sequence[key].score_ith_combo.filter(Boolean).length;  // filter to only true values
+			max_quiz_score += component_sequence[key].correct_blicket_ratings.length;
 		}
 	}
 	max_score.set(max_quiz_score);
@@ -240,11 +240,11 @@
 <!-- Dynamically show different components to the participant -->
 <svelte:component this={current_component} {...current_props} on:continue={handleContinue}/>
 
-<div class="bottom">
-	<progress value={$progress}></progress>
-	<span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$max_score}</b></span>
-</div>
-
+<!-- <div class="bottom">
+	   <progress value={$progress}></progress>
+	   <span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$max_score}</b></span>
+     </div>
+-->
 
 <style>
 	.bottom {

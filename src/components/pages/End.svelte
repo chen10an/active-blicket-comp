@@ -4,7 +4,7 @@
     export let code_suffix = "";
 
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import { current_score, max_score, bonus_val, bonus_currency_str, current_total_bonus } from '../../modules/experiment_stores.js';
+    import { current_score, max_score, bonus_val, bonus_currency_str, current_total_bonus, quiz_data_dict } from '../../modules/experiment_stores.js';
 
     const CODE_PREFIX = "K3SHW";  // generated with www.random.org
     const CODE_MID = ["CS", $current_score, "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
@@ -27,7 +27,7 @@
 {:else}
     <CenteredCard has_button={false}>
         <h3 style="margin-bottom: 0">Thank you for participating!</h3>
-        <p style="color: green;">Your final score is {$current_score}/{$max_score}, which results in a total bonus of {$bonus_currency_str}{$current_total_bonus}.</p>
+        <p style="color: green;">Your final score is {$current_score}/{$max_score} (part 1: {$quiz_data_dict["level_1"].blicket_rating_scores.reduce((x,y) => x+y, 0)}; part 2: {$quiz_data_dict["level_2"].blicket_rating_scores.reduce((x,y) => x+y, 0)}), which results in a total bonus of {$bonus_currency_str}{$current_total_bonus}.</p>
         <p style="margin-top: 0;">Your MTurk completion code is: {[CODE_PREFIX, CODE_MID, code_suffix].join("-")}</p>
         <img src="/images/thankyou.jpg" alt="dog biting a thank you card">
         <span class="attribution"><br/>Photo by <a href="https://unsplash.com/@howier?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Howie R</a> on <a href="https://unsplash.com/s/photos/thank-you?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>

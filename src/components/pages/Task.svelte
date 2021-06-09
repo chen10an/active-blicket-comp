@@ -223,7 +223,7 @@
             <p class:hide="{can_cont}" style="color: red;">You will be able to continue after
                 {all_block_combos.length < fixed_num_interventions ? (fixed_num_interventions - all_block_combos.length) + " more tests" : ""}
                 {(all_block_combos.length < fixed_num_interventions) && (min_time_seconds > -1) ? " and  " : ""}
-                {min_time_seconds > -1 ? Math.max(min_time_seconds, 0) + " more seconds" : ""}
+                {min_time_seconds > -1 ? Math.max(min_time_seconds, 0) + " more seconds" : ""}.
             </p>
             
             <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>

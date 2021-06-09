@@ -18,7 +18,7 @@
 	// configure the experiment conditions and bonuses
 	const ALL_SEQ = [d1_c2, nd1_c2, c1_c2, nc1_c2, cc1_c2, ncc1_c2]
 	const ALL_SEQ_NAMES = ["d1_c2", "nd1_c2", "c1_c2", "nc1_c2", "cc1_c2", "ncc1_c2"];
-	const bonus_val_arr = [0.05, 0.05, 0.075, 0.075, 0.05, 0.05, 0.075, 0.075];  // bonus per activation quiz question for each condition
+	const bonus_val_arr = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1];  // max bonus per  question for each condition
 	bonus_currency_str.set("$");
 
 	// TODO: route that doesn't write data (can be turned on/off separately from dev mode)
