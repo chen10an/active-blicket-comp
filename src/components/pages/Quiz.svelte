@@ -242,7 +242,7 @@
         <div class="info-box">
             <p><b>Details about bonus calculations:</b></p>
             <p>We will show your examples to other people <i>after the study</i>. Your bonus is calculated based on how well they understand the blicket machine. This process can take some time: we will send you your bonus within 1.5 weeks.</p>
-            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus is $0.15; if both choose the correct option, your bonus is $0.30.</p>
+            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus for this section is $0.075; if both choose the correct option, your bonus is $0.15.</p>
         </div>
         
         {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
