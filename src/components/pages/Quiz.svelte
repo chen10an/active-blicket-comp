@@ -24,13 +24,11 @@
     }
 
     // Imports
-    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
-    import BlockGrid from '../partials/BlockGrid.svelte';
     import CenteredCard from '../partials/CenteredCard.svelte';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, max_score, bonus_val, bonus_currency_str, current_total_bonus } from '../../modules/experiment_stores.js';
-    import { Combo } from '../../modules/block_classes.js';
+    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
+    import { Combo, Block as BlockClass } from '../../modules/block_classes.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
@@ -70,7 +68,7 @@
             blicket_rating_groups: [],
             correct_blicket_ratings: correct_blicket_ratings,
             blicket_rating_scores: [],
-            teaching_ex: [{detector_state: null, blocks: []}],
+            teaching_ex: [],
             free_response_0: "",
             free_response_1: ""
         };
@@ -85,8 +83,18 @@
 
     // initialize the stored answers
     for (let i=0; i < $block_dict[collection_id].length; i++) {
-        $quiz_data_dict[collection_id].blicket_rating_groups.push(null);
-        $quiz_data_dict[collection_id].blicket_rating_scores.push(0);
+        quiz_data_dict.update(dict => {
+            dict[collection_id].blicket_rating_groups.push(null);
+            dict[collection_id].blicket_rating_scores.push(0);
+            return dict;
+        });
+    }
+    // 5 teaching examples
+    for (let i=0; i < 5; i++) {
+        quiz_data_dict.update(dict => {
+            dict[collection_id].teaching_ex.push({detector_state: false, blocks:[]});
+            return dict;
+        });
     }
 
     // map block ids to their relative (starting from 0) positions
@@ -211,9 +219,23 @@
              <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
              <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/> -->
 
+        <h3>How do you think the blicket machine works?</h3>
+        <textarea bind:value={$quiz_data_dict[collection_id].free_response_0} disabled="{!hide_correct_answers}"></textarea>
+
+        <h3>What was your strategy for figuring out how the blicket machine works?</h3>
+        <textarea bind:value={$quiz_data_dict[collection_id].free_response_1} disabled="{!hide_correct_answers}"></textarea>
+
         <h3>How would you teach someone else about the blicket machine?</h3>
-        <!-- TODO: see previous activation questions code for making several teaching questions -->
-        <TwoPilesAndDetector num_on_blocks_limit={$block_dict[collection_id].length} is_disabled={!hide_correct_answers} bind:show_positive_detector={$quiz_data_dict[collection_id].teaching_ex[0].detector_state}/>
+        Key:
+        <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blicket</div>
+
+        <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain block</div>
+        
+        {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
+            <div class="qa">
+                <TwoPilesAndDetector collection_id="piles_{i}" num_on_blocks_limit={$block_dict[collection_id].length} is_disabled={!hide_correct_answers} bind:show_positive_detector={ex.detector_state}/>
+            </div>
+        {/each}
         
         {#each quiz_block_combos as arr, i}
             <!-- <div class="qa">
@@ -238,12 +260,6 @@
                  </div>
                  </div> -->
         {/each}
-
-        <h3>How do you think the blicket machine works?</h3>
-        <textarea bind:value={$quiz_data_dict[collection_id].free_response_0} disabled="{!hide_correct_answers}"></textarea>
-
-        <h3>What was your strategy for figuring out how the blicket machine works?</h3>
-        <textarea bind:value={$quiz_data_dict[collection_id].free_response_1} disabled="{!hide_correct_answers}"></textarea>
 
         <h3 class:hide="{!is_last}" style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
         <p class:hide="{!is_last}">We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
@@ -281,7 +297,18 @@
 
         display: flex;
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .block-key {
+        margin-top: 0.1rem;
+        width: 100%;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
     }
 
     #checkmark {
