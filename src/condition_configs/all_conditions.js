@@ -12,20 +12,18 @@
 // c_1 c_3
 // d_1 d_3
 
-const fixed_num_interventions_l1 = 10;
-const fixed_num_interventions_l2 = 20;
-const min_time_seconds_l1 = 30;
-const min_time_seconds_l2 = 60;
+export const fixed_num_interventions_l1 = 10;
+export const fixed_num_interventions_l2 = 20;
+export const min_time_seconds_l1 = 30;
+export const min_time_seconds_l2 = 60;
 
-const overview_2l = `Our study has 2 parts and lasts around 10min in total. Each part includes an interactive "blicket game" (with a TODO: limit) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
-const overview_3l = `Our study has 3 parts and lasts around 15min in total. Each part includes an interactive "blicket game" (with a TODO: limit) followed by a quiz about the game. The blicket game gets harder throughout the study.`;
-
-const qa_dict = {
+export const qa_dict = {
     "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false},
     "letter": {"question": "A block’s <em>letter</em> does <em>not</em> tell you whether it’s a blicket.", "correct_answer": true},
     "position": {"question": "A block’s <em>position</em> on the machine can influence whether the machine activates.", "correct_answer": false},
     "machine": {"question": "Only the blicket machine can help you figure out which blocks are blickets.", "correct_answer": true},
-    "time_limit": {"question": `You have a TODO:limit to play the blicket game and figure out which blocks are blickets.`, "correct_answer": true},
+    "intervention_limit": {"question": `You have a limited number of tries to test the blicket machine and figure out which blocks are blickets.`, "correct_answer": true},
+    "min_time": {"question": `There is a minimum amount of time you must spend on the blicket game.`, "correct_answer": true},
     "quiz": {"question": "After each blicket game, you will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
 };
 
@@ -114,7 +112,7 @@ const conj_l2 = {
 // Define all 6 conditions:
 const d1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,
     "Task_3": conj_l2.Task,
@@ -124,7 +122,7 @@ const d1_c2 = {
 
 const nd1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_disj_l1.Task,
     "Quiz_1": noisy_disj_l1.Quiz,
     "Task_3": conj_l2.Task,
@@ -134,7 +132,7 @@ const nd1_c2 = {
 
 const c1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
     "Task_3": conj_l2.Task,
@@ -144,7 +142,7 @@ const c1_c2 = {
 
 const nc1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_conj_l1.Task,
     "Quiz_1": noisy_conj_l1.Quiz,
     "Task_3": conj_l2.Task,
@@ -154,7 +152,7 @@ const nc1_c2 = {
 
 const cc1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": conj3_l1.Task,
     "Quiz_1": conj3_l1.Quiz,
     "Task_3": conj_l2.Task,
@@ -164,7 +162,7 @@ const cc1_c2 = {
 
 const ncc1_c2 = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro", overview: overview_2l, qa_dict: qa_dict},
+    "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_conj3_l1.Task,
     "Quiz_1": noisy_conj3_l1.Quiz,
     "Task_3": conj_l2.Task,

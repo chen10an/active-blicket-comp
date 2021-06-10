@@ -3,18 +3,8 @@
     // dev_mode.set(true);
 
     export let collection_id = "intro";
-    export let overview;  // overview description of the experiment
-    export let qa_dict;  // a dictionary with "question" (string that can contain html) and "correct_answer" (boolean) pairs
-
-    // set some default values for convenience during testing, but do this only in dev mode
-    if ($dev_mode) {
-        if (overview === undefined) {
-            overview = "TEST overview";
-        }
-        if (qa_dict === undefined) {
-            qa_dict = {"test": {"question": "TEST: A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false}};
-        }
-    }
+    
+    import { fixed_num_interventions_l1, fixed_num_interventions_l2, min_time_seconds_l1, min_time_seconds_l2, qa_dict } from '../../condition_configs/all_conditions.js';
 
     import CenteredCard from '../partials/CenteredCard.svelte';
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
@@ -107,12 +97,17 @@
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
         
         <h3>Overview</h3>
-        <p>{@html overview}</p>
+        <p>Our study has 2 levels and lasts around 10min in total. Each level includes an interactive "blicket game", involving blickets and a blicket machine, followed by a quiz about the game. The game and quiz get harder from level 1 to 2.</p>
 
-        <p>We'll tally your <b>quiz score</b> on the bottom right corner of your screen, and you'll earn a bonus of {$bonus_currency_str}{$bonus_val} for each correct quiz answer. You can earn a <b>total bonus up to {$bonus_currency_str}{$max_total_bonus}</b>.</p>
+        <p>There are two types of quiz questions:</p>
+        <ol>
+            <li>9 questions about blickets that award up to <b>{$bonus_currency_str}{$max_total_bonus}</b> bonus. Your bonus will be sent <b>within 2 working days</b>.</li>
+            <li>2 questions about the blicket machine that award up to <b>$0.3</b> bonus. These questions will take longer to score because they are evaluated by several other people. Your bonus will be sent <b>within 1.5 weeks</b>.</li>
+        </ol>
+        <p><b>In total, you can earn a bonus of {$bonus_currency_str}{$max_total_bonus + 0.3}</b>. </p>
         
         <h3>The Blicket Game</h3>
-        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>"blickets"</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
+        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>blickets</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket, and it doesn’t matter where blocks are placed on the machine.</p>
 
         <p>Here's an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
         <div class="centering-container" style="padding: 0;">
@@ -128,7 +123,7 @@
             
         <p>Try clicking on the blocks (A, B and C) above! This allows us to move any number of blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
             
-        <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. It doesn’t matter where blocks are placed on the machine.</p>
+        <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
         <h3>Checking Your Understanding of the Instructions</h3>
         {#each Object.keys(qa_dict) as key}
