@@ -28,6 +28,7 @@
     <CenteredCard has_button={false}>
         <h3 style="margin-bottom: 0">Thank you for participating!</h3>
         <p style="color: green;">Your final score is {$current_score}/{$max_score} (part 1: {$quiz_data_dict["level_1"].blicket_rating_scores.reduce((x,y) => x+y, 0)}; part 2: {$quiz_data_dict["level_2"].blicket_rating_scores.reduce((x,y) => x+y, 0)}), which results in a total bonus of {$bonus_currency_str}{$current_total_bonus}.</p>
+        <!-- TODO: reiterate how much bonus per q -->
         <p style="margin-top: 0;">Your MTurk completion code is: {[CODE_PREFIX, CODE_MID, code_suffix].join("-")}</p>
         <img src="/images/thankyou.jpg" alt="dog biting a thank you card">
         <span class="attribution"><br/>Photo by <a href="https://unsplash.com/@howier?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Howie R</a> on <a href="https://unsplash.com/s/photos/thank-you?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText" target="_blank">Unsplash</a></span>

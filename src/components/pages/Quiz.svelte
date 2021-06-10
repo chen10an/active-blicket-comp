@@ -197,9 +197,16 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
-        <p><b>Your score (and resulting bonus)</b> will be calculated after you answer and submit all questions. Only the "Will the blicket machine activate?" section will be scored, but we hope that you'll sincerely answer all questions. After submitting, the scored questions will be labeled with checkmarks or crosses, and you'll receive a <b>bonus of {$bonus_currency_str}{$bonus_val}</b> for each checkmark.</p>
+        <p><b>Your score (and resulting bonus)</b> will be calculated and shown at the <b>end of the study</b>. Only "Do you think these blocks are blickets?" and "How would you teach others about the blicket machine?" will be scored, but we hope you'll sincerely answer all questions.</p>
 
-        <h3>Do you think that these blocks are blickets?</h3>
+        <h3>Do you think these blocks are blickets?</h3>
+        <div class="info-box">
+            <p><b>Details about calculating score and bonus:</b></p>
+            <p>Each questions is scored as [1 - (difference between your rating and the correct rating)/10].</p>
+            <p>For example, if the correct rating is 10 and you answer 7, your score is 0.7. If the correct rating is 0 and you answer 3, your score is also 0.7.</p>
+            <p>The scores for all questions are added together and multiplied with {$bonus_currency_str}{$bonus_val} to produce your bonus (up to {$bonus_currency_str}{$bonus_val*$quiz_data_dict[collection_id].blicket_rating_groups.length} in this section.)</p>
+        </div>
+        
         <!-- Iterate over $block_dict, which orders blocks alphabetically -->
         {#each $block_dict[collection_id] as block, i}
             <div class="qa">
@@ -225,11 +232,18 @@
         <h3>What was your strategy for figuring out how the blicket machine works?</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_1} disabled="{!hide_correct_answers}"></textarea>
 
-        <h3>How would you teach someone else about the blicket machine?</h3>
-        Key:
-        <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blicket</div>
+        <h3>How would you teach others about the blicket machine?</h3>
+        <p>We are asking you to help us give 5 examples to help other people understand how the machine works. In each example, you can choose to add</p>
+            <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
+            <p>and</p>
+            <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
+            <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
 
-        <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain block</div>
+        <div class="info-box">
+            <p><b>Details about bonus calculations:</b></p>
+            <p>We will show your examples to other people <i>after the study</i>. Your bonus is calculated based on how well they understand the blicket machine. This process can take some time: we will send you your bonus within 1.5 weeks.</p>
+            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus is $0.15; if both choose the correct option, your bonus is $0.30.</p>
+        </div>
         
         {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
             <div class="qa">
@@ -302,23 +316,18 @@
     }
 
     .block-key {
-        margin-top: 0.1rem;
-        width: 100%;
-
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
     }
 
-    #checkmark {
-        color: green;
-        font-size: xx-large;
-    }
+    .info-box {
+        border: solid;
+        width: 100%;
+        padding: 0.5em;
 
-    #cross {
-        color: red;
-        font-size: xx-large;
+        font-size: 0.8em;
     }
 
     textarea {
