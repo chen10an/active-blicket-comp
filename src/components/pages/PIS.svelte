@@ -17,7 +17,7 @@
     <p>You’ve been asked to take part because we’re interested in studying many different people and their diverse approaches to problems in learning and decision-making.</p>
 
     <h3>Do I have to take part?</h3>
-    <p>No – participation in this study is entirely up to you. You can withdraw from the study at any time, without giving a reason. Your rights will not be affected. If you wish to withdraw, contact the PI. We will not use any identifiable data we collect from you in any publications or presentations submitted after you have withdrawn consent. However, we will retain your withdrawal request.</p>
+    <p>No – participation in this study is entirely up to you. You can withdraw from the study at any time, without giving a reason. Your rights will not be affected. If you wish to withdraw, contact the Principal Investigator. We will not use any identifiable data we collect from you in any publications or presentations submitted after you have withdrawn consent. However, we will retain your withdrawal request.</p>
 
     <h3>What will happen if I decide to take part?</h3>
     <p>You are invited to participate in an online study that involves observing, interacting with, and making judgments about simple stimuli on a web-based interface, such as geometric shapes and causal systems. Once you finish, we may have some questions about your experience (e.g., age, gender, feedback about how you approached the task). Your responses will be recorded.</p>
@@ -39,7 +39,7 @@
 
     <h3>Data protection and confidentiality.</h3>
     <p>Your data will be processed in accordance with Data Protection Law.  All identifiable information collected about you will be kept strictly confidential. Your data will be referred to by a unique participant number rather than by name. All identifiable data will only be viewed by the research team (listed above).</p>
-    <p>All identifiable electronic data will be stored on a password-protected encrypted computer, on the School of Informatics’ secure file servers, or on the University’s secure encrypted cloud storage services (DataShare, ownCloud, or Sharepoint) and all paper records will be stored in a locked filing cabinet in the PI’s office. Your consent information will be kept separately from your responses in order to minimize risk.</p>
+    <p>All identifiable electronic data will be stored on a password-protected encrypted computer, on the School of Informatics’ secure file servers, or on the University’s secure encrypted cloud storage services (DataShare, ownCloud, or Sharepoint) and all paper records will be stored in a locked filing cabinet in the Principal Investigator’s office. Your consent information will be kept separately from your responses in order to minimize risk.</p>
 
     <h3>What are my data protection rights?</h3>
     <p>The University of Edinburgh is a Data Controller for the information you provide. You have the right to access information held about you. Your right of access can be exercised in accordance with Data Protection Law. You also have other rights including rights of correction, erasure and objection. However, for fully anonymized data, it may be impossible to find, edit, and/or delete information about any individual. For more details, including the right to lodge a complaint with the Information Commissioner’s Office, please visit www.ico.org.uk. Questions, comments and requests about your personal data can also be sent to the University Data Protection Officer at dpo@ed.ac.uk.</p>
@@ -47,7 +47,7 @@
     <p>For general information about how we use your data, go to: edin.ac/privacy-research</p>
 
     <h3>Who can I contact?</h3>
-    <p>If you have any further questions about the study, please contact the lead researcher, Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
+    <p>If you have any further questions about the study, please contact the Principal Investigator, Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
     <p>If you have a complaint that the research team (cocosci_support@mlist.is.ed.ac.uk) cannot resolve, please contact inf-ethics@inf.ed.ac.uk. When you contact us, please provide the study title and detail the nature of your complaint.</p>
 
     <h3>Consent</h3>
