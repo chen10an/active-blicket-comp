@@ -38,6 +38,10 @@
     import { receive, CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import { onDestroy, tick } from 'svelte';
+    
+    // Event dispatcher for communicating with parent components
+    import {createEventDispatcher} from 'svelte';
+    const dispatch = createEventDispatcher();
 
     onDestroy(() => {
         clearInterval(instructions_interval);
@@ -58,7 +62,6 @@
     let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
     let show_instructions = true;
     let min_time_interval;  // count down to when the participant can continue
-    let has_ended = false;  // whether this task has ended
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_task = false;  // when true, participants cannot interact with the task (blocks + detector)
@@ -138,7 +141,8 @@
         clearInterval(instructions_interval);
         clearInterval(min_time_interval);
 
-        has_ended = true;
+        // Tell parent components to move on to the next quiz
+        dispatch("continue");
     }
 
     // Count down timer
@@ -170,71 +174,52 @@
 
 </script>
 
-{#if !has_ended}
-    <OverlayInstructions show={show_instructions}>
-        <CenteredCard has_button={false}>
-            <p><b>Can you figure out which blocks are blickets?</b> Please test the blicket machine <b>{fixed_num_interventions} times</b> and spend <b>at least {min_time_seconds}s</b> in the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
-            <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
-        </CenteredCard>
-    </OverlayInstructions>
 
-    <!--
-    {#if !show_instructions}
-        <div class="top">
-            <span class="info">
-                Remaining tries: <b>{fixed_num_interventions - all_block_combos.length}</b>
-                Minimum time: <b>{Math.max(min_time_seconds, 0)}</b>
-            </span>
-        </div>
-    {/if}
-    -->
-
-    <div class="centering-container" style="margin-top: 3rem;"
-    in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
-        <div class="col-container">
-            <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
-
-            <!-- Button for testing the detector -->
-            <button disabled="{disable_task}" on:click={test}>
-                Test the blicket machine <br>
-                Remaining tests: <b>{fixed_num_interventions - all_block_combos.length}</b>
-            </button>
-
-            <!-- Show all previously attempted block combinations -->
-            <h4 style="margin: 0;">Your previous (scrollable) results from the blicket machine:</h4>
-            <span>Be ready to be quizzed about blickets and the blicket machine.</span>
-            <div class="row-container">
-                <div id="all-combos">
-                    <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
-                    {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
-                        <div in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
-                        animate:flip="{{duration: FLIP_DURATION_MS}}">
-                            <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true}
-                                                         show_positive={copy_show_positive_detector()}/>  <!-- copy the primitive value so that it doesn't change dynamically when show_positive_detector changes -->
-                        </div>
-                    {/each}
-                </div>
-            </div>
-
-            <!-- Continue button -->
-            <button disabled="{!can_cont}" on:click="{cont}">
-                Continue to the quiz
-            </button>
-            <p class:hide="{can_cont}" style="color: red;">You will be able to continue after
-                {all_block_combos.length < fixed_num_interventions ? (fixed_num_interventions - all_block_combos.length) + " more tests" : ""}
-                {(all_block_combos.length < fixed_num_interventions) && (min_time_seconds > -1) ? " and  " : ""}
-                {min_time_seconds > -1 ? Math.max(min_time_seconds, 0) + " more seconds" : ""}.
-            </p>
-            
-            <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
-        </div>
-    </div>
-{:else}
-    <!-- Show when the time limit is reached and forward the continue event upward. -->
-    <CenteredCard on:continue>
-        <h3 style="text-align: center;">Time's up! The next part is a quiz about the blickets and blicket machine you just saw.</h3>
+<OverlayInstructions show={show_instructions}>
+    <CenteredCard has_button={false}>
+        <p><b>Can you figure out which blocks are blickets?</b> Please test the blicket machine <b>{fixed_num_interventions} times</b> and spend <b>at least {min_time_seconds}s</b> in the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
+        <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
     </CenteredCard>
-{/if}
+</OverlayInstructions>
+
+<div class="centering-container" style="margin-top: 3rem;"
+in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
+    <div class="col-container">
+        <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
+
+        <!-- Button for testing the detector -->
+        <button disabled="{disable_task}" on:click={test}>
+            Test the blicket machine <br>
+            Remaining tests: <b>{fixed_num_interventions - all_block_combos.length}</b>
+        </button>
+
+        <!-- Show all previously attempted block combinations -->
+        <h4 style="margin: 0;">Your previous (scrollable) results from the blicket machine:</h4>
+        <span>Be ready to be quizzed about blickets and the blicket machine.</span>
+        <div class="row-container">
+            <div id="all-combos">
+                <!-- Use `all_block_combos.length - i` in the key because we are adding new block combos to the front of the array -->
+                {#each all_block_combos as block_arr, i (("combo_").concat(all_block_combos.length - i))}  
+                    <div in:receive="{{key: ("combo_").concat(all_block_combos.length - i)}}"
+                    animate:flip="{{duration: FLIP_DURATION_MS}}">
+                        <BlockGrid copied_blocks_arr={block_arr} collection_id={null} is_mini={true} is_disabled={true} use_transitions={false} block_filter_func={block => block.state} is_detector={true}
+                                                     show_positive={copy_show_positive_detector()}/>  <!-- copy the primitive value so that it doesn't change dynamically when show_positive_detector changes -->
+                    </div>
+                {/each}
+            </div>
+        </div>
+
+        <!-- Continue button -->
+        <button disabled="{!can_cont}" on:click="{cont}">
+            Continue to the quiz
+        </button>
+        <p class:hide="{can_cont}" style="color: red;">You will be able to continue after
+            {all_block_combos.length < fixed_num_interventions ? (fixed_num_interventions - all_block_combos.length) + " more tests" : ""}{(all_block_combos.length < fixed_num_interventions) && (min_time_seconds > -1) ? " and  " : ""}{min_time_seconds > -1 ? Math.max(min_time_seconds, 0) + " more seconds" : ""}.
+        </p>
+
+        <button class:hide="{!$dev_mode}" on:click={cont}>dev: skip</button>
+    </div>
+</div>
 
 
 <style>
