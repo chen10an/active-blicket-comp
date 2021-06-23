@@ -16,8 +16,8 @@ class Block {
         }
         this.color = color;  // name of the css variable that contains the color (string)
 
-        if (typeof letter !== "string" || letter.length > 1) {
-            throw new Error("The letter should be a string of length <=1.")
+        if (typeof letter !== "string") {
+            throw new Error("The letter should be a string.")
         }
         this.letter = letter;  // an upper-case letter or empty (string)
 

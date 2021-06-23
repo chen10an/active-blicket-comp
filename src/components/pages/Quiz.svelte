@@ -235,9 +235,9 @@
 
         <h3>How would you teach others about the blicket machine?</h3>
         <p>We are asking you to help us give 5 examples to help other people understand how the blicket machine works. In each example, you can choose to add</p>
-        <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
+        <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
         <p>and</p>
-        <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
+        <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
         <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
         
         <p>We will show your examples to other people <b>after the study</b>. They will also know that blickets are light gray and plain blocks are dark gray. Your bonus is calculated based on how well they understand the blicket machine. This process may take some time: we will send you your bonus <b>within 1.5 weeks</b>.</p>

@@ -45,8 +45,8 @@
             // visually separate blickets vs nonblickets via different gray-scale colors; the hardcoded color strings need to correspond to css variable names that contain the color
             // one blicket OR one nonblicket can fill a position on the detector (0-8)
             // except the first blicket/nonblicket which has position -1; this first block is used as a button for moving other blocks in their pile onto the detector
-            let blicket = new BlockClass(i, false, "light-gray", "", i-1);
-            let nonblicket = new BlockClass(i+NONBLICKET_START_DEX, false, "dark-gray", "", i-1);
+            let blicket = new BlockClass(i, false, "dark-gray", "&#9734;", i-1);
+            let nonblicket = new BlockClass(i+NONBLICKET_START_DEX, false, "light-gray", "", i-1);
             blicket_pile.push(blicket);
             nonblicket_pile.push(nonblicket);
         }

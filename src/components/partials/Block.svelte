@@ -22,12 +22,12 @@
     class:mini="{is_mini}" class:disabled="{is_disabled}"
     in:receive="{{key: key_prefix.concat(String(block.id))}}" out:send="{{key: key_prefix.concat(String(block.id))}}"
     on:click={() => click(block)}>
-        <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
+        <span class="block-letter" class:mini="{is_mini}"><b>{@html block.letter}</b></span>
     </div>
 {:else}
     <div class="block" style="background-color: var(--{block.color}); grid-area: {"pos".concat(block.position)};"
     class:mini="{is_mini}" class:disabled="{is_disabled}">
-        <span class="block-letter" class:mini="{is_mini}"><b>{block.letter}</b></span>
+        <span class="block-letter" class:mini="{is_mini}"><b>{@html block.letter}</b></span>
     </div>
 {/if}
 
