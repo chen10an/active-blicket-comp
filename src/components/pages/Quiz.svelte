@@ -22,7 +22,7 @@
             });
         }
 
-        // page_num = 2;
+        page_num = 2;
         // is_last = true;
     }
     let max_page_num = is_last ? 3 : 2;
@@ -81,11 +81,6 @@
         return dict;
     });
 
-    // TODO: remove
-    console.log(collection_id)
-    console.log($block_dict)
-    $: console.log($quiz_data_dict[collection_id])
-
     // initialize the stored answers
     for (let i=0; i < $block_dict[collection_id].length; i++) {
         quiz_data_dict.update(dict => {
@@ -97,7 +92,7 @@
     // 5 teaching examples
     for (let i=0; i < 5; i++) {
         quiz_data_dict.update(dict => {
-            dict[collection_id].teaching_ex.push({detector_state: false, blocks:[]});
+            dict[collection_id].teaching_ex.push({detector_state: false, blicket_nonblicket_combo: ""});
             return dict;
         });
     }
@@ -122,7 +117,13 @@
                 answered_all = false;
             }
 
-            // TODO: check teaching question
+            let teaching_ex = $quiz_data_dict[collection_id].teaching_ex
+            for (let i=0; i < teaching_ex.length; i++) {
+                if (teaching_ex[i].blicket_nonblicket_combo === "") {
+                    // one of teaching ex is empty (no blickets/nonblickets placed onto the detector)
+                    answered_all = false;
+                }
+            }
 
         } else if (page_num === max_page_num && is_last) {
             answered_all = true;
@@ -160,19 +161,6 @@
             // add sum of blicket rating scores to current running score
             current_score.update(score => score += $quiz_data_dict[collection_id].blicket_rating_scores.reduce((x,y) => x+y, 0));
         } else if (page_num === 2) {
-        
-            // TODO: edit the below code to store copy of blicket_nonblicket_piles blocks to maintain the participant's chosen block states
-            // copy the array of block objects and sort by the randomly assigned id
-            let blocks_copy = [...$block_dict[collection_id]];
-            blocks_copy.sort((a, b) => a.id - b.id);
-            // the randomly assigned id then becomes the argument position in `activation`
-            let block_states = blocks_copy.map(block => block.state);
-            // record the combo representation of the participant's blicket answers
-            quiz_data_dict.update(dict => {
-                dict[collection_id].blicket_answer_combo = new Combo(block_states.map(state => state ? "1" : "0").join(""));
-                return dict;
-            });
-
             // escape quotes in free response questions
             quiz_data_dict.update(dict => {
                 dict[collection_id].free_response_0 = escape_quotes($quiz_data_dict[collection_id].free_response_0);
@@ -216,73 +204,71 @@
 
 <svelte:window bind:scrollY={scrollY}/>
 
-<div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
-    <CenteredCard is_large={true} has_button={false}>
-        <h2>Quiz about Blickets and the Blicket Machine (Part {page_num}/{max_page_num})</h2>
+<CenteredCard is_large={true} has_button={false}>
+    <h2>Quiz about Blickets and the Blicket Machine (Part {page_num}/{max_page_num})</h2>
 
-        {#if page_num === 1}
-            <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
-                <h3>Do you think these blocks are blickets?</h3>
-                <p style="margin-bottom: 3em;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent to you <b>within {short_bonus_time}</b>.</p>
-                
-                <!-- Iterate over $block_dict, which orders blocks alphabetically -->
-                {#each $block_dict[collection_id] as block, i}
-                    <div class="qa">
-                        <Block block="{block}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" /> 
-                        <div class="answer-options">
-                            <select bind:value={$quiz_data_dict[collection_id].blicket_rating_groups[get_rel_id(block.id)]}>  <!-- store the value in the group/index corresponding to the _relative id_ of the block -->
-                                {#each BLICKET_ANSWER_OPTIONS as option}
-                                    <option value={option.val}>
-                                        {option.text}
-                                    </option>
-                                {/each}
-                            </select>
-                        </div>
+    {#if page_num === 1}
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+            <h3>Do you think these blocks are blickets?</h3>
+            <p style="margin-bottom: 3em;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent to you <b>within {short_bonus_time}</b>.</p>
+            
+            <!-- Iterate over $block_dict, which orders blocks alphabetically -->
+            {#each $block_dict[collection_id] as block, i}
+                <div class="qa">
+                    <Block block="{block}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" /> 
+                    <div class="answer-options">
+                        <select bind:value={$quiz_data_dict[collection_id].blicket_rating_groups[get_rel_id(block.id)]}>  <!-- store the value in the group/index corresponding to the _relative id_ of the block -->
+                            {#each BLICKET_ANSWER_OPTIONS as option}
+                                <option value={option.val}>
+                                    {option.text}
+                                </option>
+                            {/each}
+                        </select>
                     </div>
-                {/each}
-            </div>
+                </div>
+            {/each}
+        </div>
         {:else if page_num === 2}
-            <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
-                <p>Only the question "How would you teach others about the blicket machine?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
-                
-                <h3>How do you think the blicket machine works?</h3>
-                <textarea bind:value={$quiz_data_dict[collection_id].free_response_0}></textarea>
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+            <p>Only the question "How would you teach others about the blicket machine?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
+            
+            <h3>How do you think the blicket machine works?</h3>
+            <textarea bind:value={$quiz_data_dict[collection_id].free_response_0}></textarea>
 
-                <h3>What was your strategy for figuring out how the blicket machine works?</h3>
-                <textarea bind:value={$quiz_data_dict[collection_id].free_response_1}></textarea>
+            <h3>What was your strategy for figuring out how the blicket machine works?</h3>
+            <textarea bind:value={$quiz_data_dict[collection_id].free_response_1}></textarea>
 
-                <h3>How would you teach others about the blicket machine?</h3>
-                <p>We are asking you to help us give 5 examples to help other people understand how the blicket machine works. In each example, you can choose to add</p>
-                <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
-                <p>and</p>
-                <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
-                <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
-                
-                <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val}) <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
-                
-                {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
-                    <div class="qa">
-                        <p style="margin-top: 0;"><b>Example {i+1}</b></p>
-                        <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit={$block_dict[collection_id].length} bind:show_positive_detector={ex.detector_state}/>
-                    </div>
-                {/each}
-            </div>
+            <h3>How would you teach others about the blicket machine?</h3>
+            <p>We are asking you to help us give 5 examples to help other people understand how the blicket machine works. In each example, you can choose to add</p>
+            <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
+            <p>and</p>
+            <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
+            <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
+            
+            <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val}) <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+            
+            {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
+                <div class="qa">
+                    <p style="margin-top: 0;"><b>Example {i+1}</b></p>
+                    <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit="{$block_dict[collection_id].length}" bind:show_positive_detector="{ex.detector_state}" bind:blicket_nonblicket_combo="{ex.blicket_nonblicket_combo}" />
+                </div>
+            {/each}
+        </div>
 
         {:else if is_last}
-            <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
-                <h3 style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
-                <p>We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
-                <textarea class:hide="{!is_last}" bind:value={$feedback}></textarea>
-            </div>
-        {/if}
-        <button on:click="{submit_answers}" disabled="{!answered_all}">
-            Submit ({page_num}/{max_page_num})
-        </button>
-        <p class:hide="{answered_all}" style="color: red;">You will be able to submit after answering all questions.</p>
-        
-        <button class:hide="{!$dev_mode}" on:click="{skip_validation}">dev: skip form validation</button>
-    </CenteredCard>
-</div>
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+            <h3 style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
+            <p>We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
+            <textarea class:hide="{!is_last}" bind:value={$feedback}></textarea>
+        </div>
+    {/if}
+    <button on:click="{submit_answers}" disabled="{!answered_all}">
+        Submit ({page_num}/{max_page_num})
+    </button>
+    <p class:hide="{answered_all}" style="color: red;">You will be able to submit after answering all questions.</p>
+    
+    <button class:hide="{!$dev_mode}" on:click="{skip_validation}">dev: skip form validation</button>
+</CenteredCard>
 
 <style>
     .middle-transition-div {

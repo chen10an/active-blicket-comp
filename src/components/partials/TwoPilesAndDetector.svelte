@@ -1,7 +1,8 @@
 <script>
     // Props
-    // parent component should bind this:
+    // parent component should bind these:
     export let show_positive_detector = false;  // whether the participant wants the detector to show a positive response
+    export let blicket_nonblicket_combo = "";  // string for a special kind of combo that shows the blickets ("*") and nonblickets (".") currently on the detector, indexed by the order the participant placed them on the detector (rather than block id, as used in regular combos)
     
     // input
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
@@ -75,9 +76,15 @@
         
         // put block at the right position onto the detector
         if (block.id === 0) {
+            // show the blicket at next_detector_pos
             $block_dict[collection_id].filter(block => block.id < NONBLICKET_START_DEX && block.position === next_detector_pos)[0].flip();
+
+            blicket_nonblicket_combo += "*";
         } else if (block.id === NONBLICKET_START_DEX) {
+            // show the nonblicket at next_detector_pos
             $block_dict[collection_id].filter(block => block.id >= NONBLICKET_START_DEX && block.position === next_detector_pos)[0].flip();
+
+            blicket_nonblicket_combo += ".";
         }
 
         next_detector_pos += 1;
@@ -97,6 +104,7 @@
 
         // reset the next detector position and warning
         next_detector_pos = 0;
+        blicket_nonblicket_combo = "";
         hide_limit_warning = true;
     }
 
