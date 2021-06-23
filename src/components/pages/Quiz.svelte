@@ -263,7 +263,7 @@
                 {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
                     <div class="qa">
                         <p style="margin-top: 0;"><b>Example {i+1}</b></p>
-                        <TwoPilesAndDetector collection_id="piles_{i}" num_on_blocks_limit={$block_dict[collection_id].length} bind:show_positive_detector={ex.detector_state}/>
+                        <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit={$block_dict[collection_id].length} bind:show_positive_detector={ex.detector_state}/>
                     </div>
                 {/each}
             </div>
