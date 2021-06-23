@@ -102,9 +102,9 @@
         <p>There are two types of quiz questions:</p>
         <ol>
             <li>9 questions about blickets that award up to <b>{$bonus_currency_str}{$max_total_bonus}</b> bonus. Your bonus will be sent <b>within {short_bonus_time}</b>.</li>
-            <li>2 questions about the blicket machine that award up to <b>{$bonus_currency_str}{teaching_bonus_val*2}</b> bonus. These questions will take longer to score because they are evaluated by several other people. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
+            <li>2 questions about the blicket machine that award up to <b>{$bonus_currency_str}{+(teaching_bonus_val*2).toFixed(3)}</b> bonus. These questions will take longer to score because they are evaluated by several other people. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
         </ol>
-        <p><b>In total, you can earn a bonus of {$bonus_currency_str}{$max_total_bonus + teaching_bonus_val*2}</b>. </p>
+        <p><b>In total, you can earn a bonus of {$bonus_currency_str}{+($max_total_bonus + teaching_bonus_val*2).toFixed(3)}</b>. </p>
         
         <h3>The Blicket Game</h3>
         <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>blickets</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket, and it doesn’t matter where blocks are placed on the machine.</p>

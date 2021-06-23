@@ -29,7 +29,8 @@
     import Block from '../partials/Block.svelte';
     import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
     import { Combo, Block as BlockClass } from '../../modules/block_classes.js';
-    import { long_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
+    import { tooltip } from '../../modules/tooltip.js';
+    import { long_bonus_time, short_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
@@ -198,16 +199,10 @@
 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     <CenteredCard is_large={true} has_button={false}>
         <h2>Quiz about Blickets and the Blicket Machine</h2>
-        <p><b>Your score (and resulting bonus)</b> will be calculated and shown at the <b>end of the study</b>. Only "Do you think these blocks are blickets?" and "How would you teach others about the blicket machine?" will be scored, but we hope you'll sincerely answer all questions.</p>
+        <p>Only the questions "Do you think these blocks are blickets?" and "How would you teach others about the blicket machine?" can award bonuses, but we hope you'll sincerely answer all questions.</p>
 
         <h3>Do you think these blocks are blickets?</h3>
-        <p>Your score and bonus is calculated based on how close your blicket rating is to the correct rating. They will be shown at the <b>end of the study</b>.</p>
-        <div class="info-box">
-            <p><b>Details about calculating score and bonus:</b></p>
-            <p>Each question is scored as [1 - (difference between your rating and the correct rating)/10].</p>
-            <p>For example, if the correct rating is 10 and you answer 7, your score is 0.7. If the correct rating is 0 and you answer 3, your score is also 0.7.</p>
-            <p>The scores for the questions here are added together and multiplied with {$bonus_currency_str}{$bonus_val} to produce your bonus (up to {$bonus_currency_str}{$bonus_val*$quiz_data_dict[collection_id].blicket_rating_groups.length}).</p>
-        </div>
+        <p>The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent to you <b>within {short_bonus_time}</b>.</p>
         
         <!-- Iterate over $block_dict, which orders blocks alphabetically -->
         {#each $block_dict[collection_id] as block, i}
@@ -224,9 +219,6 @@
                 </div>
             </div>
         {/each}
-        <!-- <h3>Which blocks do you think are blickets?</h3>
-             <p style="margin-top: 0;">Please do your best to move only the blickets onto the blicket machine.</p>
-             <GridDetectorPair collection_id={collection_id} is_disabled={!hide_correct_answers} is_mini={true} key_prefix="quiz_blicket"/> -->
 
         <h3>How do you think the blicket machine works?</h3>
         <textarea bind:value={$quiz_data_dict[collection_id].free_response_0} disabled="{!hide_correct_answers}"></textarea>
@@ -241,12 +233,7 @@
         <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
         <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
         
-        <p>We will show your examples to other people <b>after the study</b>. They will also know which blocks are blickets (star) or not (plain). Your bonus is calculated based on how well they understand the blicket machine. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
-
-        <div class="info-box">
-            <p><b>Details about calculating bonus:</b></p>
-            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val/2}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}.</p>
-        </div>
+        <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val}) <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
         
         {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
             <div class="qa">
@@ -327,8 +314,10 @@
 
     .info-box {
         border: solid;
-        width: 100%;
-        padding: 0.5em;
+        border-color: var(--medium-gray);
+	      border-width: 1px;
+        box-shadow: var(--container-box-shadow);
+        padding: 0 0.5em;
 
         font-size: 0.8em;
     }
