@@ -8,6 +8,7 @@
     export let correct_blicket_ratings;  // array of correct blicket ratings
     export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
+    let page_num = 1;  // keep track of a multipage quiz    
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
         if (correct_blicket_ratings === undefined) {
@@ -20,8 +21,11 @@
                 return dict;
             });
         }
+
+        // page_num = 2;
         // is_last = true;
     }
+    let max_page_num = is_last ? 3 : 2;
 
     // Imports
     import CenteredCard from '../partials/CenteredCard.svelte';
@@ -61,8 +65,6 @@
     
     // Initialize and store variables
     let scrollY = 0;
-    let page_num = 1;  // keep track of a multipage quiz
-    let max_page_num = is_last ? 3 : 2;
 
     // Store participant answers
     quiz_data_dict.update(dict => {
@@ -134,8 +136,6 @@
     // event dispatcher for communicating with parent components
     const dispatch = createEventDispatcher();
     function submit_answers() {
-        scrollY = 0;  // scroll to the top
-
         if (page_num === 1) {
             // calculate participant's score for the ith block (ordered by _relative_ block id)
             for (let i=0; i < $quiz_data_dict[collection_id].blicket_rating_groups.length; i++) {
@@ -188,6 +188,7 @@
             dispatch("continue");
         } else {
             page_num += 1;  // show next page
+            scrollY = 0;  // scroll to the top
         }
     }
 
@@ -227,7 +228,7 @@
                 <!-- Iterate over $block_dict, which orders blocks alphabetically -->
                 {#each $block_dict[collection_id] as block, i}
                     <div class="qa">
-                        <Block block="{block}" is_mini="{false}" is_disabled="{true}"/> 
+                        <Block block="{block}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" /> 
                         <div class="answer-options">
                             <select bind:value={$quiz_data_dict[collection_id].blicket_rating_groups[get_rel_id(block.id)]}>  <!-- store the value in the group/index corresponding to the _relative id_ of the block -->
                                 {#each BLICKET_ANSWER_OPTIONS as option}
@@ -261,6 +262,7 @@
                 
                 {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
                     <div class="qa">
+                        <p style="margin-top: 0;"><b>Example {i+1}</b></p>
                         <TwoPilesAndDetector collection_id="piles_{i}" num_on_blocks_limit={$block_dict[collection_id].length} bind:show_positive_detector={ex.detector_state}/>
                     </div>
                 {/each}
