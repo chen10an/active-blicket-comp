@@ -29,6 +29,7 @@
     import Block from '../partials/Block.svelte';
     import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
     import { Combo, Block as BlockClass } from '../../modules/block_classes.js';
+    import { long_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
@@ -240,11 +241,11 @@
         <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
         <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
         
-        <p>We will show your examples to other people <b>after the study</b>. They will also know that blickets are light gray and plain blocks are dark gray. Your bonus is calculated based on how well they understand the blicket machine. This process may take some time: we will send you your bonus <b>within 1.5 weeks</b>.</p>
+        <p>We will show your examples to other people <b>after the study</b>. They will also know which blocks are blickets (star) or not (plain). Your bonus is calculated based on how well they understand the blicket machine. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
 
         <div class="info-box">
             <p><b>Details about calculating bonus:</b></p>
-            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus is $0.075; if both choose the correct option, your bonus is $0.15.</p>
+            <p>Two other people will choose from 7 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val/2}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}.</p>
         </div>
         
         {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}

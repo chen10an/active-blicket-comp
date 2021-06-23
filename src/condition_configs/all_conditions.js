@@ -1,16 +1,9 @@
-// this config file specifies the following 8 experiment conditions:
+// this file specifies the experiment conditions as well as any one-off variables that are needed for a specific experiment version but will not necessarily generalize to future versions (e.g., long_bonus_time and teaching_bonus_val in 2.x.x)
 
-// mismatched (where the last task has a different causal relationship from the preceding tasks):
-// c_1 c_2 d_3
-// d_1 d_2 c_3
-// c_1 d_3
-// d_1 c_3
+export const short_bonus_time = "2 working days";  // max time for receiving auto-calculated bonus
 
-// matched (where the last task has the same causal relationship as the preceding tasks):
-// c_1 c_2 c_3
-// d_1 d_2 d_3
-// c_1 c_3
-// d_1 d_3
+export const long_bonus_time = "10 working days";  // max time for receiving coded bonus
+export const teaching_bonus_val = 0.16;
 
 export const fixed_num_interventions_l1 = 10;
 export const fixed_num_interventions_l2 = 20;

@@ -12,6 +12,7 @@ export const FADE_IN_DELAY_MS = 500;
 export const dev_mode = writable(false);
 
 // Write-able ints for the participant's score and bonus throughout the experiment
+// these keep track of the score/bonus that are automatically calculated and sent out shortly after completion, not score/bonus that are coded by experimenters and sent out with a longer delay
 export const max_score = writable(0);
 export const current_score = writable(0);
 export const bonus_val = writable(0);
