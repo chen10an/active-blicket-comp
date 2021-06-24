@@ -40,8 +40,8 @@ export const feedback = writable("");
 // Write-able responses to honeypot captcha
 export const honeypot_responses = writable({});
 
-// Write-able number of clicks on the intro page's continue button
-export const num_cont_clicks = writable(0);
+// Write-able dict storing the number of clicks on the intro page's continue buttons
+export const intro_cont_clicks = writable({});  // dict maps subpage numbers (within the overall intro page) to the number of continue clicks on that subpage
 
 export function reset_experiment_stores() {
     // Reset experiment store values without relying on start() and stop()
