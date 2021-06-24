@@ -69,7 +69,6 @@
     // Store participant answers
     quiz_data_dict.update(dict => {
         dict[collection_id] = {
-            blicket_answer_combo: "",
             blicket_rating_groups: [],
             correct_blicket_ratings: correct_blicket_ratings,
             blicket_rating_scores: [],
