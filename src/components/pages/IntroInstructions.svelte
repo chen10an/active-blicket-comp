@@ -10,8 +10,9 @@
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks } from '../../modules/experiment_stores.js';
-    import { BlockGetter } from '../../modules/block_classes.js';
+    import Block from '../partials/Block.svelte';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks, BLICKET_ANSWER_OPTIONS } from '../../modules/experiment_stores.js';
+    import { BlockGetter, Block as BlockClass } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
     import {createEventDispatcher} from 'svelte';
@@ -125,6 +126,43 @@
             
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
+        <h3>Quiz about Blickets</h3>
+        <p>After the blicket game, some quiz questions will ask you to rate blocks as blickets or not. If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
+        <p>Here is a practice question with dummy blocks:</p>
+    </div>
+    <p>If you are certain that</p>
+    <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> is a blicket</div>
+    <p>and</p>
+    <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> is not a blicket </div>
+    <p>how would you rate them?</p>
+
+    <Block block="{new BlockClass(-1, false, "dark-gray", "&#9734;", -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+    <div class="answer-options">
+        <!-- TODO: bind and check -->
+        <select>
+            {#each BLICKET_ANSWER_OPTIONS as option}
+                <option value={option.val}>
+                    {option.text}
+                </option>
+            {/each}
+        </select>
+    </div>
+    
+    <Block block="{new BlockClass(-1, false, "light-gray", "", -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+    <div class="answer-options">
+        <!-- TODO: bind and check -->
+        <select>
+            {#each BLICKET_ANSWER_OPTIONS as option}
+                <option value={option.val}>
+                    {option.text}
+                </option>
+            {/each}
+        </select>
+    </div>
+
+    <button>Check your ratings</button>
+    
+    <div>
         <h3>Checking Your Understanding of the Instructions</h3>
         {#each Object.keys(qa_dict) as key}
             <div class="qa">
@@ -187,5 +225,21 @@
     p.wrong {
         color: red;
         margin: 0;
+    }
+
+    .block-key {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .answer-options {
+        margin-top: 0.1rem;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
     }
 </style>

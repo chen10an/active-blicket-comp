@@ -31,7 +31,7 @@
     import CenteredCard from '../partials/CenteredCard.svelte';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str } from '../../modules/experiment_stores.js';
+    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS } from '../../modules/experiment_stores.js';
     import { Combo, Block as BlockClass } from '../../modules/block_classes.js';
     import { tooltip } from '../../modules/tooltip.js';
     import { long_bonus_time, short_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
@@ -45,24 +45,7 @@
             return dict;
         });
     }
-
-    // Constants
-    const ACTIVATION_ANSWER_OPTIONS = ["Yes", "No"];
-    const BLICKET_ANSWER_OPTIONS = [
-        {val: null, text: "Please select an answer."},
-        {val: 10, text: "10 — Definitely a blicket."}, 
-        {val: 9, text: "9"}, 
-        {val: 8, text: "8 — Almost sure this is a blicket."}, 
-        {val: 7, text: "7"}, 
-        {val: 6, text: "6"}, 
-        {val: 5, text: "5 — Equally likely to be a blicket or not."}, 
-        {val: 4, text: "4"},
-        {val: 3, text: "3"},
-        {val: 2, text: "2 — Almost sure this is NOT a blicket."},
-        {val: 1, text: "1"},
-        {val: 0, text: "0 — Definitely NOT a blicket."}
-    ]
-    
+ 
     // Initialize and store variables
     let scrollY = 0;
 
