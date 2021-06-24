@@ -22,7 +22,7 @@
             });
         }
 
-        page_num = 2;
+        // page_num = 2;
         // is_last = true;
     }
     let max_page_num = is_last ? 3 : 2;
