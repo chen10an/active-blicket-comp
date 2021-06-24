@@ -118,9 +118,9 @@
 <div class="row-container">
     <div class="col-container">
         <div class="col-container">
-            <Block block={$block_dict[collection_id][0]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)}/>
+            <Block block={$block_dict[collection_id][0]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}"/>
             
-            <Block block={$block_dict[collection_id][NONBLICKET_START_DEX]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} />
+            <Block block={$block_dict[collection_id][NONBLICKET_START_DEX]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}" />
         </div>
 
         <button disabled="{is_disabled}" on:click={combined_reset} style="min-width: var(--mini-block-length); justify-self: flex-end;">
@@ -129,7 +129,7 @@
     </div>
 
     <div class="col-container">
-        <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} />
+        <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} use_transitions="{true}"/>
         
         <button disabled="{is_disabled}" on:click="{flip_detector}" >
             {show_positive_detector ? "Deactivate" : "Activate"} the <br> blicket machine
