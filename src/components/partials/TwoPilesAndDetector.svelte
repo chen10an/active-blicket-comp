@@ -9,6 +9,7 @@
     export let num_on_blocks_limit;  // limit on the _combined_ number of blickets and nonblickets that the participant can put onto the detector
     export let is_disabled;  // boolean for disabling clicking on the piles and detector
 
+    import { dev_mode } from '../../modules/experiment_stores.js';
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
         if (collection_id === undefined) {
@@ -25,8 +26,8 @@
     }
 
     // Imports
-    import { block_dict, dev_mode } from '../../modules/experiment_stores.js';
-    import { Block as BlockClass, TOTAL_CSS_GRID_AREAS } from '../../modules/block_classes.js';
+    import { block_dict, make_dummy_blicket, make_dummy_nonblicket} from '../../modules/experiment_stores.js';
+    import { TOTAL_CSS_GRID_AREAS } from '../../modules/block_classes.js';
     import BlockGrid from './BlockGrid.svelte';
     import Block from './Block.svelte';
 
@@ -46,8 +47,8 @@
             // visually separate blickets vs nonblickets via different gray-scale colors; the hardcoded color strings need to correspond to css variable names that contain the color
             // one blicket OR one nonblicket can fill a position on the detector (0-8)
             // except the first blicket/nonblicket which has position -1; this first block is used as a button for moving other blocks in their pile onto the detector
-            let blicket = new BlockClass(i, false, "dark-gray", "&#9734;", i-1);
-            let nonblicket = new BlockClass(i+NONBLICKET_START_DEX, false, "light-gray", "", i-1);
+            let blicket = make_dummy_blicket(i, i-1);
+            let nonblicket = make_dummy_nonblicket(i+NONBLICKET_START_DEX, i-1);
             blicket_pile.push(blicket);
             nonblicket_pile.push(nonblicket);
         }

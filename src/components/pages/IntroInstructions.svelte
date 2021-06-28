@@ -11,7 +11,7 @@
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks, BLICKET_ANSWER_OPTIONS } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket} from '../../modules/experiment_stores.js';
     import { BlockGetter, Block as BlockClass } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
@@ -127,16 +127,16 @@
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
         <h3>Quiz about Blickets</h3>
-        <p>After the blicket game, some quiz questions will ask you to rate blocks as blickets or not. If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
-        <p>Here is a practice question with dummy blocks:</p>
+        <p>After the blicket game, you will be asked to rate the blocks: If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
+        <p>Here is a practice question with dummy blocks: If you are certain that
+            <span style="display: inline-block;"><Block block="{make_dummy_blicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
+            is a blicket and
+            <span style="display: inline-block;"><Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
+            is not a blicket, how would you rate them?
+        </p>
     </div>
-    <p>If you are certain that</p>
-    <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> is a blicket</div>
-    <p>and</p>
-    <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> is not a blicket </div>
-    <p>how would you rate them?</p>
 
-    <Block block="{new BlockClass(-1, false, "dark-gray", "&#9734;", -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+    <Block block="{make_dummy_blicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
     <div class="answer-options">
         <!-- TODO: bind and check -->
         <select>
@@ -148,7 +148,7 @@
         </select>
     </div>
     
-    <Block block="{new BlockClass(-1, false, "light-gray", "", -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+    <Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
     <div class="answer-options">
         <!-- TODO: bind and check -->
         <select>
@@ -225,13 +225,6 @@
     p.wrong {
         color: red;
         margin: 0;
-    }
-
-    .block-key {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
     }
 
     .answer-options {

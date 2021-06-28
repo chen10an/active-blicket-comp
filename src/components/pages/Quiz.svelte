@@ -31,8 +31,7 @@
     import CenteredCard from '../partials/CenteredCard.svelte';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS } from '../../modules/experiment_stores.js';
-    import { Combo, Block as BlockClass } from '../../modules/block_classes.js';
+    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket } from '../../modules/experiment_stores.js';
     import { tooltip } from '../../modules/tooltip.js';
     import { long_bonus_time, short_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
     import { fade } from 'svelte/transition';
@@ -222,9 +221,9 @@
 
             <h3>How would you teach others about the blicket machine?</h3>
             <p>We are asking you to help us give 5 examples to help other people understand how the blicket machine works. In each example, you can choose to add</p>
-            <div class="block-key"><Block block={new BlockClass(-1, false, "dark-gray", "&#9734;", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> blickets</div>
-            <p>and</p>
-            <div class="block-key"><Block block={new BlockClass(-1, false, "light-gray", "", -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /> plain blocks (not blickets) </div>
+            <span><span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> blickets</span>
+            <span>and</span>
+            <span><span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> plain blocks (not blickets) </span>
             <p>to a blicket machine. You can then choose whether that blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
             
             <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val}) <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
@@ -277,13 +276,6 @@
     .answer-options {
         margin-top: 0.1rem;
 
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .block-key {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
