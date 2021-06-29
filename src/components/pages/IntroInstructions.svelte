@@ -11,11 +11,11 @@
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, num_cont_clicks, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket} from '../../modules/experiment_stores.js';
-    import { BlockGetter, Block as BlockClass } from '../../modules/block_classes.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_val, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_cont_clicks } from '../../modules/experiment_stores.js';
+    import { BlockGetter } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { fade } from 'svelte/transition';
-    import {createEventDispatcher} from 'svelte';
+    import { createEventDispatcher } from 'svelte';
 
     // Constants
     const dispatch = createEventDispatcher();  // for communicating with parent components
@@ -56,37 +56,62 @@
     }
 
     // Check understanding of the instructions
-    let understanding_correct = false;
-    let show_understanding_feedback = false;
-    let passed_captcha = false;
-    let show_cont_feedback = false;
-
+    let checking_page_num = 1;  // multipage checks
+    
+    let all_correct = false;  // whether all understanding/captcha questions are correct on the current page
+    let show_feedback = false;  // whether to show feedback on the current page
+    let passed_captcha = false;  // bind to CoolWarmCaptcha
+    
     for (const key in qa_dict) {
         // create an answer field that the inputs below can bind to
         qa_dict[key].answer = null;
     }
 
     $: {
-        understanding_correct = true;  // start with true then flip to false depending on the checks below
-        for (const key in qa_dict) {
-            if (qa_dict[key].answer !== qa_dict[key].correct_answer) {
-                understanding_correct = false;
+        all_correct = true;  // start with true then flip to false depending on the checks below
+
+        if (checking_page_num === 1) {
+            for (const key in qa_dict) {
+                if (qa_dict[key].answer !== qa_dict[key].correct_answer) {
+                    all_correct = false;
+                }
             }
+        } else if (checking_page_num === 2 ) {
+            all_correct = true;  // TODO:
+        } else if (checking_page_num === 3) {
+            all_correct = passed_captcha; 
+        } else {
+            all_correct = false;
         }
     }
 
-    // Continue click handler
+    // Click handler    
     function cont() {
-        num_cont_clicks.update(n => n+=1);
-        if ($num_cont_clicks >= MAX_CLICKS) {
-            // force the end of the experiment
+        intro_cont_clicks.update(dict => {
+            if (`checking_page_${checking_page_num}` in dict) {
+                dict[checking_page_num] += 1;
+            } else {
+                dict[checking_page_num] = 1;
+            }
+            return dict;
+        });
+        
+        if (Object.values($intro_cont_clicks).reduce((a,b) => a+b, 0) >= MAX_CLICKS) {
+            // if total clicks exceeds the max allowed, then force the end of the experiment
             dispatch("continue", {trouble: true});
         }
 
-        if (understanding_correct && passed_captcha) {
-            dispatch("continue");
+        if (all_correct) {
+            if (checking_page_num <= 2) {
+                checking_page_num += 1;
+                show_feedback = false;
+            } else if (checking_page_num === 3) {
+                dispatch("continue");  // to the next component
+                show_feedback = false;
+            }
+        } else {
+            show_feedback = true;
         }
-        show_cont_feedback = true;
     }
 </script>
 
@@ -121,81 +146,87 @@
                 <span style="font-size: 0.7rem">Note: this dummy machine does not do anything</span>
             </button>
         </div>
-            
+        
         <p>Try clicking on the blocks (A, B and C) above! This allows us to move any number of blocks on or off the blicket machine. Press the test button to see how the blicket machine reacts to different combinations of blocks.</p>
-            
+        
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
-        <h3>Quiz about Blickets</h3>
-        <p>After the blicket game, you will be asked to rate the blocks: If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
-        <p>Here is a practice question with dummy blocks: If you are certain that
-            <span style="display: inline-block;"><Block block="{make_dummy_blicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
-            is a blicket and
-            <span style="display: inline-block;"><Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
-            is not a blicket, how would you rate them?
-        </p>
-    </div>
+        <div style="border: solid; width=100%; height: 500px; overflow-y: scroll;">
+            {#if checking_page_num === 1}
+                <div>
+                    <h3 style="margin-bottom: 0">Checking Your Understanding of the Instructions</h3>
+                    <p style="margin-top: 0;">(This box is scrollable.)</p>
+                    {#each Object.keys(qa_dict) as key}
+                        <div class="qa">
+                            <p>{@html qa_dict[key].question}</p>
+                            <label><input type="radio" bind:group={qa_dict[key].answer} value={true}>True</label>
+                            <label><input type="radio" bind:group={qa_dict[key].answer} value={false}>False</label>
+                        </div>
+                    {/each}
+                    <button on:click="{cont}">Continue</button>
+                    <div class:hide={!show_feedback}>
+                        <p class="wrong">Not all answers are correct. Please try again.</p>
+                    </div>
+                </div>
 
-    <Block block="{make_dummy_blicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
-    <div class="answer-options">
-        <!-- TODO: bind and check -->
-        <select>
-            {#each BLICKET_ANSWER_OPTIONS as option}
-                <option value={option.val}>
-                    {option.text}
-                </option>
-            {/each}
-        </select>
-    </div>
-    
-    <Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
-    <div class="answer-options">
-        <!-- TODO: bind and check -->
-        <select>
-            {#each BLICKET_ANSWER_OPTIONS as option}
-                <option value={option.val}>
-                    {option.text}
-                </option>
-            {/each}
-        </select>
-    </div>
+{:else if checking_page_num === 2}
+                <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" class="middle-centering-div">
+                    <h3>Quiz about Blickets</h3>
+                    <p>After the blicket game, you will be asked to rate the blocks: If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
+                    <p>Here is a practice question with dummy blocks: If you are certain that
+                        <span style="display: inline-block;"><Block block="{make_dummy_blicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
+                        is a blicket and
+                        <span style="display: inline-block;"><Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
+                        is not a blicket, how would you rate them?
+                    </p>
+                </div>
 
-    <button>Check your ratings</button>
-    
-    <div>
-        <h3>Checking Your Understanding of the Instructions</h3>
-        {#each Object.keys(qa_dict) as key}
-            <div class="qa">
-                <p>{@html qa_dict[key].question}</p>
-                <label><input type="radio" bind:group={qa_dict[key].answer} value={true} on:click="{() => show_understanding_feedback = false}">True</label>
-                <label><input type="radio" bind:group={qa_dict[key].answer} value={false} on:click="{() => show_understanding_feedback = false}">False</label>
-            </div>
-        {/each}
-        <button on:click="{() => show_understanding_feedback = true}">Check your answers</button>
-        <div class:hide={!show_understanding_feedback}>
-            {#if understanding_correct}
-                <p class="correct">All correct! Thanks for reading our instructions.</p>
-            {:else}
-                <p class="wrong">Not all answers are correct. Please try again.</p>
+                <Block block="{make_dummy_blicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+                <div class="answer-options">
+                    <!-- TODO: bind and check -->
+                    <select>
+                        {#each BLICKET_ANSWER_OPTIONS as option}
+                            <option value={option.val}>
+                                {option.text}
+                            </option>
+                        {/each}
+                    </select>
+                </div>
+                
+                <Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
+                <div class="answer-options">
+                    <!-- TODO: bind and check -->
+                    <select>
+                        {#each BLICKET_ANSWER_OPTIONS as option}
+                            <option value={option.val}>
+                                {option.text}
+                            </option>
+                        {/each}
+                    </select>
+                </div>
+                <button on:click="{cont}">Continue</button>
+                <div class:hide={!show_feedback}>
+                    <p class="wrong">Not all ratings are correct. Please try again.</p>
+                </div>
+
+{:else if checking_page_num === 3}
+                <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" class="middle-centering-div">
+                    <p><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
+
+                    <!-- captcha -->
+                    <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
+                    <button on:click={cont}>Begin the blicket game</button>
+                    <div class:hide={!show_feedback}>
+                        <p class="wrong">Please move only the warm-colored blocks onto the blicket machine.</p>
+                    </div>
+                </div>
             {/if}
         </div>
-
-        <p><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
+        <button class:hide="{!$dev_mode}" on:click="{() => all_correct = true}">dev: skip validation</button>
     </div>
-
-    <!-- captcha -->
-    <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
-    <button on:click={cont}>Begin the blicket game</button>
-    <div class:hide={!show_cont_feedback}>
-        {#if !understanding_correct}
-            <p class="wrong">Please make sure you have correct answers on the "Checking Your Understanding" section.</p>
-        {:else if !passed_captcha}
-            <p class="wrong">Please move only the warm-colored blocks onto the blicket machine.</p>
-        {/if}
-    </div>
-
-    <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip</button>
 </CenteredCard>
+
+<button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip</button>
 
 <div class="attribution" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     Cog icon made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08" target="_blank">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a>
@@ -205,6 +236,16 @@
 <WinnieThePooh on:continue/>
 
 <style>
+    .middle-centering-div {
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
     h2 {
         margin: 0.5rem;
     }
