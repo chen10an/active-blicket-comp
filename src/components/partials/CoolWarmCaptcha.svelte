@@ -35,16 +35,4 @@
     }
 </script>
 
-<div class="row-container">
-    <GridDetectorPair collection_id="captcha" is_mini={true} is_disabled={false} key_prefix="captcha"/>
-</div>
-
-<style>
-    .row-container {        
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-</style>
-
+<GridDetectorPair collection_id="captcha" is_mini={true} is_disabled={false} key_prefix="captcha"/>

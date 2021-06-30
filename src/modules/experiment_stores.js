@@ -9,17 +9,17 @@ export const FADE_DURATION_MS = 300;
 export const FADE_IN_DELAY_MS = 500;
 export const BLICKET_ANSWER_OPTIONS = [
     {val: null, text: "Please select an answer."},
-    {val: 10, text: "10 — Definitely a blicket."}, 
+    {val: 10, text: "10 - Definitely a blicket"}, 
     {val: 9, text: "9"}, 
-    {val: 8, text: "8 — Almost sure this is a blicket."}, 
+    {val: 8, text: "8 - Almost sure this is a blicket"}, 
     {val: 7, text: "7"}, 
     {val: 6, text: "6"}, 
-    {val: 5, text: "5 — Equally likely to be a blicket or not."}, 
+    {val: 5, text: "5 - Equally likely to be a blicket or not"}, 
     {val: 4, text: "4"},
     {val: 3, text: "3"},
-    {val: 2, text: "2 — Almost sure this is NOT a blicket."},
+    {val: 2, text: "2 - Almost sure this is NOT a blicket"},
     {val: 1, text: "1"},
-    {val: 0, text: "0 — Definitely NOT a blicket."}
+    {val: 0, text: "0 - Definitely NOT a blicket"}
 ]
 
 // Write-able boolean indicating whether to view the app in dev mode
@@ -55,7 +55,7 @@ export const feedback = writable("");
 export const honeypot_responses = writable({});
 
 // Write-able dict storing the number of clicks on the intro page's continue buttons
-export const intro_cont_clicks = writable({});  // dict maps subpage numbers (within the overall intro page) to the number of continue clicks on that subpage
+export const intro_incorrect_clicks = writable({});  // dict maps subpage numbers (within the overall intro page) to the number of incorrect clicks on that subpage
 
 // make dummy blickets and nonblickets with consistent appearances; to be used for intro captcha and teaching ex
 export function make_dummy_blicket(id, position) {

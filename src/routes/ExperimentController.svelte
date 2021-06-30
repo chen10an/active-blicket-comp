@@ -24,7 +24,7 @@
 		dev_mode,
 		feedback,
 		honeypot_responses,
-		intro_cont_clicks,
+		intro_incorrect_clicks,
 		reset_experiment_stores,
 		current_total_bonus
 	} from '../modules/experiment_stores.js';
@@ -193,7 +193,7 @@
 					seq_key: next_key,
 					is_trouble: is_trouble,
 					honeypot_responses: $honeypot_responses,
-					intro_cont_clicks: $intro_cont_clicks,
+					intro_incorrect_clicks: $intro_incorrect_clicks,
 					task_data: $task_data_dict,
 					quiz_data: $quiz_data_dict,
 					score: $current_score,

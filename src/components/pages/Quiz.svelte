@@ -189,7 +189,7 @@
     <h2>Quiz about Blickets and the Blicket Machine (Part {page_num}/{max_page_num})</h2>
 
     {#if page_num === 1}
-        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <h3>Do you think these blocks are blickets?</h3>
             <p style="margin-bottom: 3em;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent to you <b>within {short_bonus_time}</b>.</p>
             
@@ -210,7 +210,7 @@
             {/each}
         </div>
         {:else if page_num === 2}
-        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <p>Only the question "How would you teach others about the blicket machine?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
             
             <h3>How do you think the blicket machine works?</h3>
@@ -237,7 +237,7 @@
         </div>
 
         {:else if is_last}
-        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="middle-transition-div">
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <h3 style="margin-bottom: 0;">Do you have any feedback for us? (Optional)</h3>
             <p>We're at the end of the study and we're interested in hearing your thoughts on how fun/boring the study was, how this website can be improved, or anything else! Thank you in advance :)</p>
             <textarea class:hide="{!is_last}" bind:value={$feedback}></textarea>
@@ -252,36 +252,6 @@
 </CenteredCard>
 
 <style>
-    .middle-transition-div {
-        width: 100%;
-        height: 100%;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .qa {
-        border-radius: var(--container-border-radius);
-        box-shadow: var(--container-box-shadow);
-        margin: 0.5rem;
-        padding: 0.5rem;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .answer-options {
-        margin-top: 0.1rem;
-
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
     .info-box {
         border: solid;
         border-color: var(--medium-gray);
