@@ -132,8 +132,8 @@
 </script>
 
 <CenteredCard is_large={true} has_button={false}>
+    <h2 style="margin: 0;">Welcome to a Research Study by the University of Edinburgh</h2>
     <div>
-        <h2 style="margin: 0;">Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
@@ -167,7 +167,7 @@
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
         <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 400px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
-            <h3 style="margin: 0">Checking Your Understanding ({checking_page_num}/3)</h3>
+            <h3 style="margin: 0">Checking Your Understanding (Part {checking_page_num}/3)</h3>
             <p style="margin: 0;">(This box is scrollable.)</p>
             <hr>
             {#if checking_page_num === 1}

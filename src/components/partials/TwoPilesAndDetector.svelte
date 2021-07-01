@@ -65,10 +65,22 @@
 
     // Click handlers
     // customize block (id 0 or id NONBLICKET_START_DEX) response to clicking so that blocks from the same pile move onto the next position (i.e. next_detector_pos) on the detector
+    let already_set_hide_timeout = false;
     function to_next_detector_pos(block) {
         // stop adding if the limit has been reached
         if (next_detector_pos >= num_on_blocks_limit) {
             hide_limit_warning = false;
+
+            // hide warning again after timeout, without allowing overlapping timeouts
+            if (!already_set_hide_timeout) {
+                already_set_hide_timeout = true;
+                
+                setTimeout(function() {
+                    hide_limit_warning = true;
+                    already_set_hide_timeout = false;
+                }, 3000);
+            }
+            
             return;
         }
 
@@ -118,7 +130,7 @@
 
 <div class="row-container">
     <div class="col-container">
-        <div class="col-container">
+        <div class="col-container" style="user-select: none;">
             <Block block={$block_dict[collection_id][0]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}"/>
             
             <Block block={$block_dict[collection_id][NONBLICKET_START_DEX]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}" />
@@ -132,14 +144,14 @@
     <div class="col-container">
         <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} use_transitions="{true}"/>
         
-        <button disabled="{is_disabled}" on:click="{flip_detector}" >
-            {show_positive_detector ? "Deactivate" : "Activate"} the <br> blicket machine
+        <button disabled="{is_disabled}" on:click="{flip_detector}" style="width: 9rem">
+            {show_positive_detector ? "Deactivate" : "Activate"} the blicket machine
         </button>
     </div>
 </div>
 
 <div class="row-container">
-    <p class:hide="{hide_limit_warning}" style="color: red; margin: 0;">You've reached the maximum number ({num_on_blocks_limit}) of blickets and non-blickets. You can press the "Reset" button to start over.</p>
+    <p class:hide="{hide_limit_warning}" style="color: red; margin: 0; font-size: 0.8rem;">You've reached the max number ({num_on_blocks_limit}) of blickets and plain blocks. You can press "Reset" to start over.</p>
 </div>
 
 <!-- 

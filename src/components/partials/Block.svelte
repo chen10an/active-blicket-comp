@@ -65,6 +65,7 @@
 
     .block-letter {
         font-size: 2.5em;
+        user-select: none;  /* don't allow the letter to be highlighted like regular text */
     }
 
     .block-letter.mini {
