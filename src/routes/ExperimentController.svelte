@@ -240,11 +240,11 @@
 <!-- Dynamically show different components to the participant -->
 <svelte:component this={current_component} {...current_props} on:continue={handleContinue}/>
 
-<!-- <div class="bottom">
-	   <progress value={$progress}></progress>
-	   <span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$max_score}</b></span>
-     </div>
--->
+<div class="bottom">
+	  <progress value={$progress}></progress>
+	  <!-- <span class="score"><span style="font-size: 0.8rem;">Running Score: </span><b>{$current_score}/{$max_score}</b></span> -->
+</div>
+
 
 <style>
 	.bottom {

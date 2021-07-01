@@ -191,7 +191,7 @@
     {#if page_num === 1}
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <h3>Do you think these blocks are blickets?</h3>
-            <p style="margin-bottom: 3rem;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent to you <b>within {short_bonus_time}</b>.</p>
+            <p style="margin-bottom: 3rem;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent <b>within {short_bonus_time}</b>.</p>
             
             <!-- Iterate over $block_dict, which orders blocks alphabetically -->
             {#each $block_dict[collection_id] as block, i}
@@ -235,7 +235,7 @@
             {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
                 <div class="qa">
                     <p style="margin-top: 0;"><b>Example {i+1}</b></p>
-                    <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit="{$block_dict[collection_id].length}" bind:show_positive_detector="{ex.detector_state}" bind:blicket_nonblicket_combo="{ex.blicket_nonblicket_combo}" />
+                    <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit="{$block_dict[collection_id].length}" is_disabled="{false}" bind:show_positive_detector="{ex.detector_state}" bind:blicket_nonblicket_combo="{ex.blicket_nonblicket_combo}" />
                 </div>
             {/each}
         </div>
