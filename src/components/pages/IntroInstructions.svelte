@@ -95,6 +95,10 @@
                 checking_page_num += 1;
             } else if (checking_page_num === 3) {
                 dispatch("continue");  // to the next component
+                
+                if ($dev_mode) {
+                    console.log("dispatched normal continue");
+                }
             }
             
             show_feedback = false;
@@ -104,16 +108,20 @@
             // only count clicks when !all_correct
             intro_incorrect_clicks.update(dict => {
                 if (`checking_page_${checking_page_num}` in dict) {
-                    dict[checking_page_num] += 1;
+                    dict[`checking_page_${checking_page_num}`] += 1;
                 } else {
-                    dict[checking_page_num] = 1;
+                    dict[`checking_page_${checking_page_num}`] = 1;
                 }
                 return dict;
             });
             
             if (Object.values($intro_incorrect_clicks).reduce((a,b) => a+b, 0) >= MAX_CLICKS) {
-                // if total clicks exceeds the max allowed, then force the end of the experiment
+                // if total incorrect clicks exceeds the max allowed, then force the end of the experiment
                 dispatch("continue", {trouble: true});
+                
+                if ($dev_mode) {
+                    console.log("dispatched trouble");
+                }
             }
             
             show_feedback = true;
@@ -238,11 +246,11 @@
                 </div>
             {/if}
         </div>
+        
         <button class:hide="{!$dev_mode}" on:click="{() => all_correct = true}">dev: skip validation</button>
+        <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
     </div>
 </CenteredCard>
-
-<button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip</button>
 
 <div class="attribution" in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
     Cog icon made by <a href="https://www.flaticon.com/authors/pause08" title="Pause08" target="_blank">Pause08</a> from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a>
