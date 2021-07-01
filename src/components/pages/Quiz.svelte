@@ -225,8 +225,12 @@
             <span>and</span>
             <span><span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> plain blocks (not blickets) </span>
             <p>to a blicket machine. Each example needs <b>at least 1 and at most {$block_dict[collection_id].length}</b> blickets or plain blocks. You can then choose whether the blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
-            
-            <p style="margin-bottom: 3rem;">We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val}) <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+
+            <!-- TODO: change from singular to plural for full exp -->
+            <p style="margin-bottom: 3rem;">We will show your examples to another person after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val})
+                <span class="info-box" title="Given your examples, one other person will choose from 8 options about how the blicket machine works. If they choose the correct option, you will receive a bonus of {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>.
+                <!-- two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}. -->
+                This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
             
             {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
                 <div class="qa">

@@ -144,7 +144,8 @@
         <p>There are two types of quiz questions:</p>
         <ol>
             <li>9 questions about blickets that award up to <b>{$bonus_currency_str}{$max_total_bonus}</b> bonus. Your bonus will be sent <b>within {short_bonus_time}</b>.</li>
-            <li>2 questions about the blicket machine that award up to <b>{$bonus_currency_str}{+(teaching_bonus_val*2).toFixed(3)}</b> bonus. These questions will take longer to score because they are evaluated by several other people. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
+            <li>2 questions about the blicket machine that award up to <b>{$bonus_currency_str}{+(teaching_bonus_val*2).toFixed(3)}</b> bonus. These questions will take longer to score because they are evaluated in detail by another person. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
+            <!-- TODO: change to plural for full exp -->
         </ol>
         <p><b>In total, you can earn a bonus of {$bonus_currency_str}{+($max_total_bonus + teaching_bonus_val*2).toFixed(3)}</b>. </p>
         
