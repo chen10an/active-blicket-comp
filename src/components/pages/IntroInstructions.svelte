@@ -20,7 +20,7 @@
     // Constants
     const dispatch = createEventDispatcher();  // for communicating with parent components
     const INTRO_COLORS = ["color0", "color1", "color5"];
-    const MAX_CLICKS = 50;  // number of clicks allowed on the continue button before forcing the end of the experiment
+    const MAX_CLICKS = 10;  // total number of _unsuccessful_ continue clicks allowed on the comprehension checks / captchas before forcing the end of the experiment
 
     // Dummy blocks
     let intro_getter = new BlockGetter(INTRO_COLORS);
@@ -55,12 +55,13 @@
         show_dummy_negative = false;
     }
 
-    // Check understanding of the instructions
+    // Comprehension checks and captchas
     let checking_page_num = 1;  // multipage checks
     let all_correct = false;  // whether all understanding/captcha questions are correct on the current page
     let show_feedback = false;  // whether to show feedback on the current page
     let passed_captcha = false;  // bind to CoolWarmCaptcha
     let checking_container;  // bind to div that contains the checking pages
+    let practice_ratings = {"blicket": null, "nonblicket": null};  // bind to participant's practice blicket ratings
     
     for (const key in qa_dict) {
         // create an answer field that the inputs below can bind to
@@ -77,7 +78,9 @@
                 }
             }
         } else if (checking_page_num === 2 ) {
-            all_correct = true;  // TODO:
+            if (practice_ratings["blicket"] != 10 || practice_ratings["nonblicket"] != 0) {
+                all_correct = false;
+            }
         } else if (checking_page_num === 3) {
             all_correct = passed_captcha; 
         } else {
@@ -189,8 +192,7 @@
                         <div class="qa">
                             <Block block="{make_dummy_blicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
                             <div class="answer-options">
-                                <!-- TODO: bind and check -->
-                                <select>
+                                <select bind:value={practice_ratings["blicket"]}>
                                     {#each BLICKET_ANSWER_OPTIONS as option}
                                         <option value={option.val}>
                                             {option.text}
@@ -203,8 +205,7 @@
                         <div class="qa">
                             <Block block="{make_dummy_nonblicket(-1, -1)}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
                             <div class="answer-options">
-                                <!-- TODO: bind and check -->
-                                <select>
+                                <select bind:value={practice_ratings["nonblicket"]}>
                                     {#each BLICKET_ANSWER_OPTIONS as option}
                                         <option value={option.val}>
                                             {option.text}
