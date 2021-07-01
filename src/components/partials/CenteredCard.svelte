@@ -31,7 +31,7 @@
         max-width: 500px;
         min-height: 200px;
         margin: 5px;
-        padding: 30px;
+        padding: 20px;
 
         border-radius: var(--container-border-radius);
         box-shadow: var(--container-box-shadow);

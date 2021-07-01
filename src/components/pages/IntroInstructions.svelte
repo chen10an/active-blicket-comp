@@ -122,7 +122,7 @@
 
 <CenteredCard is_large={true} has_button={false}>
     <div>
-        <h2>Welcome to a Research Study by the University of Edinburgh</h2>
+        <h2 style="margin: 0;">Welcome to a Research Study by the University of Edinburgh</h2>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
@@ -155,10 +155,11 @@
         
         <p>In the <b>real blicket game</b>, the blicket machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate"</span> with a green color, or do nothing. You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
-        <div bind:this={checking_container} style="border: solid; width=100%; height: 400px; overflow: scroll; padding: 0;">
+        <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 400px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
+            <h3 style="margin: 0">Checking Your Understanding ({checking_page_num}/3)</h3>
+            <p style="margin: 0;">(This box is scrollable.)</p>
+            <hr>
             {#if checking_page_num === 1}
-                <h3 style="margin-bottom: 0">Checking Your Understanding of the Instructions</h3>
-                <p style="margin-top: 0;">(This box is scrollable.)</p>
                 {#each Object.keys(qa_dict) as key}
                     <div class="qa-min">
                         <p>{@html qa_dict[key].question}</p>
@@ -176,9 +177,6 @@
 
             {:else if checking_page_num === 2}
                 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}">
-                    <h3 style="margin-bottom: 0;">Practice Quiz about Blickets</h3>
-                    <p style="margin-top: 0;">(This box is scrollable.)</p>
-
                     <p>After the blicket game, you will be asked to rate the blocks: If you are certain that a block is a blicket, you should rate it 10; if you are certain it is <i>not</i> a blicket, you should rate it 0.</p>
                     <p style="margin-top: 0;">Here is a practice question with dummy blocks: If you are certain that
                         <span style="display: inline-block;"><Block block="{make_dummy_blicket(-1, -1)}" is_mini="{true}" use_transitions="{false}" is_disabled="{true}" /></span>
@@ -226,7 +224,7 @@
                 </div>
             {:else if checking_page_num === 3}
                 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}">
-                    <p><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
+                    <p style="margin-bottom: 2rem;"><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
 
                     <div class="col-centering-container" style="padding: 0;">
                         <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
