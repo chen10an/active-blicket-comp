@@ -47,7 +47,7 @@
     <p>For general information about how we use your data, go to: edin.ac/privacy-research</p>
 
     <h3>Who can I contact?</h3>
-    <p>If you have any further questions about the study, please contact the Principal Investigator, Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
+    <p>If you have any further questions about the study, please contact the Principal Investigator: Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
     <p>If you have a complaint that the research team (cocosci_support@mlist.is.ed.ac.uk) cannot resolve, please contact inf-ethics@inf.ed.ac.uk. When you contact us, please provide the study title and detail the nature of your complaint.</p>
 
     <h3>Consent</h3>
