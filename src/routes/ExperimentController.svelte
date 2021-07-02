@@ -252,15 +252,10 @@
 		bottom: 0;
 		width: 100%;
 		z-index: 20;
-
-		display: flex;
-		justify-content: space-between;
-		pointer-events: none;
 	}
 
 	progress {
-		flex-grow: 1;
-		align-self: flex-end;
+		width: 100%;
 	}
 
 	.score {
