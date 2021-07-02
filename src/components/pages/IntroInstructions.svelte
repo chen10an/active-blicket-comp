@@ -68,6 +68,14 @@
         qa_dict[key].answer = null;
     }
 
+    intro_incorrect_clicks.update(dict => {
+        // initialize all possible keys
+        dict["checking_page_1"] = 0;
+        dict["checking_page_2"] = 0;
+        dict["checking_page_3"] = 0;
+        return dict;
+    });
+
     $: {
         all_correct = true;  // start with true then flip to false depending on the checks below
 
@@ -107,11 +115,7 @@
         } else {
             // only count clicks when !all_correct
             intro_incorrect_clicks.update(dict => {
-                if (`checking_page_${checking_page_num}` in dict) {
-                    dict[`checking_page_${checking_page_num}`] += 1;
-                } else {
-                    dict[`checking_page_${checking_page_num}`] = 1;
-                }
+                dict[`checking_page_${checking_page_num}`] += 1;
                 return dict;
             });
             
