@@ -114,17 +114,22 @@ class BlockGetter {
 };
 
 class Combo {
-    // Represent a combination as a bitstring with a timestamp, where the ith bit corresponds to the ith block from an array of blocks sorted by id
+    // Represents a combination of blocks as a bitstring, where the ith bit corresponds to the ith block from an array of blocks sorted by id
+    // Also contains related info about whether the detector activates in response to that block combination and the creation timestamp
 
-    constructor(bitstring) {
+    constructor(bitstring, activates_detector) {
         if (typeof bitstring !== "string") {
             throw new Error("The input should be a bit-**string**.");
         }
         if (!(/^[01]+$/.test(bitstring))) {
-            throw new Error("The input string should conly contain ones and zeros.");
+            throw new Error("The input string should only contain ones and zeros.");
+        }
+        if (typeof activates_detector !== "boolean") {
+            throw new Error("The input should be a boolean indicating whether the detector is active.");
         }
 
         this.bitstring = bitstring;
+        this.activates_detector = activates_detector;
         this.timestamp = Date.now();
     }
 

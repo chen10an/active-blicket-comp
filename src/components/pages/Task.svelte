@@ -16,10 +16,10 @@
         }
         if (activation === undefined) {
             let noise_level = 0.75;
-            activation = (arg0) => (arg0 >= 1) ? Math.random() < noise_level : false;
+            activation = (arg0, arg1, arg2) => (arg0 >= 1) ? Math.random() < noise_level : false;
         }
         if (fixed_num_interventions === undefined) {
-            fixed_num_interventions = 3;
+            fixed_num_interventions = 10;
         }
         
         if (min_time_seconds === undefined) {
@@ -79,7 +79,7 @@
     // reactive declaraction of whether the participant can continue to the quiz:
     // wait at least min_time_seconds and make at least fixed_num_interventions interventions
     $: can_cont = (min_time_seconds <= -1) && (all_block_combos.length >= fixed_num_interventions)
-    
+
     // Click handler functions
     async function test() {
         // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
@@ -92,7 +92,8 @@
         let block_states = blocks_copy.map(block => block.state);
 
         // change the detector's response and turn off button interactions
-        if (activation(...block_states)) {
+        let activates_detector = activation(...block_states);
+        if (activates_detector) {
             show_positive_detector = true;
         } else {
             show_negative_detector = true;
@@ -105,7 +106,7 @@
 
         // create the bitstring representation where character i corresponds to the block with id=i
         let bitstring = block_states.map(state => state ? "1" : "0").join("");
-        let combo = new Combo(bitstring);
+        let combo = new Combo(bitstring, activates_detector);
         // record block combinations (for server) on interactive task
         // create and store a Combo object from the current bitstring
         task_data_dict.update(dict => {

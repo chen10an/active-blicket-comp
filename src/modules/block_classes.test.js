@@ -64,7 +64,7 @@ describe("Combo's set_block_states method", () => {
         new Block(0, false, "color2", "C", 2)
     ];
 
-    let threebit_combos = [new Combo("000"), new Combo("001"), new Combo("010"), new Combo("011"), new Combo("100"), new Combo("101"), new Combo("110"), new Combo("111")];
+    let threebit_combos = [new Combo("000", false), new Combo("001", false), new Combo("010", false), new Combo("011", false), new Combo("100", false), new Combo("101", false), new Combo("110", false), new Combo("111", false)];
 
     let expected_threebit_blocks = [
         [new Block(0, false, "color2", "C", 2), new Block(1, false, "color1", "B", 1), new Block(2, false, "color0", "A", 0)],
@@ -78,7 +78,7 @@ describe("Combo's set_block_states method", () => {
     ]
 
     let more_blocks = [new Block(4, false, "color3", "D", 3), new Block(3, false, "color4", "E", 4)];
-    let morebit_combos = [new Combo("0110"), new Combo("01110")];
+    let morebit_combos = [new Combo("0110", false), new Combo("01110", false)];
     let expected_morebit_blocks = [
         // note that only the relative order of IDs should matter
         [new Block(0, false, "color2", "C", 2), new Block(1, true, "color1", "B", 1), new Block(2, true, "color0", "A", 0), new Block(4, false, "color3", "D", 3)],
