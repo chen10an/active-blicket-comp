@@ -133,7 +133,7 @@
                         // did not answer
                         dict[collection_id].blicket_rating_scores[i] = 0;
                     } else {
-                        dict[collection_id].blicket_rating_scores[i] = 1 - Math.abs(participant_rating - true_rating)/10;
+                        dict[collection_id].blicket_rating_scores[i] = +((1 - Math.abs(participant_rating - true_rating)/10).toFixed(3));  // avoid precision errors
                     }
                     return dict;
                 });

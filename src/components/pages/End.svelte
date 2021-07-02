@@ -43,7 +43,7 @@
     import { short_bonus_time, long_bonus_time } from '../../condition_configs/all_conditions.js';
     
     const CODE_PREFIX = "K3SHW";  // generated with www.random.org
-    const CODE_MID = ["CS", (+$current_score.toFixed(3)).toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
+    const CODE_MID = ["CS", $current_score.toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
 
     // get blocks for revealing blicket rating answers and bonuses
     // (shallow) copy in alphabetical order
