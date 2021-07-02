@@ -220,7 +220,7 @@
             <textarea bind:value={$quiz_data_dict[collection_id].free_response_1}></textarea>
 
             <h3 style="margin-top: 5rem;">How would you teach others about the blicket machine?</h3>
-            <p>Please give 5 examples to help other people understand how the blicket machine works. In each example, you can choose to click on</p>
+            <p>Please give 5 examples to teach other people how the blicket machine works. In each example, you can choose to click on</p>
             <span><span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> blickets</span>
             <span>and</span>
             <span><span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> plain blocks (not blickets) </span>
