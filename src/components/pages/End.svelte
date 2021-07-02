@@ -43,12 +43,13 @@
     import { short_bonus_time, long_bonus_time } from '../../condition_configs/all_conditions.js';
     
     const CODE_PREFIX = "K3SHW";  // generated with www.random.org
-    const CODE_MID = ["CS", +(($current_score.toString().replace(".", "D")).toFixed(3)), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
+    const CODE_MID = ["CS", (+$current_score.toFixed(3)).toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
 
     // get blocks for revealing blicket rating answers and bonuses
     // (shallow) copy in alphabetical order
-    let l1_blocks = [...$block_dict["level_1"]];
-    let l2_blocks = [...$block_dict["level_2"]];
+    let l1_blocks = (is_trouble || chunk_error) ? [...$block_dict["intro"]] : [...$block_dict["level_1"]];
+    let l2_blocks = (is_trouble || chunk_error) ? [...$block_dict["intro"]] : [...$block_dict["level_2"]];
+    // use intro blocks as hack to made the trouble / chunk error ending work
 
     // get relative ids for level 2 (for indexing quiz data)
     let l2_block_ids = l2_blocks.map(block => block.id);
