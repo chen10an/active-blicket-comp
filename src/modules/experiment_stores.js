@@ -42,6 +42,18 @@ export const task_getter = writable(new BlockGetter(BLOCK_COLORS));
 // Write-able dictionary/object of blocks used throughout the experiment, keyed by collection IDs
 export const block_dict = writable({});
 
+// When storing (i.e. sending to server), don't include blocks used for blicket/nonblicket piles
+export const to_store_block_dict = derived([block_dict], ([$block_dict]) => {
+    let to_store = {};
+    for (const key in $block_dict) {
+        if (!key.includes("pile")) {
+            to_store[key] = $block_dict[key];
+        }
+    }
+    
+    return to_store;
+});
+
 // Write-able dictionary/object of experiment data collected from the Task component, keyed by collection IDs
 export const task_data_dict = writable({});
 
@@ -78,6 +90,7 @@ export function reset_experiment_stores() {
     block_dict.set({});
 
     // data reset
+    intro_incorrect_clicks.set({});
     task_data_dict.set({});
     quiz_data_dict.set({});
     feedback.set("");

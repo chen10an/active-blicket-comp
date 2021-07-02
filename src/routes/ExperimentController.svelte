@@ -17,7 +17,7 @@
 	import {
 		task_data_dict,
 		quiz_data_dict,
-		block_dict,
+		to_store_block_dict,
 		current_score,
 		max_score,
 		bonus_val,
@@ -194,14 +194,14 @@
 					is_trouble: is_trouble,
 					honeypot_responses: $honeypot_responses,
 					intro_incorrect_clicks: $intro_incorrect_clicks,
-					task_data: $task_data_dict,
-					quiz_data: $quiz_data_dict,
 					score: $current_score,
 					max_score: $max_score,
 					bonus_per_q: $bonus_val,
 					total_bonus: $current_total_bonus,
-					blocks: $block_dict,
-					feedback: $feedback
+					feedback: $feedback,
+					task_data: $task_data_dict,
+					quiz_data: $quiz_data_dict,
+					blocks: $to_store_block_dict
 				};
 				wso.sendChunk(message);
 				return;  // let message callback handle rendering the next component
