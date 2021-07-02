@@ -43,7 +43,7 @@
     import { short_bonus_time, long_bonus_time } from '../../condition_configs/all_conditions.js';
     
     const CODE_PREFIX = "K3SHW";  // generated with www.random.org
-    const CODE_MID = ["CS", $current_score.toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
+    const CODE_MID = ["CS", (+$current_score.toFixed(3)).toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
 
     // get blocks for revealing blicket rating answers and bonuses
     // (shallow) copy in alphabetical order
@@ -93,7 +93,7 @@
             <Block block="{block}" is_mini="{false}" is_disabled="{true}" use_transitions="{false}" />
             <span>True rating: {$quiz_data_dict["level_1"].correct_blicket_ratings[block.id]} </span>
             <span>Your rating: {$quiz_data_dict["level_1"].blicket_rating_groups[block.id]}</span>
-            <span style="margin-bottom: 1rem;">Bonus: {$bonus_currency_str}{$quiz_data_dict["level_1"].blicket_rating_scores[block.id]*$bonus_val}</span>
+            <span style="margin-bottom: 1rem;">Bonus: {$bonus_currency_str}{+(($quiz_data_dict["level_1"].blicket_rating_scores[block.id]*$bonus_val).toFixed(3))}</span>
         {/each}
 
         <h4><u>Level 2</u></h4>
@@ -102,7 +102,7 @@
             <!-- use relative ids to index level 2 quiz data -->
             <span>True rating: {$quiz_data_dict["level_2"].correct_blicket_ratings[l2_get_rel_id(block.id)]} </span>
             <span>Your rating: {$quiz_data_dict["level_2"].blicket_rating_groups[l2_get_rel_id(block.id)]}</span>
-            <span style="margin-bottom: 1rem;">Bonus: {$bonus_currency_str}{$quiz_data_dict["level_2"].blicket_rating_scores[l2_get_rel_id(block.id)]*$bonus_val}</span>
+            <span style="margin-bottom: 1rem;">Bonus: {$bonus_currency_str}{+(($quiz_data_dict["level_2"].blicket_rating_scores[l2_get_rel_id(block.id)]*$bonus_val).toFixed(3))}</span>
         {/each}
     </CenteredCard>
 {/if}

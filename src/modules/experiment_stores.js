@@ -33,7 +33,7 @@ export const bonus_val = writable(0);
 export const bonus_currency_str = writable("$");
 
 // Derive the current total running bonus and max possible bonus to 3 decimal points
-export const current_total_bonus = derived([current_score, bonus_val], ([$current_score, $bonus_val]) => +($current_score*$bonus_val).toFixed(3));  // unary + to turn string back to number
+export const current_total_bonus = derived([current_score, bonus_val], ([$current_score, $bonus_val]) => +($current_score*$bonus_val).toFixed(3));  // unary + to turn string back to number to shave off unnecessary decimals
 export const max_total_bonus = derived([max_score, bonus_val], ([$max_score, $bonus_val]) => +($max_score*$bonus_val).toFixed(3));
 
 // Write-able BlockGetter for consistently getting blocks in different components
