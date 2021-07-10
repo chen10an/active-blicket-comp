@@ -15,14 +15,15 @@
             correct_blicket_ratings = [10, 0, 0];
         }
         if (collection_id === undefined) {
-            collection_id = ["TEST_collection"];
+            collection_id = ["TEST_level_1"];
             block_dict.update(dict => {
                 dict[collection_id] = $task_getter.get(3);
                 return dict;
             });
         }
 
-        // page_num = 2;
+        page_num = 2;
+
         // is_last = true;
     }
     let max_page_num = is_last ? 3 : 2;
@@ -73,7 +74,7 @@
     // 5 teaching examples
     for (let i=0; i < 5; i++) {
         quiz_data_dict.update(dict => {
-            dict[collection_id].teaching_ex.push({detector_state: false, blicket_nonblicket_combo: ""});
+            dict[collection_id].teaching_ex.push({detector_state: null, blicket_nonblicket_combo: ""});
             return dict;
         });
     }
@@ -100,8 +101,8 @@
 
             let teaching_ex = $quiz_data_dict[collection_id].teaching_ex
             for (let i=0; i < teaching_ex.length; i++) {
-                if (teaching_ex[i].blicket_nonblicket_combo === "") {
-                    // one of teaching ex is empty (no blickets/nonblickets placed onto the detector)
+                if (teaching_ex[i].blicket_nonblicket_combo === "" || teaching_ex[i].detector_state === null) {
+                    // one of teaching ex is empty (no blickets/nonblickets placed onto the detector) or one of the detector states have not been chosen to be true/false
                     answered_all = false;
                 }
             }
@@ -186,7 +187,14 @@
 <svelte:window bind:scrollY={scrollY}/>
 
 <CenteredCard is_large={true} has_button={false}>
-    <h2>Quiz about Blickets and the Blicket Machine (Part {page_num}/{max_page_num})</h2>
+    <h2>Quiz about the Level
+        {#if collection_id.toString().includes("level_1")}
+            1
+        {:else if collection_id.toString().includes("level_2")}
+            2
+        {/if}
+        Game
+        (Part {page_num}/{max_page_num})</h2>
 
     {#if page_num === 1}
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
@@ -213,18 +221,54 @@
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <p>Only the question "How would you teach others about the blicket machine?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
             
-            <h3>How do you think the blicket machine works?</h3>
+            <h3>How do you think the blicket machine (from the level
+                {#if collection_id.toString().includes("level_1")}
+                    1
+                {:else if collection_id.toString().includes("level_2")}
+                    2
+                {/if}
+                game) works?</h3>
             <textarea bind:value={$quiz_data_dict[collection_id].free_response_0}></textarea>
 
             <h3>What was your strategy for figuring out how the blicket machine works?</h3>
             <textarea bind:value={$quiz_data_dict[collection_id].free_response_1}></textarea>
 
             <h3 style="margin-top: 5rem;">How would you teach others about the blicket machine?</h3>
-            <p>Please give 5 examples to teach other people how the blicket machine works. In each example, you can choose to click on</p>
-            <span><span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> blickets</span>
-            <span>and</span>
-            <span><span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> plain blocks (not blickets) </span>
-            <p>to add them to a blicket machine. The "Reset" button allows you to remove them and start over. Each example needs <b>at least 1 and at most {$block_dict[collection_id].length}</b> blickets or plain blocks. You can then choose whether the blicket machine should be <span style="background: var(--active-color); padding: 0 0.3rem;">activated</span> or deactivated.</p>
+            <p>Based on how you think the level
+                {#if collection_id.toString().includes("level_1")}
+                    1
+                {:else if collection_id.toString().includes("level_2")}
+                    2
+                {/if} blicket machine works, please give 5 examples to teach other people about this machine.
+            </p>
+            
+            <div class="qa">
+                <p style="margin-top: 0;"><b>Setup of an Example</b></p>
+                <TwoPilesAndDetector collection_id="{collection_id}_piles_dummy" num_on_blocks_limit="{$block_dict[collection_id].length}" is_disabled="{false}" />
+            </div>
+
+            <div>
+                <p>In this setup, we are given the knowledge that starred blocks (<span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are blickets and plain blocks (<span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are not blickets. With this knowledge, please make examples about the level
+                    {#if collection_id.toString().includes("level_1")}
+                        1
+                    {:else if collection_id.toString().includes("level_2")}
+                        2
+                    {/if} blicket machine using these buttons:</p>
+                <ul style="list-style-type:none;">
+                    <li><button class="block-button"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds blickets to the machine.</li>
+                    <li><button class="block-button"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds plain blocks (not blickets) to the machine.</li>
+                    <li>You can add as many blickets and plain blocks as you like, for a total of <b>at least 1 and at most {$block_dict[collection_id].length}</b>.</li>
+                    <li><button style="min-width: var(--mini-block-length);">
+                        Reset
+                    </button> removes everything from the machine.</li>
+                    <li>You can then show whether the level
+                        {#if collection_id.toString().includes("level_1")}
+                            1
+                        {:else if collection_id.toString().includes("level_2")}
+                            2
+                        {/if} blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</li>
+                </ul>
+            </div>
 
             <!-- TODO: change from singular to plural for full exp -->
             <p style="margin-bottom: 2rem;">We will show your examples to another person after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val})

@@ -1,7 +1,7 @@
 <script>
     // Props
     // parent component should bind these:
-    export let show_positive_detector = false;  // whether the participant wants the detector to show a positive response
+    export let show_positive_detector = null;  // whether the participant wants the detector to show a positive response, null represents the unanswered state
     export let blicket_nonblicket_combo = "";  // string for a special kind of combo that shows the blickets ("*") and nonblickets (".") currently on the detector, indexed by the order the participant placed them on the detector (rather than block id, as used in regular combos)
     
     // input
@@ -121,19 +121,14 @@
         hide_limit_warning = true;
     }
 
-    // flip the response (boolean) of the detector
-    function flip_detector() {
-        show_positive_detector = !show_positive_detector;
-    }
-
 </script>
 
 <div class="row-container">
-    <div class="col-container">
+    <div class="col-container" >
         <div class="col-container" style="user-select: none;">
-            <Block block={$block_dict[collection_id][0]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}"/>
+            <button class="block-button" disabled="{is_disabled}" on:click={to_next_detector_pos($block_dict[collection_id][0])}><Block block={$block_dict[collection_id][0]} is_mini={true} is_disabled={true} use_transitions="{false}"/></button>
             
-            <Block block={$block_dict[collection_id][NONBLICKET_START_DEX]} is_mini={true} is_disabled={is_disabled} click={(block) => to_next_detector_pos(block)} use_transitions="{false}" />
+            <button class="block-button" disabled="{is_disabled}" on:click={to_next_detector_pos($block_dict[collection_id][NONBLICKET_START_DEX])}><Block block={$block_dict[collection_id][NONBLICKET_START_DEX]} is_mini={true} is_disabled={true} use_transitions="{false}" /></button>
         </div>
 
         <button disabled="{is_disabled}" on:click={combined_reset} style="min-width: var(--mini-block-length); justify-self: flex-end;">
@@ -142,11 +137,13 @@
     </div>
 
     <div class="col-container">
-        <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} use_transitions="{true}"/>
-        
-        <button disabled="{is_disabled}" on:click="{flip_detector}" style="width: 9rem">
-            {show_positive_detector ? "Deactivate" : "Activate"} the blicket machine
-        </button>
+        <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} use_transitions="{true}" />
+
+        <div style="margin: 1rem 0;">
+            <label><input type="radio" value="{true}" bind:group="{show_positive_detector}" ><span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span></label>
+            <br>
+            <label><input type="radio" value="{false}" bind:group="{show_positive_detector}" >Do Nothing</label>
+        </div>
     </div>
 </div>
 

@@ -131,6 +131,12 @@ button:disabled.unpress {
 	  transform: translateY(-3px);
 }
 
+button.block-button {
+    min-width: 0;
+    padding: 0;
+    margin: 0 0 0.5rem 0;
+}
+
 .hide {
 	  display: none;
 }
