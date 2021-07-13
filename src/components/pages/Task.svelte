@@ -7,12 +7,11 @@
     export let activation;  // lambda function that represents the causal relationship
     export let fixed_num_interventions;  // fixed number of interventions that participant has to perform before moving on
     export let min_time_seconds;  // minimum time before participant can continue
-    export let instructions_seconds = $dev_mode ? 3 : 15;  // time in seconds to show the overlay instructions before the task starts
 
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
         if (collection_id === undefined) {
-            collection_id = ["TEST_collection"];
+            collection_id = ["TEST_level_1"];
         }
         if (activation === undefined) {
             let noise_level = 0.75;
@@ -30,8 +29,6 @@
     // Imports
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import BlockGrid from '../partials/BlockGrid.svelte';
-    import CenteredCard from '../partials/CenteredCard.svelte';
-    import OverlayInstructions from '../partials/OverlayInstructions.svelte';
     import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../../modules/experiment_stores.js';
     import { Combo } from '../../modules/block_classes.js';
     import { flip } from 'svelte/animate';
@@ -44,7 +41,6 @@
     const dispatch = createEventDispatcher();
 
     onDestroy(() => {
-        clearInterval(instructions_interval);
         clearInterval(min_time_interval);
     });
 
@@ -59,9 +55,8 @@
         return dict;
     });
 
-    let instructions_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS);  // start the instructions count down
-    let show_instructions = true;
-    let min_time_interval;  // count down to when the participant can continue
+    let min_time_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS)  // count down to when the participant can continue
+    let min_time_seconds_copy = min_time_seconds;  // a static copy that won't decrement with min_time_seconds
     let show_positive_detector = false;  // whether to show a positive response from the detector
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_task = false;  // when true, participants cannot interact with the task (blocks + detector)
@@ -139,7 +134,6 @@
     }
 
     function cont() {
-        clearInterval(instructions_interval);
         clearInterval(min_time_interval);
 
         // Tell parent components to move on to the next quiz
@@ -148,22 +142,13 @@
 
     // Count down timer
     function countDownSeconds() {
-        if (instructions_seconds > 0) {
-            instructions_seconds = Math.max(instructions_seconds - 1, 0);
-        } else if (instructions_seconds === 0) {
-            clearInterval(instructions_interval);
-            show_instructions = false;
-            min_time_interval = setInterval(countDownSeconds, COUNT_DOWN_INTERVAL_MS)  // start the count down
-            instructions_seconds = -1;
+        // Count down in seconds until 0, at which time the participant can continue
+        if (min_time_seconds === 0) {
+            // the time limit has been reached --> end the task (see the markup)
+            clearInterval(min_time_interval);
+            min_time_seconds = -1;
         } else {
-            // Count down in seconds until 0, at which time the participant can continue
-            if (min_time_seconds === 0) {
-                // the time limit has been reached --> end the task (see the markup)
-                clearInterval(min_time_interval);
-                min_time_seconds = -1;
-            } else {
-                min_time_seconds = Math.max(min_time_seconds - 1, 0);
-            }
+            min_time_seconds = Math.max(min_time_seconds - 1, 0);
         }
     }
     
@@ -175,17 +160,19 @@
 
 </script>
 
-
-<OverlayInstructions show={show_instructions}>
-    <CenteredCard has_button={false}>
-        <p><b>Can you figure out which blocks are blickets?</b> Please test the blicket machine <b>{fixed_num_interventions} times</b> and spend <b>at least {min_time_seconds}s</b> in the blicket game. Remember, only the blicket machine can help you identify blickets.</p>
-        <p>The blicket game starts in <span style="font-size: 1.5rem;">{instructions_seconds}s</span></p>
-    </CenteredCard>
-</OverlayInstructions>
-
-<div class="centering-container" style="margin-top: 3rem;"
-in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
-    <div class="col-container">
+<div class="col-centering-container"
+     in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
+    <h2>Blicket Game Level
+        {#if collection_id.toString().includes("level_1")}
+            1:
+        {:else if collection_id.toString().includes("level_2")}
+            2:
+        {/if}
+        <i>Can you figure out which blocks are blickets?</i>
+    </h2>
+    <p style="margin: 0;">Please use <b>{fixed_num_interventions} tests</b> on the blicket machine and spend <b>at least {min_time_seconds_copy} seconds</b> in this game.</p>
+    <p>Remember, only the blicket machine can help you identify blickets.</p>
+    <div class="col-centering-container" style="padding: 0; min-width: 75%;">
         <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
 
         <!-- Button for testing the detector -->
@@ -224,15 +211,6 @@ in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{du
 
 
 <style>
-    .col-container {
-        min-width: 75%;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
     .row-container {
         width: 100%;
         
