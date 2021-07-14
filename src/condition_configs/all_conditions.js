@@ -12,8 +12,8 @@ export const min_time_seconds_l2 = 60;
 
 export const qa_dict = {
     "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false},
-    "letter": {"question": "A block’s <em>letter</em> does <em>not</em> tell you whether it’s a blicket.", "correct_answer": true},
-    "position": {"question": "A block’s <em>position</em> on the machine can influence whether the machine activates.", "correct_answer": false},
+    "letter": {"question": "A block’s <em>letter</em> tells you whether it’s a blicket.", "correct_answer": false},
+    "position": {"question": "When a block is on the machine, its <em>position</em> can influence whether the machine activates.", "correct_answer": false},
     "machine": {"question": "Only the blicket machine can help you figure out which blocks are blickets.", "correct_answer": true},
     "intervention_limit": {"question": `You have a limited number of tries to test the blicket machine and figure out which blocks are blickets.`, "correct_answer": true},
     "min_time": {"question": `There is a minimum amount of time you must spend on the blicket game.`, "correct_answer": true},
