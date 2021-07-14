@@ -22,7 +22,7 @@
             });
         }
 
-        page_num = 2;
+        // page_num = 2;
 
         // is_last = true;
     }
@@ -32,9 +32,10 @@
     import CenteredCard from '../partials/CenteredCard.svelte';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket } from '../../modules/experiment_stores.js';
+    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, raw_current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket } from '../../modules/experiment_stores.js';
     import { tooltip } from '../../modules/tooltip.js';
     import { long_bonus_time, short_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
+    import { roundMoney } from '../../modules/utilities.js';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
@@ -134,14 +135,14 @@
                         // did not answer
                         dict[collection_id].blicket_rating_scores[i] = 0;
                     } else {
-                        dict[collection_id].blicket_rating_scores[i] = +((1 - Math.abs(participant_rating - true_rating)/10).toFixed(3));  // avoid precision errors
+                        dict[collection_id].blicket_rating_scores[i] = 1 - Math.abs(participant_rating - true_rating)/10;
                     }
                     return dict;
                 });
             }
             
-            // add sum of blicket rating scores to current running score
-            current_score.update(score => score += $quiz_data_dict[collection_id].blicket_rating_scores.reduce((x,y) => x+y, 0));
+            // add sum of blicket rating scores to raw (with precision errors) current running score
+            raw_current_score.update(score => score += $quiz_data_dict[collection_id].blicket_rating_scores.reduce((x,y) => x+y, 0));
         } else if (page_num === 2) {
             // escape quotes in free response questions
             quiz_data_dict.update(dict => {
@@ -199,7 +200,7 @@
     {#if page_num === 1}
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
             <h3>Do you think these blocks are blickets?</h3>
-            <p style="margin-bottom: 3rem;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{$bonus_val} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent <b>within {short_bonus_time}</b>.</p>
+            <p style="margin-bottom: 3rem;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{roundMoney($bonus_val)} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent <b>within {short_bonus_time}</b>.</p>
             
             <!-- Iterate over $block_dict, which orders blocks alphabetically -->
             {#each $block_dict[collection_id] as block, i}
@@ -271,9 +272,9 @@
             </div>
 
             <!-- TODO: change from singular to plural for full exp -->
-            <p style="margin-bottom: 2rem;">We will show your examples to another person after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{teaching_bonus_val})
-                <span class="info-box" title="Given your examples, one other person will choose from 8 options about how the blicket machine works. If they choose the correct option, you will receive a bonus of {$bonus_currency_str}{teaching_bonus_val}." use:tooltip>hover/tap me for details</span>.
-                <!-- two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{+(teaching_bonus_val/2).toFixed(3)}; if both choose the correct option, your bonus is {$bonus_currency_str}{teaching_bonus_val}. -->
+            <p style="margin-bottom: 2rem;">We will show your examples to another person after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)})
+                <span class="info-box" title="Given your examples, one other person will choose from 8 options about how the blicket machine works. If they choose the correct option, you will receive a bonus of {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>.
+                <!-- two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}. -->
                 This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
             
             {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}

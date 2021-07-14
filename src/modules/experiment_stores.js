@@ -2,6 +2,7 @@
 
 import { writable, derived } from 'svelte/store';
 import { BlockGetter, Block } from './block_classes.js';
+import { removePrecError } from './utilities.js';
 
 // Read-only constants
 export const BLOCK_COLORS = ["color0", "color1", "color2", "color3", "color4", "color5", "color6", "color7", "color8"];
@@ -28,13 +29,14 @@ export const dev_mode = writable(false);
 // Write-able ints for the participant's score and bonus throughout the experiment
 // these keep track of the score/bonus that are automatically calculated and sent out shortly after completion, not score/bonus that are coded by experimenters and sent out with a longer delay
 export const max_score = writable(0);
-export const current_score = writable(0);
+export const raw_current_score = writable(0);
 export const bonus_val = writable(0);
 export const bonus_currency_str = writable("$");
 
-// Derive the current total running bonus and max possible bonus to 3 decimal points
-export const current_total_bonus = derived([current_score, bonus_val], ([$current_score, $bonus_val]) => +($current_score*$bonus_val).toFixed(3));  // unary + to turn string back to number to shave off unnecessary decimals
-export const max_total_bonus = derived([max_score, bonus_val], ([$max_score, $bonus_val]) => +($max_score*$bonus_val).toFixed(3));
+// Derive the current score, current total running bonus, and max possible bonus without precision errors
+export const current_score = derived([raw_current_score], ([$current_score]) => removePrecError($current_score));
+export const current_total_bonus = derived([current_score, bonus_val], ([$current_score, $bonus_val]) => removePrecError($current_score*$bonus_val));
+export const max_total_bonus = derived([max_score, bonus_val], ([$max_score, $bonus_val]) => removePrecError($max_score*$bonus_val));
 
 // Write-able BlockGetter for consistently getting blocks in different components
 export const task_getter = writable(new BlockGetter(BLOCK_COLORS));
@@ -80,8 +82,8 @@ export function make_dummy_nonblicket(id, position) {
 export function reset_experiment_stores() {
     // Reset experiment store values without relying on start() and stop()
 
-    // current_score reset
-    current_score.set(0);
+    // raw_current_score reset
+    raw_current_score.set(0);
 
     // task_getter reset
     task_getter.set(new BlockGetter(BLOCK_COLORS));
