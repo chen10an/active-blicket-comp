@@ -155,7 +155,7 @@
         <p><b>In total, you can earn a bonus of {$bonus_currency_str}{roundMoney($max_total_bonus + teaching_bonus_val*2)}</b>. </p>
         
         <h3>The Blicket Game</h3>
-        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>blickets</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket, and it doesn’t matter where blocks are placed on the machine.</p>
+        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>blickets</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
 
         <p>Here's an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
         <div class="col-centering-container" style="padding: 0;">
@@ -170,7 +170,7 @@
         
         <p>Try clicking on the blocks (A, B and C) above! This allows us to move any number of blocks on or off the blicket machine. Press the test button to see a dummy response from the blicket machine. </p>
         
-        <p>In the <b>real blicket game</b>, the test button will show how the blicket machine responds to different combinations of blocks: the machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate" with a green color</span>, or do nothing.</p>
+        <p>In the <b>real blicket game</b>, the test button will show how the blicket machine responds to different combinations of blocks: the machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate" with a green color</span>, or do nothing. It doesn’t matter where blocks are placed on the machine.</p>
         <p>You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
 
         <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 400px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
