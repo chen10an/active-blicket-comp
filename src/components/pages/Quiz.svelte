@@ -220,7 +220,7 @@
         </div>
         {:else if page_num === 2}
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
-            <p>Only the question "How would you teach others about the blicket machine?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
+            <p>Only the question "How would you teach others about how the blicket machine works?" can award a bonus, but we hope you'll sincerely answer all questions.</p>
             
             <h3>How do you think the blicket machine (from the level
                 {#if collection_id.toString().includes("level_1")}
@@ -234,7 +234,7 @@
             <h3>What was your strategy for figuring out how the blicket machine works?</h3>
             <textarea bind:value={$quiz_data_dict[collection_id].free_response_1}></textarea>
 
-            <h3 style="margin-top: 5rem;">How would you teach others about the blicket machine?</h3>
+            <h3 style="margin-top: 5rem;">How would you teach others about how the blicket machine works?</h3>
             <p>Based on how you think the level
                 {#if collection_id.toString().includes("level_1")}
                     1
