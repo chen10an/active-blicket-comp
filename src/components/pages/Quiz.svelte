@@ -228,7 +228,9 @@
                 {:else if collection_id.toString().includes("level_2")}
                     2
                 {/if}
-                game) works?</h3>
+                game) works?
+            </h3>
+            <p style="margin-top: 0;">How does the machine respond to blickets? How does it respond to non-blickets?</p>
             <textarea bind:value={$quiz_data_dict[collection_id].free_response_0}></textarea>
 
             <h3>What was your strategy for figuring out how the blicket machine works?</h3>
