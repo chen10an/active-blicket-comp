@@ -5,7 +5,7 @@ export const short_bonus_time = "2 working days";  // max time for receiving aut
 export const long_bonus_time = "10 working days";  // max time for receiving coded bonus
 export const teaching_bonus_val = 0.16;
 
-export const fixed_num_interventions_l1 = 10;
+export const fixed_num_interventions_l1 = 12;
 export const fixed_num_interventions_l2 = 20;
 export const min_time_seconds_l1 = 30;
 export const min_time_seconds_l2 = 60;
