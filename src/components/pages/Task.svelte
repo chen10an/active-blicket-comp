@@ -32,6 +32,7 @@
     import { task_getter, block_dict, task_data_dict, FADE_DURATION_MS, FADE_IN_DELAY_MS } from '../../modules/experiment_stores.js';
     import { Combo } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
+    import { tooltip } from '../../modules/tooltip.js';
     import { fade } from 'svelte/transition';
     import { onDestroy } from 'svelte';
     
@@ -59,24 +60,35 @@
     let show_negative_detector = false;  // whether to show a negative response from the detector
     let disable_task = false;  // when true, participants cannot interact with the task (blocks + detector)
     
+    let is_currently_confident = false;  // whether participant is currently confident they know which blocks are blickets
+    let confidence_toggles = [];  // record when the participant toggles is_currently_confident
+                               
     // history of all combinations (as Combo objects) that the participant has tried; use arrays to maintain order
-    task_data_dict
-        .update(dict => {
+    task_data_dict.update(dict => {
         dict[collection_id] = {
             all_combos: [],  // list of Combo objects
+            confidence_toggles: confidence_toggles
         };
         return dict;
     });
 
+    $: {
+        confidence_toggles = [...confidence_toggles, {is_confident: is_currently_confident, timestamp: Date.now()}];  // record whenever is_currently_confident changes
+        
+        task_data_dict.update(dict => {
+             dict[collection_id].confidence_toggles = confidence_toggles;
+            return dict;
+        });
+    }
 
     // reactive declaraction of whether the participant can continue to the quiz:
     // wait at least min_time_seconds and make at least fixed_num_interventions interventions
     $: can_cont = (min_time_seconds <= -1) && ($task_data_dict[collection_id].all_combos.length >= fixed_num_interventions)
-
+    
     // Click handler functions
     async function test() {
         // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
-
+        
         // copy the array of block objects and sort by the randomly assigned id
         let blocks_copy = [...$block_dict[collection_id]];
         blocks_copy.sort((a, b) => a.id - b.id);
@@ -163,15 +175,22 @@
     <p>Remember, only the blicket machine can help you identify blickets.</p>
     <div class="col-centering-container" style="padding: 0; min-width: 75%;">
         <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
-
+        
         <!-- Button for testing the detector -->
         <button disabled="{disable_task}" on:click={test}>
             Test the blicket machine <br>
             Remaining tests: <b>{fixed_num_interventions - $task_data_dict[collection_id].all_combos.length}</b>
         </button>
 
+
+        <h4 style="margin: 0;"> At <u>&nbsp;{fixed_num_interventions - $task_data_dict[collection_id].all_combos.length}&nbsp;</u> remaining tests, are you confident you have identified all blickets? <span class="info-box" title=" You may already be confident before running out of tests, or you may still be unsure after using all tests. Please tell us about this by toggling the Yes/No buttons at any time." use:tooltip>hover/tap me for details</span></h4>
+        <div>
+        <label><input type="radio" bind:group={is_currently_confident} value={true}>Yes</label>
+        <label><input type="radio" bind:group={is_currently_confident} value={false}>No</label>
+        </div>
+
         <!-- Show all previously attempted block combinations -->
-        <h4 style="margin: 0;">Your previous (scrollable) results from the blicket machine:</h4>
+        <h4 style="margin-bottom: 0;">Your previous (scrollable) results from the blicket machine:</h4>
         
         <BlockComboHistory collection_id="{collection_id}" />
         

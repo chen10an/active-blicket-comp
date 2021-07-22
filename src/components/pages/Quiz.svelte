@@ -327,16 +327,6 @@
 </CenteredCard>
 
 <style>
-    .info-box {
-        border: solid;
-        border-color: var(--medium-gray);
-	      border-width: 1px;
-        box-shadow: var(--container-box-shadow);
-        padding: 0 0.5em;
-
-        font-size: 0.8em;
-    }
-
     textarea {
         width: 70%;
         height: 3rem;
