@@ -8,20 +8,31 @@
     export let correct_blicket_ratings;  // array of correct blicket ratings
     export let is_last = false;  // whether this is the last quiz before the end of the experiment
 
-    let page_num = 1;  // keep track of a multipage quiz    
+    let page_num = 1;  // keep track of a multipage quiz
+    
+    import { block_dict, task_getter, task_data_dict } from '../../modules/experiment_stores.js';
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
         if (correct_blicket_ratings === undefined) {
             correct_blicket_ratings = [10, 0, 0];
         }
+
         if (collection_id === undefined) {
-            collection_id = ["TEST_level_1"];
+            collection_id = "TEST_level_1";
+
             block_dict.update(dict => {
                 dict[collection_id] = $task_getter.get(3);
                 return dict;
             });
-        }
 
+            task_data_dict.update(dict => {
+                dict[collection_id] = {
+                    all_combos: [new Combo("000", false), new Combo("100", true), new Combo("011", false)]
+                };
+                return dict;
+            });
+        }
+        
         // page_num = 2;
 
         // is_last = true;
@@ -32,10 +43,12 @@
     import CenteredCard from '../partials/CenteredCard.svelte';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import { block_dict, task_getter, quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, raw_current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket } from '../../modules/experiment_stores.js';
+    import BlockComboHistory from '../partials/BlockComboHistory.svelte';
+    import { quiz_data_dict, feedback, FADE_DURATION_MS, FADE_IN_DELAY_MS, raw_current_score, bonus_val, bonus_currency_str, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket } from '../../modules/experiment_stores.js';
     import { tooltip } from '../../modules/tooltip.js';
     import { long_bonus_time, short_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
     import { roundMoney } from '../../modules/utilities.js';
+    import { Combo } from '../../modules/block_classes';
     import { fade } from 'svelte/transition';
     import { createEventDispatcher } from 'svelte';
 
@@ -195,12 +208,23 @@
             2
         {/if}
         Game
-        (Part {page_num}/{max_page_num})</h2>
+        (Part {page_num}/{max_page_num})
+    </h2>
 
     {#if page_num === 1}
         <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
+            <h4 style="margin: 0;">You can refer to your previous (scrollable) results from the level
+                {#if collection_id.toString().includes("level_1")}
+                    1
+                {:else if collection_id.toString().includes("level_2")}
+                    2
+                {/if}
+                blicket machine to help you with this part of the quiz.
+            </h4>
+            <BlockComboHistory collection_id="{collection_id}" />
+            
             <h3>Do you think these blocks are blickets?</h3>
-            <p style="margin-bottom: 3rem;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{roundMoney($bonus_val)} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent <b>within {short_bonus_time}</b>.</p>
+            <p style="margin: 0 0 2rem 0;">The closer you are to the correct rating (10 for blickets, 0 for non-blickets), the bigger your bonus will be (up to {$bonus_currency_str}{roundMoney($bonus_val)} per rating). The correct ratings will be revealed at the end of the study and your corresponding bonus will be sent <b>within {short_bonus_time}</b>.</p>
             
             <!-- Iterate over $block_dict, which orders blocks alphabetically -->
             {#each $block_dict[collection_id] as block, i}
