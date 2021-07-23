@@ -244,6 +244,8 @@
 
                     <div class="col-centering-container" style="padding: 0;">
                         <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
+                        
+                        <p style="margin: 2rem 0 0 0;">Remember, in the <b>real blicket game</b>, a block’s color doesn’t tell us anything about whether it is a blicket.</p>
                         <div class="button-container">
                             <!-- translate to center-->
                             <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Begin the blicket game</button>
