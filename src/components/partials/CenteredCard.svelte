@@ -46,7 +46,7 @@
     }
 
     .large {
-        max-width: 50rem;
+        max-width: min(100%, 50rem);
         min-height: 30rem;
     }
 </style>

@@ -27,7 +27,7 @@
 
             task_data_dict.update(dict => {
                 dict[collection_id] = {
-                    all_combos: [new Combo("000", false), new Combo("100", true), new Combo("011", false)]
+                    all_combos: [new Combo("000", false),  new Combo("100", true), new Combo("011", false), new Combo("011", false)]
                 };
                 return dict;
             });
@@ -212,7 +212,7 @@
     </h2>
 
     {#if page_num === 1}
-        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
+        <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container" style="max-width: 100%;">
             <h4 style="margin: 0;">You can refer to your previous (scrollable) results from the level
                 {#if collection_id.toString().includes("level_1")}
                     1
