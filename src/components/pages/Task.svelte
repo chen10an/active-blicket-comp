@@ -173,7 +173,7 @@
     </h2>
     <p style="margin: 0;">Please use <b>{fixed_num_interventions} tests</b> on the blicket machine and spend <b>at least {min_time_seconds_copy} seconds</b> in this game.</p>
     <p>Remember, only the blicket machine can help you identify blickets.</p>
-    <div class="col-centering-container" style="padding: 0; min-width: 75%;">
+    <div class="col-centering-container" style="padding: 0; min-width: 75%; max-width: 100%;">
         <GridDetectorPair collection_id={collection_id} is_disabled={disable_task} is_mini={false} key_prefix="task" show_positive_detector={show_positive_detector} show_negative_detector={show_negative_detector}/>
         
         <!-- Button for testing the detector -->
@@ -183,8 +183,9 @@
         </button>
 
 
-        <h4 style="margin: 0;"> At <u>&nbsp;{fixed_num_interventions - $task_data_dict[collection_id].all_combos.length}&nbsp;</u> remaining tests, are you confident you have identified all blickets? <span class="info-box" title=" You may already be confident before running out of tests, or you may still be unsure after using all tests. Please tell us about this by toggling the Yes/No buttons at any time." use:tooltip>hover/tap me for details</span></h4>
-        <div>
+        <h4 style="margin: 0;"> At <u>&nbsp;{fixed_num_interventions - $task_data_dict[collection_id].all_combos.length}&nbsp;</u> remaining tests, are you confident you have identified all blickets?</h4>
+        <span class="info-box" title=" You may already be confident before running out of tests, or you may still be unsure after using all tests. Please tell us about this by toggling the Yes/No buttons at any time." use:tooltip>hover/tap me for details</span>
+        <div style="margin-top: 0.5rem;">
         <label><input type="radio" bind:group={is_currently_confident} value={true}>Yes</label>
         <label><input type="radio" bind:group={is_currently_confident} value={false}>No</label>
         </div>

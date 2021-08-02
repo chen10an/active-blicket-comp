@@ -7,5 +7,5 @@ The different scripts are defined in ~package.json~.
 - ~package.json~ version
 - ~package-lock.json~ version (top level active-blicket-comp version only)
 - ~App.svelte~ experiment_id prop for each route
-- ~ExperimentController.svelte~: experiment_id for sending messages to somata
-  - also make sure a somata config exists for this version
+  - which takes care of experiment_id for sending messages to somata in ~ExperimentController.svelte~
+- also make sure a somata config exists for this version
