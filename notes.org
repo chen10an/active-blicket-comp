@@ -1,11 +1,14 @@
 * Notes
-** Install from ~package-lock.json~ via ~npm ci~
-Not ~npm install~, which updates all packages and may break reproducibility.
-** Use ~npm run <script_name>~ to do stuff
-The different scripts are defined in ~package.json~.
+** Current versions:
+- for release :: 2.0.0-mturk-micro
+- for somata :: 2.0.x-mturk-micro
 ** Things to update when making a new version of the experiment
 - ~package.json~ version
 - ~package-lock.json~ version (top level active-blicket-comp version only)
 - ~App.svelte~ experiment_id prop for each route
   - which takes care of experiment_id for sending messages to somata in ~ExperimentController.svelte~
 - also make sure a somata config exists for this version
+** Install from ~package-lock.json~ via ~npm ci~
+Not ~npm install~, which updates all packages and may break reproducibility.
+** Use ~npm run <script_name>~ to do stuff
+The different scripts are defined in ~package.json~.
