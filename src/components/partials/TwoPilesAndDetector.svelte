@@ -8,6 +8,7 @@
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let num_on_blocks_limit;  // limit on the _combined_ number of blickets and nonblickets that the participant can put onto the detector
     export let is_disabled;  // boolean for disabling clicking on the piles and detector
+    export let activation = null;  // when this is set to a lambda function, it is used to calculate the machine's response (as opposed to letting the participant select pos/neg machine response)
 
     import { dev_mode } from '../../modules/experiment_stores.js';
     // set some default values for convenience during testing, but do this only in dev mode
@@ -28,15 +29,18 @@
     // Imports
     import { block_dict, make_dummy_blicket, make_dummy_nonblicket} from '../../modules/experiment_stores.js';
     import { TOTAL_CSS_GRID_AREAS } from '../../modules/block_classes.js';
+    import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import BlockGrid from './BlockGrid.svelte';
     import Block from './Block.svelte';
 
     // the combined num of blickets and nonblickets should not exceed the max number off blocks that can be placed on a detector / css grid
     console.assert(num_on_blocks_limit <= TOTAL_CSS_GRID_AREAS); 
 
+    // Constants:
     // [0..NONBLICKET_START_DEX) in block_dict contains blickets; [NONBLICKET_START_DEX..NON_BLICKET_START_DEX*2) in block_dict contains nonblickets
     const NONBLICKET_START_DEX = TOTAL_CSS_GRID_AREAS+1;
     // there are a total of TOTAL_CSS_GRID_AREAS+1 (above num_on_blocks_limit) blocks for each blicket/nonblicket pile, allowing the first (index 0) block in each pile to be used as the button for moving that pile's blocks to the detector
+    const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
 
     // if they don't exist, create one collections of blocks for blickets AND nonblickets
     if (!(collection_id in $block_dict)) {
@@ -121,6 +125,56 @@
         hide_limit_warning = true;
     }
 
+    let show_negative_detector = false;
+    async function test() {
+        // Test whether the blocks in the detector (i.e. blocks with state=true) will cause an activation
+        
+        // copy the array of block objects and sort by the id
+        let blocks_copy = [...$block_dict[collection_id]];
+        blocks_copy.sort((a, b) => a.id - b.id);
+
+        // only use blicket blocks for determining activation
+        let blickets = blocks_copy.slice(1, NONBLICKET_START_DEX);
+        // exclude the 0th blicket because it's used as a button
+        
+        // the blicket relative id then becomes the argument position in `activation`
+        let block_states = blickets.map(block => block.state);
+        
+        // change the detector's response and turn off button interactions
+        let activates_detector = activation(...block_states);
+        if (activates_detector) {
+            show_positive_detector = true;
+        } else {
+            show_negative_detector = true;
+        }
+        
+        is_disabled = true;
+
+        // wait before returning everything to their default state
+        await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
+
+        // create the bitstring representation where character i corresponds to the block with id=i
+        // let bitstring = block_states.map(state => state ? "1" : "0").join("");
+        // let combo = new Combo(bitstring, activates_detector);
+        // // record block combinations (for server) on interactive task
+        // // create and store a Combo object from the current bitstring
+        // task_data_dict.update(dict => {
+        //     dict[collection_id].all_combos.push(combo);
+        //     return dict;
+        // });
+
+        // revert to the default detector background color
+        show_positive_detector = false;
+        show_negative_detector = false;
+
+        // return all block states back to false
+        combined_reset();
+
+        // wait for crossfade transition
+        await new Promise(r => setTimeout(r, CROSSFADE_DURATION_MS));
+
+        is_disabled = false;
+    }
 </script>
 
 <div class="row-container">
@@ -137,13 +191,23 @@
     </div>
 
     <div class="col-container">
-        <BlockGrid collection_id={collection_id} is_mini={true} is_disabled={true} block_filter_func={block => block.state} is_detector={true} show_positive={show_positive_detector} use_transitions="{true}" />
+        <BlockGrid collection_id="{collection_id}" is_mini="{true}" is_disabled="{true}" block_filter_func="{block => block.state}" is_detector="{true}" show_positive="{show_positive_detector}" show_negative="{show_negative_detector}" use_transitions="{true}" use_overlay="{typeof activation === 'function'}" />
 
-        <div style="margin: 1rem 0;">
-            <label><input type="radio" value="{true}" bind:group="{show_positive_detector}" ><span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span></label>
-            <br>
-            <label><input type="radio" value="{false}" bind:group="{show_positive_detector}" >Do Nothing</label>
-        </div>
+        {#if typeof activation === 'function'}
+            <!-- the detector response is testable via the activation lambda function -->
+
+            <button disabled="{is_disabled}" on:click={test}>
+                Test the blicket machine
+            </button>
+            
+        {:else}
+            <!-- let the participant choose the detector response -->
+            <div style="margin: 1rem 0;">
+                <label><input type="radio" value="{true}" bind:group="{show_positive_detector}" ><span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span></label>
+                <br>
+                <label><input type="radio" value="{false}" bind:group="{show_positive_detector}" >Do Nothing</label>
+            </div>
+        {/if}
     </div>
 </div>
 

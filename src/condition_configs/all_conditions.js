@@ -22,26 +22,13 @@ export const qa_dict = {
 
 // level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive
 
-const disj_activation_l1 = (arg0, arg1, arg2) => arg0 >= 1;
-const noisy_disj_activation_l1 = function(arg0, arg1, arg2) {
-    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=0.9 (when noise at 1 blicket is ~0.75)
-    
-    let num_blickets = arg0;  // non-neg integer
-    if (num_blickets == 1) {
-        return Math.random() < 0.75;  // noise
-    } else if (num_blickets > 1) {
-        return true;
-    } else {
-        return false;
-    }
-}
-const correct_disj_ratings_l1 = [10, 0, 0];  // ith rating corresponds to block with _id_ i
+const disj_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 1;
 
-const conj_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 >= 2;
-const noisy_conj_activation_l1 = function(arg0, arg1, arg2) {
+const conj_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 2;
+const noisy_conj_activation = function(...blickets) {
     // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=1.9 (when noise at 2 blickets is ~0.75)
     
-    let num_blickets = arg0 + arg1;  // non-neg integer
+    let num_blickets =  blickets.reduce((x,y) => x+y, 0);  // non-neg integer
     if (num_blickets == 2) {
         return Math.random() < 0.75;  // noise
     } else if (num_blickets > 2) {
@@ -50,124 +37,18 @@ const noisy_conj_activation_l1 = function(arg0, arg1, arg2) {
         return false;
     }
 }
-const correct_conj_ratings_l1 = [10, 10, 0];  // ith rating corresponds to block with _id_ i
 
-const conj3_activation_l1 = (arg0, arg1, arg2) => arg0 + arg1 + arg2 >= 3;
-const noisy_conj3_activation_l1 = function(arg0, arg1, arg2) {
-    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=2.9 (when noise at 3 blickets is ~0.75)
-    
-    let num_blickets = arg0 + arg1 + arg2;  // non-neg integer
-    if (num_blickets == 3) {
-        return Math.random() < 0.75;  // noise
-    } else if (num_blickets > 3) {
-        return true;
-    } else {
-        return false;
-    }
-}
-const correct_conj3_ratings_l1 = [10, 10, 10];  // ith rating corresponds to block with _id_ i
-
-const disj_l1 = {
-    "Task": {collection_id: "level_1", activation: disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_disj_ratings_l1}
-};
-const noisy_disj_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_disj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_disj_ratings_l1}
-};
-
-const conj_l1 = {
-    "Task": {collection_id: "level_1", activation: conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_conj_ratings_l1}
-};
-const noisy_conj_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_conj_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_conj_ratings_l1}
-};
-
-const conj3_l1 = {
-    "Task": {collection_id: "level_1", activation: conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_conj3_ratings_l1}
-};
-const noisy_conj3_l1 = {
-    "Task": {collection_id: "level_1", activation: noisy_conj3_activation_l1, fixed_num_interventions: fixed_num_interventions_l1, min_time_seconds: min_time_seconds_l1},
-    "Quiz": {collection_id: "level_1", correct_blicket_ratings: correct_conj3_ratings_l1}
-};
-
-// level 2: 6 blocks, 3 blickets
-const conj_activation_l2 = (arg0, arg1, arg2, arg3, arg4, arg5) => arg0 + arg1 + arg2 >= 2;
-const correct_conj_ratings_l2 = [10, 10, 10, 0, 0, 0];  // ith rating corresponds to block with _id_ i
-const conj_l2 = {
-    "Task": {collection_id: "level_2", activation: conj_activation_l2, fixed_num_interventions: fixed_num_interventions_l2, min_time_seconds: min_time_seconds_l2},
-    "Quiz": {collection_id: "level_2", correct_blicket_ratings: correct_conj_ratings_l2}
-};
-
-// Define all 6 conditions:
-const d1_c2 = {
+// a sequence of 4 within-participant conditions:
+const within_seq = {
     "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": disj_l1.Task,
-    "Quiz_1": disj_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "D1C2"}
-};
-
-const nd1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": noisy_disj_l1.Task,
-    "Quiz_1": noisy_disj_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "ND1C2"}
-};
-
-const c1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": conj_l1.Task,
-    "Quiz_1": conj_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "C1C2"}
-};
-
-const nc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": noisy_conj_l1.Task,
-    "Quiz_1": noisy_conj_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "NC1C2"}
-};
-
-const cc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": conj3_l1.Task,
-    "Quiz_1": conj3_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "CC1C2"}
-};
-
-const ncc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
-    "IntroInstructions": {collection_id: "intro"},
-    "Task_1": noisy_conj3_l1.Task,
-    "Quiz_1": noisy_conj3_l1.Quiz,
-    "Task_3": conj_l2.Task,
-    "Quiz_3": {...conj_l2.Quiz, is_last: true},
-    "End": {code_suffix: "NCC1C2"}
+    // "IntroInstructions": {collection_id: "intro"},
+    "TeachingValidation_1": {collection_id: "disj", activation: disj_activation, machine_name: "A"},
+    "TeachingValidation_2": {collection_id: "conj", activation: conj_activation, machine_name: "B"},
+    "TeachingValidation_3": {collection_id: "noisy_conj", activation: noisy_conj_activation, machine_name: "C"},
+    "TeachingValidation_4": {collection_id: "choice", activation: null, machine_name: "D"},
+    "End": {code_suffix: "WITHIN"}
 };
 
 export {
-    // disj conditions 0, 1
-    d1_c2, nd1_c2,
-    // conj conditions 2, 3
-    c1_c2, nc1_c2,
-    // conj3 conditions 4, 5
-    cc1_c2, ncc1_c2
+    within_seq
 }

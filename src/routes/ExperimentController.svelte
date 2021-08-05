@@ -10,6 +10,7 @@
 	import Task from '../components/pages/Task.svelte';
 	import Quiz from '../components/pages/Quiz.svelte';
 	import End from '../components/pages/End.svelte';
+  import TeachingValidation from '../components/pages/TeachingValidation.svelte'
 	import Loading from '../components/conditional_pages/Loading.svelte';
 	import PIS from '../components/pages/PIS.svelte';
 	import DontRepeat from '../components/conditional_pages/DontRepeat.svelte';
@@ -139,7 +140,8 @@
 		"Quiz": Quiz,
 		"IntroInstructions": IntroInstructions,
 		"End": End,
-		"PIS": PIS
+		"PIS": PIS,
+    "TeachingValidation": TeachingValidation
 	}
 
 	let scrollY = 0;
