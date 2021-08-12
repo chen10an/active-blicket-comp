@@ -3,7 +3,7 @@
 	import {wrap} from 'svelte-spa-router/wrap';
 
 	import ExperimentController from './routes/ExperimentController.svelte';
-	import TestComponent from './components/pages/TeachingValidation.svelte';
+	import TestComponent from './components/pages/IntroInstructions.svelte';
 	import { bonus_currency_str, dev_mode } from './modules/experiment_stores.js';
 
 	import { within_seq } from './condition_configs/all_conditions.js';

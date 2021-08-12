@@ -4,17 +4,21 @@
 
     export let collection_id = "intro";
     
-    import { fixed_num_interventions_l1, fixed_num_interventions_l2, min_time_seconds_l1, min_time_seconds_l2, qa_dict, short_bonus_time, long_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
+    import { qa_dict, long_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
 
     import CenteredCard from '../partials/CenteredCard.svelte';
     import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str } from '../../modules/experiment_stores.js';
+    import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
+
     import { BlockGetter } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { roundMoney } from '../../modules/utilities.js';
+    import { tooltip } from '../../modules/tooltip.js';
+
     import { fade } from 'svelte/transition';
     import { createEventDispatcher, tick } from 'svelte';
 
@@ -99,6 +103,9 @@
 
     // Click handler    
     async function cont() {
+        // TODO: 
+        let can_cont = checking_page_num <= 2 ? all_correct : answered_all
+        
         if (all_correct) {
             if (checking_page_num <= 2) {
                 checking_page_num += 1;
@@ -141,38 +148,60 @@
     <div>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
-        <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
-        
+        <p>Welcome to our research study! We're interested in understanding how you would teach others about our "blicket machine" and we hope that you have fun in the process.</p>
+
         <h3>Overview</h3>
-        <p>Our study has 2 levels and lasts around 10min in total. Each level includes an interactive "blicket game" followed by a quiz about the game. The game and quiz get harder from level 1 to 2.</p>
-
-        <p>There are two types of quiz questions:</p>
-        <ol>
-            <li>9 questions that award up to <b>{$bonus_currency_str}{roundMoney($max_total_bonus)}</b> bonus and are scored automatically. Your bonus will be sent <b>within {short_bonus_time}</b>.</li>
-            <li>2 questions that award up to <b>{$bonus_currency_str}{roundMoney(teaching_bonus_val*2)}</b> bonus. These questions will take longer to score because they are evaluated in detail by another person. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
-            <!-- TODO: change to plural for full exp -->
-        </ol>
-        <p><b>In total, you can earn a bonus of {$bonus_currency_str}{roundMoney($max_total_bonus + teaching_bonus_val*2)}</b>. </p>
+        <ul>
+            <li>Our study has 7 sets of questions and lasts around {$duration_str} in total. Each set introduces a "blicket machine" and asks you to teach others about how the machine works.</li>
+            <!-- Notice bonus is only for 6 questions because 7th one is just "make your own rule" -->
+            <li><b>You can earn a total bonus of up to {$bonus_currency_str}{roundMoney(teaching_bonus_val*6)}.</b> The questions in this study may take some time to score because they are evaluated in detail by other people. Your bonus will be sent within <b>{long_bonus_time}</b>.</li>
+        </ul>
         
-        <h3>The Blicket Game</h3>
-        <p>The blicket game involves blocks with different letters and colors. Some blocks have special properties that make them <b>blickets</b> and your goal is to identify these blickets with the help of a <b>blicket machine</b>. <i>Only</i> the blicket machine can help us identify blickets. A block’s color and letter don’t tell us anything about whether it is a blicket.</p>
+        <h3>How to use Blicket Machines</h3>
+        <p><b>Blicket machines</b> work by activating or doing nothing in response to blocks. Some blocks have special properties that make them <b>blickets</b> <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>; others are just plain blocks (not blickets) <span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>.
+        </p>
 
-        <p>Here's an example of some blocks (A, B, C) and a dummy blicket machine (square with cogs):</p>
+        <p>Here's an example of a dummy blicket machine (square with cogs) that you can play with:</p>
         <div class="col-centering-container" style="padding: 0;">
-            <GridDetectorPair collection_id={collection_id} is_mini={true} is_disabled={disable_blocks} key_prefix="intro" show_negative_detector={show_dummy_negative}/>
- 
-            <!-- Dummy blicket machine test button -->
-            <button on:click={dummy_test} disabled="{disable_blocks}">
-                Test the dummy blicket machine<br/>
-                <span style="font-size: 0.8rem">Note: this dummy machine does not do anything</span>
-            </button>
+            <TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" activation="{dummy_test}" test_button_html="Test the dummy blicket machine<br/><span style='font-size: 0.8rem;'>Note: this dummy machine does not do anything</span>"/>
         </div>
         
-        <p>Try clicking on the blocks (A, B and C) above! This allows us to move any number of blocks on or off the blicket machine. Press the test button to see a dummy response from the blicket machine. </p>
-        
-        <p>In the <b>real blicket game</b>, the test button will show how the blicket machine responds to different combinations of blocks: the machine can either <span style="background: var(--active-color); padding: 0 0.3rem;">"activate" with a green color</span>, or do nothing. It doesn’t matter where blocks are placed on the machine.</p>
-        <p>You can test the blicket machine {fixed_num_interventions_l1} times in level 1 and {fixed_num_interventions_l2} times in level 2. You must also play the blicket game for <i>at least</i> {min_time_seconds_l1}s in level 1 and {min_time_seconds_l2}s in level 2.</p>
+        <div>
+            <p>How to use:</p>
+            <ul style="list-style-type:none;">
+                <li><button class="block-button"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds blickets to the machine.</li>
+                <li><button class="block-button"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds plain blocks (not blickets) to the machine.</li>
+                <li>You can add as many blickets and plain blocks as you like, for a total of <b>at least 1 and at most {MAX_NUM_BLOCKS}</b>.</li>
+                <li><button style="min-width: var(--mini-block-length);">
+                    Reset
+                </button> removes everything from the machine.</li>
+                <li><button>Test the dummy blicket machine</button> shows a dummy response from the blicket machine.</li>
+            </ul>
+        </div>
 
+        <p>When you encounter <b>real blicket machines</b>, they respond to the blickets and/or plain blocks on the machine by either <span style="background: var(--active-color); padding: 0 0.3rem;">activating with a green color</span> or doing nothing. It doesn’t matter where blickets and/or plain blocks are placed on the machine.</p>
+
+        <p>The question sets in this study will show you many <b>different blicket machines, each with its own rule for activating</b>. The rule will be revealed to you so that you can teach it to other people.</p>
+
+    <h3>Teaching Other People about How the Blicket Machine Works</h3>
+    <p>In each question set, you be informed about a new blicket machine and its rule for activating. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
+
+    <div class="col-centering-container" style="padding: 0;">
+        <div class="qa">
+            <p style="margin-top: 0;"><b>Setup of an Example</b></p>
+            <TwoPilesAndDetector collection_id="piles_dummy" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" />
+        </div>
+    </div>
+
+    <p>The buttons work in the same way before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
+    
+    <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
+
+    <p>Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per question set
+        <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>).
+
+        This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+       
         <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 400px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
             <h3 style="margin: 0">Checking Your Understanding (Part {checking_page_num}/3)</h3>
             <p style="margin: 0;">(This box is scrollable.)</p>

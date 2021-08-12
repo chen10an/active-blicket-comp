@@ -17,11 +17,7 @@
     // Imports
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import Block from '../partials/Block.svelte';
-    import CenteredCard from '../partials/CenteredCard.svelte';
-    import { long_bonus_time, teaching_bonus_val } from '../../condition_configs/all_conditions.js';
-    import { make_dummy_blicket, make_dummy_nonblicket, bonus_currency_str, quiz_data_dict } from '../../modules/experiment_stores.js';
-    import { roundMoney } from '../../modules/utilities.js';
-    import { tooltip } from '../../modules/tooltip.js';
+    import { make_dummy_blicket, make_dummy_nonblicket, bonus_currency_str, quiz_data_dict, MAX_NUM_BLOCKS } from '../../modules/experiment_stores.js';
     
     // Store participant answers
     quiz_data_dict.update(dict => {
@@ -52,11 +48,6 @@
             }
         }
     }
-    
-    // Constants
-    let MAX_NUM_BLOCKS = 6;
-
-    // Variables
 </script>
 
 <h2>Blicket Machine {machine_name}</h2>
@@ -79,7 +70,6 @@
 
 <style>
     .qa-container {
-        border: solid;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;

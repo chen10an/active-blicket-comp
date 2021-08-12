@@ -9,6 +9,7 @@
     export let num_on_blocks_limit;  // limit on the _combined_ number of blickets and nonblickets that the participant can put onto the detector
     export let is_disabled;  // boolean for disabling clicking on the piles and detector
     export let activation = null;  // when this is set to a lambda function, it is used to calculate the machine's response (as opposed to letting the participant select pos/neg machine response)
+    export let test_button_html = "Test the blicket machine";  // html to display on the test button when `activation` is a lambda function
 
     import { dev_mode } from '../../modules/experiment_stores.js';
     // set some default values for convenience during testing, but do this only in dev mode
@@ -197,7 +198,7 @@
             <!-- the detector response is testable via the activation lambda function -->
 
             <button disabled="{is_disabled}" on:click={test}>
-                Test the blicket machine
+                {@html test_button_html}
             </button>
             
         {:else}
