@@ -60,15 +60,18 @@
         }
     }
 
+    // dynamically update whether participant can continue to next subpage
+    $: can_cont = page_dex < 0 ? all_correct : answered_all
+    // negative page numbers need all correct answers (for comprehension/captcha checks) while positive page numbers just need all questions to be answered (for teaching questions)
+
+
     // Click handler    
     async function cont() {
-        // negative page numbers need all correct answers (for comprehension/captcha checks) while positive page numbers just need all questions to be answered (for teaching questions)
-        let can_cont = page_dex < 0 ? all_correct : answered_all
         
         if (can_cont) {
-            if (page_dex < 7) {
+            if (page_dex <= 5) {
                 page_dex += 1;
-            } else if (page_dex === 7) {
+            } else if (page_dex === 6) {
                 dispatch("continue");  // to the next component
                 
                 if ($dev_mode) {
@@ -132,7 +135,7 @@
             <ul style="list-style-type:none;">
                 <li><button class="block-button"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds blickets to the machine.</li>
                 <li><button class="block-button"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></button> adds plain blocks (not blickets) to the machine.</li>
-                <li>You can add as many blickets and plain blocks as you like, for a total of <b>at least 1 and at most {MAX_NUM_BLOCKS}</b>.</li>
+                <li>You can add as many blickets and plain blocks as you like, for a total of <b>at most {MAX_NUM_BLOCKS}</b>.</li>
                 <li><button style="min-width: var(--mini-block-length);">
                     Reset
                 </button> removes everything from the machine.</li>
@@ -154,7 +157,7 @@
         </div>
     </div>
 
-    <p>The buttons work in the same way before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
+    <p>The buttons work in the same way as before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
     
     <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
 
@@ -163,11 +166,12 @@
 
         This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
        
-        <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
-            <h3 style="margin: 0">Checking Your Understanding (Part {page_dex}/3)</h3>
+    <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
             <p style="margin: 0;">(This box is scrollable.)</p>
             <hr>
             {#if page_dex === -2}
+                <h3 style="margin: 0">Checking Your Understanding (Part 1/2)</h3>
+                
                 {#each Object.keys(qa_dict) as key}
                     <div class="qa-min">
                         <p>{@html qa_dict[key].question}</p>
@@ -184,6 +188,7 @@
 
             {:else if page_dex === -1}
                 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}">
+                    <h3 style="margin: 0">Checking Your Understanding (Part 2/2)</h3>
                     <p style="margin-bottom: 2rem;"><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
 
                     <div class="col-centering-container" style="padding: 0;">
@@ -198,7 +203,7 @@
                     </div>
                 </div>
 
-            {:else}
+            {:else if page_dex <= 5}
                 {#key page_dex}
                     <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
                         <TeachingValidation bind:answered_all="{answered_all}" collection_id="{ordered_fform_keys[page_dex]}" blicket_activation="{fform_dict[ordered_fform_keys[page_dex]].blicket_activation}" machine_name="{ALPHABET[page_dex]}"  has_noise="{fform_dict[ordered_fform_keys[page_dex]].has_noise}" num_blickets="{fform_dict[ordered_fform_keys[page_dex]].num_blickets}" />
@@ -210,11 +215,24 @@
                         <!-- translate to center-->
                         <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Submit</button>
                     </div>
+
+                    <div class:hide={!show_feedback}>
+                        <p class="wrong">For each example, please make sure you have:</p>
+                        <ul style="margin: 0;" class="wrong">
+                            <li>put at least one blicket or plain block on the machine</li>
+                            <li>chosen one of <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing"</li>
+                        </ul>
+                    </div>
+                    
                 </div>
+            {:else if page_dex === 6}
+                <!-- TODO: -->
+                
+                Thanks!!
             {/if}
         </div>
         
-        <button class:hide="{!$dev_mode}" on:click="{() => all_correct = true}">dev: skip validation</button>
+        <button class:hide="{!$dev_mode}" on:click="{() => can_cont = true}">dev: skip validation</button>
         <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
     </div>
 </CenteredCard>
@@ -239,12 +257,7 @@
         margin-bottom: 0;
     }
 
-    p.correct {
-        color: green;
-        margin: 0;
-    }
-
-    p.wrong {
+    .wrong {
         color: red;
         margin-bottom: 0;
     }

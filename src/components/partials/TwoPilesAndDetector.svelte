@@ -44,7 +44,7 @@
     // [0..NONBLICKET_START_DEX) in block_dict contains blickets; [NONBLICKET_START_DEX..NON_BLICKET_START_DEX*2) in block_dict contains nonblickets
     const NONBLICKET_START_DEX = TOTAL_CSS_GRID_AREAS+1;
     // there are a total of TOTAL_CSS_GRID_AREAS+1 (above num_on_blocks_limit) blocks for each blicket/nonblicket pile, allowing the first (index 0) block in each pile to be used as the button for moving that pile's blocks to the detector
-    const ACTIVATION_TIMEOUT_MS = 750;  // duration of the background's activation in milliseconds
+    const ACTIVATION_TIMEOUT_MS = 500;  // duration of the background's activation in milliseconds
 
     // if they don't exist, create one collections of blocks for blickets AND nonblickets
     if (!(collection_id in $block_dict)) {
