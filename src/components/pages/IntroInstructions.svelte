@@ -167,11 +167,16 @@
         This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
        
     <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
+
+        {#if page_dex < 0}
+            <!-- janky 3+page_dex to turn -2 and -1 into part 1 and 2, respectively -->
+            <h3 style="margin: 0">Checking Your Understanding (Part {3+page_dex}/2)</h3>
+        {:else}
+            <h3 style="margin: 0">How would you teach others about blicket machines? (Part {page_dex+1}/7)</h3>
+        {/if}
             <p style="margin: 0;">(This box is scrollable.)</p>
             <hr>
-            {#if page_dex === -2}
-                <h3 style="margin: 0">Checking Your Understanding (Part 1/2)</h3>
-                
+            {#if page_dex === -2}                
                 {#each Object.keys(qa_dict) as key}
                     <div class="qa-min">
                         <p>{@html qa_dict[key].question}</p>
@@ -188,7 +193,6 @@
 
             {:else if page_dex === -1}
                 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}">
-                    <h3 style="margin: 0">Checking Your Understanding (Part 2/2)</h3>
                     <p style="margin-bottom: 2rem;"><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
 
                     <div class="col-centering-container" style="padding: 0;">

@@ -4,6 +4,7 @@
 
 	import ExperimentController from './routes/ExperimentController.svelte';
 	import TestComponent from './components/pages/IntroInstructions.svelte';
+	import DemoComponent from './components/pages/IntroInstructions.svelte';
 	import { bonus_currency_str, dev_mode } from './modules/experiment_stores.js';
 
 	import { within_seq } from './condition_configs/all_conditions.js';
@@ -50,6 +51,10 @@
 				return dev_mode;
             },
         ]
+	});
+
+	routes["/demo"] = wrap({
+		component: DemoComponent
 	});
 
 	// TODO: implement different wrapper component for different platforms: reddit sample size, mturk and prolific
