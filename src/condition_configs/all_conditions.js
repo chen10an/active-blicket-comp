@@ -22,10 +22,22 @@ export const qa_dict = {
 
 // level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive
 
-const disj_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 1;
+const disj_blicket_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 1;
+const noisy_disj_blicket_activation = function(...blickets) {
+    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=0.9 (when noise at 1 blicket is ~0.75)
+    
+    let num_blickets = blickets.reduce((x,y) => x+y, 0);  // non-neg integer
+    if (num_blickets == 1) {
+        return Math.random() < 0.75;  // noise
+    } else if (num_blickets > 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-const conj_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 2;
-const noisy_conj_activation = function(...blickets) {
+const conj_blicket_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 2;
+const noisy_conj_blicket_activation = function(...blickets) {
     // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=1.9 (when noise at 2 blickets is ~0.75)
     
     let num_blickets =  blickets.reduce((x,y) => x+y, 0);  // non-neg integer
@@ -38,17 +50,41 @@ const noisy_conj_activation = function(...blickets) {
     }
 }
 
-// a sequence of 4 within-participant conditions:
+const conj3_blicket_activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 3;
+const noisy_conj3_blicket_activation = function(...blickets) {
+    // equivalent (with rounding up/down at the asymptotes) to sigmoid with gain=11, bias=2.9 (when noise at 3 blickets is ~0.75)
+    
+    let num_blickets = blickets.reduce((x,y) => x+y, 0);  // non-neg integer
+    if (num_blickets == 3) {
+        return Math.random() < 0.75;  // noise
+    } else if (num_blickets > 3) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+const fform_dict = {
+    "disj": {blicket_activation: disj_blicket_activation, has_noise: false, num_blickets: 1},
+    "noisy_disj": {blicket_activation: noisy_disj_blicket_activation, has_noise: true, num_blickets: 1},
+    "conj": {blicket_activation: conj_blicket_activation, has_noise: false, num_blickets: 2},
+    "noisy_conj": {blicket_activation: noisy_conj_blicket_activation, has_noise: true, num_blickets: 2},
+    "conj3": {blicket_activation: conj3_blicket_activation, has_noise: false, num_blickets: 3},
+    "noisy_conj3": {blicket_activation: noisy_conj3_blicket_activation, has_noise: true, num_blickets: 3}
+}
+
+const ordered_fform_keys = ["disj", "conj", "conj3", "noisy_disj", "noisy_conj", "noisy_conj3"]
+
+// TODO: latin square orders --> 6 between-participant conditions
+
 const within_seq = {
-    "PIS": {duration_str: "10 minutes"},
-    // "IntroInstructions": {collection_id: "intro"},
-    "TeachingValidation_1": {collection_id: "disj", activation: disj_activation, machine_name: "A"},
-    "TeachingValidation_2": {collection_id: "conj", activation: conj_activation, machine_name: "B"},
-    "TeachingValidation_3": {collection_id: "noisy_conj", activation: noisy_conj_activation, machine_name: "C"},
-    "TeachingValidation_4": {collection_id: "choice", activation: null, machine_name: "D"},
+    "PIS": {},
+    "IntroInstructions": {collection_id: "intro"},
     "End": {code_suffix: "WITHIN"}
 };
 
 export {
-    within_seq
+    within_seq,
+    fform_dict,
+    ordered_fform_keys
 }

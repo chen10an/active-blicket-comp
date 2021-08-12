@@ -4,15 +4,10 @@
 
     // props
     export let collection_id;
-    export let activation;
+    export let blicket_activation;
     export let machine_name;  // shows up on UI to help participant distinguish between the different machines
-
-    import { dev_mode } from '../../modules/experiment_stores.js';
-    if ($dev_mode) {
-        collection_id = "disj";
-        activation = (...blickets) => blickets.reduce((x,y) => x+y, 0) >= 1;
-        machine_name = "TEST";
-    }
+    export let num_blickets;  // int: the lower limit num blickets needed to activate the machine, e.g., "one", "two", ...
+    export let has_noise;  //  whether to describe that the form is noisy
     
     // Imports
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
@@ -48,13 +43,37 @@
             }
         }
     }
+
+    // map ints to their string descriptions
+    let int_to_str = {
+        1: "one",
+        2: "two",
+        3: "three",
+        4: "four"
+    }
 </script>
 
 <h2>Blicket Machine {machine_name}</h2>
 
-<p>Here is Blicket Machine {machine_name}. It activates when <b>at least one blicket <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span></b> is placed on the machine. It doesn't matter whether there are plain (non-blicket) blocks <span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> on the machine. You can test Blicket Machine {machine_name} to confirm how it works:</p>
+<p>Here is blicket machine {machine_name}.
+    {#if has_noise}
+        It <b>usually</b> activates when
+        <b>{int_to_str[num_blickets]} blicket{num_blickets === 1 ? "" : "s"}</b>
+        <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>
+        {num_blickets === 1 ? "is" : "are"}
+        on the machine, but it <b>always</b> activates for
+        <b>at least {int_to_str[num_blickets+1]} blicket{num_blickets+1 === 1 ? "" : "s"}</b>
+        <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>.
+    {:else}
+        It <b>always</b> activates when
+        <b>at least {int_to_str[num_blickets]} blicket{num_blickets === 1 ? "" : "s"}</b>
+        <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>
+        {num_blickets === 1 ? "is" : "are"} on the machine.
+    {/if}
+    It doesn't matter whether there are plain (non-blicket) blocks <span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> on the machine. You can test blicket machine {machine_name} to confirm how it works:
+</p>
 <!-- TODO: record combos here -->
-<TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" activation="{activation}" />
+<TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" blicket_activation="{blicket_activation}" />
 
 <h3>Please give 5 examples to teach other people about how Blicket Machine {machine_name} works:</h3>
 <p>Now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>

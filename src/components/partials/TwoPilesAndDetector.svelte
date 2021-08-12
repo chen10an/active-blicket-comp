@@ -8,8 +8,11 @@
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
     export let num_on_blocks_limit;  // limit on the _combined_ number of blickets and nonblickets that the participant can put onto the detector
     export let is_disabled;  // boolean for disabling clicking on the piles and detector
-    export let activation = null;  // when this is set to a lambda function, it is used to calculate the machine's response (as opposed to letting the participant select pos/neg machine response)
-    export let test_button_html = "Test the blicket machine";  // html to display on the test button when `activation` is a lambda function
+
+    // note that this (only blicket states as input) is DIFFERENT from the `activation` (all block states as input) function used elsewhere
+    export let blicket_activation = null;  // when this is set to a lambda function (input: blicket binary states; output: true/false), it is used to calculate the machine's response (as opposed to letting the participant select pos/neg machine response)
+    
+    export let test_button_html = "Test the blicket machine";  // html to display on the test button when `blicket_activation` is a lambda function
 
     import { dev_mode } from '../../modules/experiment_stores.js';
     // set some default values for convenience during testing, but do this only in dev mode
@@ -138,11 +141,11 @@
         let blickets = blocks_copy.slice(1, NONBLICKET_START_DEX);
         // exclude the 0th blicket because it's used as a button
         
-        // the blicket relative id then becomes the argument position in `activation`
-        let block_states = blickets.map(block => block.state);
+        // use blicket states as input to `blicket_activation`
+        let blicket_states = blickets.map(block => block.state);
         
         // change the detector's response and turn off button interactions
-        let activates_detector = activation(...block_states);
+        let activates_detector = blicket_activation(...blicket_states);
         if (activates_detector) {
             show_positive_detector = true;
         } else {
@@ -192,10 +195,10 @@
     </div>
 
     <div class="col-container">
-        <BlockGrid collection_id="{collection_id}" is_mini="{true}" is_disabled="{true}" block_filter_func="{block => block.state}" is_detector="{true}" show_positive="{show_positive_detector}" show_negative="{show_negative_detector}" use_transitions="{true}" use_overlay="{typeof activation === 'function'}" />
+        <BlockGrid collection_id="{collection_id}" is_mini="{true}" is_disabled="{true}" block_filter_func="{block => block.state}" is_detector="{true}" show_positive="{show_positive_detector}" show_negative="{show_negative_detector}" use_transitions="{true}" use_overlay="{typeof blicket_activation === 'function'}" />
 
-        {#if typeof activation === 'function'}
-            <!-- the detector response is testable via the activation lambda function -->
+        {#if typeof blicket_activation === 'function'}
+            <!-- the detector response is testable via the blicket_activation lambda function -->
 
             <button disabled="{is_disabled}" on:click={test}>
                 {@html test_button_html}
