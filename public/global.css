@@ -154,7 +154,7 @@ button.block-button {
 .qa {
     border-radius: var(--container-border-radius);
     box-shadow: var(--container-box-shadow);
-    margin: 0.5rem 0;
+    margin: 0.5rem;
     padding: 0.5rem;
     width: min-content;
 
