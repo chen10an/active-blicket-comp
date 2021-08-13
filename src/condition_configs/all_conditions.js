@@ -70,21 +70,61 @@ const fform_dict = {
     "conj": {blicket_activation: conj_blicket_activation, has_noise: false, num_blickets: 2},
     "noisy_conj": {blicket_activation: noisy_conj_blicket_activation, has_noise: true, num_blickets: 2},
     "conj3": {blicket_activation: conj3_blicket_activation, has_noise: false, num_blickets: 3},
-    "noisy_conj3": {blicket_activation: noisy_conj3_blicket_activation, has_noise: true, num_blickets: 3}
+    "noisy_conj3": {blicket_activation: noisy_conj3_blicket_activation, has_noise: true, num_blickets: 3},
+    "participant": {blicket_activation: null, has_noise: null, num_blickets: null}  // let participant create their own form/rule
 }
 
-const ordered_fform_keys = ["disj", "conj", "conj3", "noisy_disj", "noisy_conj", "noisy_conj3"]
+// simple latin square for 6 between-participant conditions, where each differs by a shift of the order of forms from fform_dict
+// except the participant form is always at the end
+const row0 = ["disj", "noisy_conj", "conj3", "noisy_disj", "conj", "noisy_conj3", "participant"]
+const row1 = ["noisy_conj3", "disj", "noisy_conj", "conj3", "noisy_disj", "conj", "participant"]
+const row2 = ["conj", "noisy_conj3", "disj", "noisy_conj", "conj3", "noisy_disj", "participant"]
+const row3 = ["noisy_disj", "conj", "noisy_conj3", "disj", "noisy_conj", "conj3", "participant"]
+const row4 = ["conj3", "noisy_disj", "conj", "noisy_conj3", "disj", "noisy_conj", "participant"]
+const row5 = ["noisy_conj", "conj3", "noisy_disj", "conj", "noisy_conj3", "disj", "participant"]
 
-// TODO: latin square orders --> 6 between-participant conditions
-
-const within_seq = {
+const row0_seq = {
     "PIS": {},
-    "IntroInstructions": {collection_id: "intro"},
-    "End": {code_suffix: "WITHIN"}
+    "IntroInstructions": {ordered_fform_keys: row0},
+    "End": {code_suffix: "ROW0"}
+};
+
+const row1_seq = {
+    "PIS": {},
+    "IntroInstructions": {ordered_fform_keys: row1},
+    "End": {code_suffix: "ROW1"}
+};
+
+const row2_seq = {
+    "PIS": {},
+    "IntroInstructions": {ordered_fform_keys: row2},
+    "End": {code_suffix: "ROW2"}
+};
+
+const row3_seq = {
+    "PIS": {},
+    "IntroInstructions": {ordered_fform_keys: row3},
+    "End": {code_suffix: "ROW3"}
+};
+
+const row4_seq = {
+    "PIS": {},
+    "IntroInstructions": {ordered_fform_keys: row4},
+    "End": {code_suffix: "ROW4"}
+};
+
+const row5_seq = {
+    "PIS": {},
+    "IntroInstructions": {ordered_fform_keys: row5},
+    "End": {code_suffix: "ROW5"}
 };
 
 export {
-    within_seq,
-    fform_dict,
-    ordered_fform_keys
+    row0_seq,
+    row1_seq,
+    row2_seq,
+    row3_seq,
+    row4_seq,
+    row5_seq,
+    fform_dict
 }

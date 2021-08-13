@@ -1,21 +1,24 @@
 <script>
-    import { dev_mode } from '../../modules/experiment_stores.js';
-    // dev_mode.set(true);
-
     export let collection_id = "intro";
+    export let ordered_fform_keys;  // order of underlying forms for teaching questions
     
-    import { qa_dict, long_bonus_time, teaching_bonus_val, fform_dict, ordered_fform_keys } from '../../condition_configs/all_conditions.js';
+    import { dev_mode } from '../../modules/experiment_stores.js';
+    if ($dev_mode) {
+        if (ordered_fform_keys === undefined) {
+            ordered_fform_keys = ["participant", "disj", "conj", "conj3", "noisy_disj", "noisy_conj", "noisy_conj3"];
+        }
+    }
+    
+    import { qa_dict, long_bonus_time, teaching_bonus_val, fform_dict } from '../../condition_configs/all_conditions.js';
 
     import CenteredCard from '../partials/CenteredCard.svelte';
-    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, bonus_currency_str, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str } from '../../modules/experiment_stores.js';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import TeachingValidation from '../partials/TeachingValidation.svelte';
 
-    import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { roundMoney } from '../../modules/utilities.js';
     import { tooltip } from '../../modules/tooltip.js';
 
@@ -220,24 +223,23 @@
                         <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Submit</button>
                     </div>
 
-                    <div class:hide={!show_feedback}>
-                        <p class="wrong">For each example, please make sure you have:</p>
-                        <ul style="margin: 0;" class="wrong">
-                            <li>put at least one blicket or plain block on the machine</li>
-                            <li>chosen one of <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing"</li>
+                    <div class:hide={!show_feedback} class="wrong">                        
+                        <p style="margin-bottom: 0;">Please make sure you have:</p>
+                        <ul style="margin: 0;">
+                            {#if ordered_fform_keys[page_dex].includes("participant")}
+                                <!-- when the participant creates their own form/rule -->
+                                <li>filled out the textbox
+                            {/if}
+                            <li>added at least one blicket or plain block to the machine in every example</li>
+                            <li>chosen one of <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in every example</li>
                         </ul>
                     </div>
-                    
                 </div>
-            {:else if page_dex === 6}
-                <!-- TODO: -->
-                
-                Thanks!!
             {/if}
-        </div>
-        
-        <button class:hide="{!$dev_mode}" on:click="{() => can_cont = true}">dev: skip validation</button>
-        <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
+    </div>
+    
+    <button class:hide="{!$dev_mode}" on:click="{() => can_cont = true}">dev: skip validation</button>
+    <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
     </div>
 </CenteredCard>
 

@@ -181,3 +181,8 @@ button.block-button {
     
     font-size: 0.8em;
 }
+
+textarea {
+    width: 70%;
+    height: 3rem;
+}
