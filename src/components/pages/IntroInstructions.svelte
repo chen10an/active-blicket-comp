@@ -5,7 +5,7 @@
     import { dev_mode } from '../../modules/experiment_stores.js';
     if ($dev_mode) {
         if (ordered_fform_keys === undefined) {
-            ordered_fform_keys = ["participant", "disj", "conj", "conj3", "noisy_disj", "noisy_conj", "noisy_conj3"];
+            ordered_fform_keys = ["participant"];  // make sure these correspond with actual keys in the fform_dict
         }
     }
     
@@ -15,7 +15,7 @@
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, bonus_currency_str, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, bonus_currency_str, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str, feedback } from '../../modules/experiment_stores.js';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import TeachingValidation from '../partials/TeachingValidation.svelte';
 
@@ -50,13 +50,13 @@
     $: {
         all_correct = true;  // start with true then flip to false depending on the checks below
 
-        if (page_dex === 1) {
+        if (page_dex === -2) {
             for (const key in qa_dict) {
                 if (qa_dict[key].answer !== qa_dict[key].correct_answer) {
                     all_correct = false;
                 }
             }
-        } else if (page_dex === 2 ) {
+        } else if (page_dex === -1) {
             all_correct = passed_captcha; 
         } else {
             all_correct = false;
@@ -67,20 +67,19 @@
     $: can_cont = page_dex < 0 ? all_correct : answered_all
     // negative page numbers need all correct answers (for comprehension/captcha checks) while positive page numbers just need all questions to be answered (for teaching questions)
 
-
     // Click handler    
     async function cont() {
-        
-        if (can_cont) {
-            if (page_dex <= 5) {
-                page_dex += 1;
-            } else if (page_dex === 6) {
-                dispatch("continue");  // to the next component
-                
-                if ($dev_mode) {
-                    console.log("dispatched normal continue");
-                }
+        if (page_dex === ordered_fform_keys.length) {
+            // go to next component after the subpage that asks for participant feedback; don't need to check that the participant has filled out the feedback
+            dispatch("continue");
+
+            if ($dev_mode) {
+                console.log("dispatched normal continue");
             }
+            
+        } else if (can_cont) {
+            // check if we can continue when page_dex < ordered_fform_keys.length
+            page_dex += 1;
             
             show_feedback = false;
             checking_container.scrollTop = 0;  // scroll back to top of container
@@ -150,33 +149,35 @@
 
         <p>This study will show you 7 <b>different blicket machines, each with its own rule for activating</b>. The rule will be revealed to you so that you can teach it to other people.</p>
 
-    <h3>Teaching Other People about How the Blicket Machine Works</h3>
-    <p>For each blicket machine you see, you be given its rule for activating. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
+        <h3>Teaching Other People about How the Blicket Machine Works</h3>
+        <p>For each blicket machine you see, you be given its rule for activating. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
 
-    <div class="col-centering-container" style="padding: 0;">
-        <div class="qa">
-            <p style="margin-top: 0;"><b>Setup of an Example</b></p>
-            <TwoPilesAndDetector collection_id="piles_dummy" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" />
+        <div class="col-centering-container" style="padding: 0;">
+            <div class="qa">
+                <p style="margin-top: 0;"><b>Setup of an Example</b></p>
+                <TwoPilesAndDetector collection_id="piles_dummy" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" />
+            </div>
         </div>
-    </div>
 
-    <p>The buttons work in the same way as before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
-    
-    <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
+        <p>The buttons work in the same way as before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
+        
+        <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
 
-    <p>Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
-        <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>).
+        <p>Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
+            <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>).
 
-        This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
-       
-    <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
-
-        {#if page_dex < 0}
-            <!-- janky 3+page_dex to turn -2 and -1 into part 1 and 2, respectively -->
-            <h3 style="margin: 0">Checking Your Understanding (Part {3+page_dex}/2)</h3>
-        {:else}
-            <h3 style="margin: 0">How would you teach others about blicket machines? (Part {page_dex+1}/7)</h3>
-        {/if}
+            This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+        
+        <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
+            
+            {#if page_dex < 0}
+                <!-- janky 3+page_dex to turn -2 and -1 into part 1 and 2, respectively -->
+                <h3 style="margin: 0">Checking Your Understanding (Part {3+page_dex}/2)</h3>
+            {:else if page_dex < ordered_fform_keys.length}
+                <h3 style="margin: 0">How would you teach others about blicket machines? (Part {page_dex+1}/{ordered_fform_keys.length})</h3>
+            {:else if page_dex === ordered_fform_keys.length}
+                <h3 style="margin: 0;">Do you have any feedback for us? (Optional)</h3>
+            {/if}
             <p style="margin: 0;">(This box is scrollable.)</p>
             <hr>
             {#if page_dex === -2}                
@@ -210,7 +211,7 @@
                     </div>
                 </div>
 
-            {:else if page_dex <= 5}
+            {:else if page_dex < ordered_fform_keys.length}
                 {#key page_dex}
                     <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
                         <TeachingValidation bind:answered_all="{answered_all}" collection_id="{ordered_fform_keys[page_dex]}" blicket_activation="{fform_dict[ordered_fform_keys[page_dex]].blicket_activation}" machine_name="{ALPHABET[page_dex]}"  has_noise="{fform_dict[ordered_fform_keys[page_dex]].has_noise}" num_blickets="{fform_dict[ordered_fform_keys[page_dex]].num_blickets}" />
@@ -235,11 +236,23 @@
                         </ul>
                     </div>
                 </div>
+            {:else if page_dex === ordered_fform_keys.length}
+                <!-- ask for feedback after going through all forms -->
+                
+                <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}" class="col-centering-container">
+                    <p>We're at the end of the study and we're interested in hearing your thoughts! For example, how was it to give teaching examples? Were 5 examples too few or too many? Thank you in advance :)</p>
+                    <textarea bind:value={$feedback}></textarea>
+                    
+                    <div class="button-container">
+                        <!-- translate to center-->
+                        <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Submit</button>
+                    </div>
+                </div>
             {/if}
-    </div>
-    
-    <button class:hide="{!$dev_mode}" on:click="{() => can_cont = true}">dev: skip validation</button>
-    <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
+        </div>
+        
+        <button class:hide="{!$dev_mode}" on:click="{() => can_cont = true}">dev: skip validation</button>
+        <button class:hide="{!$dev_mode}" on:click="{() => dispatch("continue")}">dev: skip to next page</button>
     </div>
 </CenteredCard>
 
