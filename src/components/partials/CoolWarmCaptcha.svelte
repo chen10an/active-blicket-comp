@@ -2,7 +2,7 @@
     // the parent component needs to bind the following props:
     export let passed = false;
 
-    import GridDetectorPair from '../partials/GridDetectorPair.svelte';
+    import BlockGrid from '../partials/BlockGrid.svelte';
     import { block_dict } from '../../modules/experiment_stores.js';
     import { Block, BlockGetter } from '../../modules/block_classes.js';
 
@@ -13,7 +13,7 @@
     let captcha_getter = new BlockGetter([...WARM_COLORS, ...COOL_COLORS]);
     let captcha_blocks = captcha_getter.get(7);
     // ensure at least one warm block and one cool block
-    captcha_blocks = [...captcha_blocks, new Block(7, false, "warm0", "H", 7), new Block(8, false, "cool0", "I", 8)];
+    captcha_blocks = [...captcha_blocks, new Block(7, false, "warm0", "&nbsp", 7), new Block(8, false, "cool0", "&nbsp", 8)];
 
     block_dict.update(dict => {
         dict["captcha"] = captcha_blocks;
@@ -35,4 +35,20 @@
     }
 </script>
 
-<GridDetectorPair collection_id="captcha" is_mini={true} is_disabled={false} key_prefix="captcha"/>
+<!-- only make plain blockgrids, not detector ones, so that participants don't get confused about how to use the style of blicket machines/detectors in the teaching validation micro experiment -->
+<div class="row-container">
+    <BlockGrid collection_id="captcha" is_mini="{true}" is_disabled="{false}" block_filter_func="{block => !block.state}" is_detector="{false}" key_prefix="captcha"/>
+
+    <BlockGrid collection_id="captcha" is_mini="{true}" is_disabled="{false}" block_filter_func="{block => block.state}" is_detector="{false}" key_prefix="captcha"/>
+</div>
+
+<style>
+    .row-container {
+        width: 100%;
+        
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+</style>

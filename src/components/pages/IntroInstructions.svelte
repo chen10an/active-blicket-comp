@@ -31,7 +31,7 @@
     const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVXYZ";  // for naming blicket machines (the names always aappear in alphabetical order while the order of the underlying forms are suffled between conditions)
 
     // Comprehension checks and captchas
-    let page_dex = 0;  // multipage checks
+    let page_dex = -2;  // multipage checks
     let all_correct = false;  // whether all understanding/captcha questions are correct on the current page
     let answered_all = false;  // whether all teaching examples have been filled out
     
@@ -118,7 +118,7 @@
 
         <h3>Overview</h3>
         <ul>
-            <li>Our study lasts around {$duration_str} in total. You will be introduced to 7 different "blicket machines" and asked to teach others about how each machine works.</li>
+            <li>Our study lasts around {$duration_str} in total. You will be introduced to {ordered_fform_keys.length} different "blicket machines" and asked to teach others about how each machine works.</li>
             <!-- Notice bonus is only for 6 questions because 7th one is just "make your own rule" -->
             <li><b>You can earn a total bonus of up to {$bonus_currency_str}{roundMoney(teaching_bonus_val*6)}.</b> The questions in this study may take some time to score because they are evaluated in detail by other people. Your bonus will be sent within <b>{long_bonus_time}</b>.</li>
         </ul>
@@ -145,9 +145,9 @@
             </ul>
         </div>
 
-        <p>When you encounter <b>real blicket machines</b>, they respond to the blickets and/or plain blocks on the machine by either <span style="background: var(--active-color); padding: 0 0.3rem;">activating with a green color</span> or doing nothing. It doesn’t matter where blickets and/or plain blocks are placed on the machine.</p>
+        <p>When you encounter a <b>real blicket machine</b>, it will have a <button>Test the blicket machine</button> button that shows how the machine responds to blickets and/or plain blocks: <span style="background: var(--active-color); padding: 0 0.3rem;">activating with a green color</span> or doing nothing. It doesn’t matter where blickets and/or plain blocks are placed on the machine.</p>
 
-        <p>This study will show you 7 <b>different blicket machines, each with its own rule for activating</b>. The rule will be revealed to you so that you can teach it to other people.</p>
+        <p>This study will show you <b>{ordered_fform_keys.length} different blicket machines, each with its own rule for activating</b>. The rule will be revealed to you so that you can teach it to other people.</p>
 
         <h3>Teaching Other People about How the Blicket Machine Works</h3>
         <p>For each blicket machine you see, you be given its rule for activating. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
@@ -159,7 +159,7 @@
             </div>
         </div>
 
-        <p>The buttons work in the same way as before, except now <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
+        <p>The buttons work in the same way as before, except now <b>it is up to you</b> to choose and show others whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
         
         <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
 
@@ -197,17 +197,16 @@
 
             {:else if page_dex === -1}
                 <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}">
-                    <p style="margin-bottom: 2rem;"><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors onto the blicket machine.</b> Feel free to google the meaning of warm colors. The button below will then take you to the blicket game.</p>
+                    <p style="margin-bottom: 2rem;"><b>To reaffirm that you want to participate in our study, please move only the blocks with warm colors from left to right.</b> You can move blocks by clicking on them. Feel free to google the meaning of warm colors. The button below will then take you to the first blicket machine.</p>
 
                     <div class="col-centering-container" style="padding: 0;">
                         <CoolWarmCaptcha on:continue bind:passed={passed_captcha}/>
                         
-                        <p style="margin: 2rem 0 0 0;">Remember, in the <b>real blicket game</b>, a block’s color doesn’t tell us anything about whether it is a blicket.</p>
                         <div class="button-container">
                             <!-- translate to center-->
-                            <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Begin the blicket game</button>
+                            <button class="abs" style="transform: translateX(-50%); width: 7rem;" on:click="{cont}">Begin</button>
                         </div>
-                        <p class:hide={!show_feedback} class="wrong">Please move only the warm-colored blocks onto the blicket machine.</p>
+                        <p class:hide={!show_feedback} class="wrong">Please move only the warm-colored blocks from left to right.</p>
                     </div>
                 </div>
 
@@ -221,7 +220,7 @@
                 <div class="col-centering-container" style="padding: 0;">
                     <div class="button-container">
                         <!-- translate to center-->
-                        <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Submit</button>
+                        <button class="abs" style="transform: translateX(-50%); width: 7rem;" on:click="{cont}">Submit</button>
                     </div>
 
                     <div class:hide={!show_feedback} class="wrong">                        
@@ -245,7 +244,7 @@
                     
                     <div class="button-container">
                         <!-- translate to center-->
-                        <button class="abs" style="transform: translateX(-50%); width: 13rem;" on:click="{cont}">Submit</button>
+                        <button class="abs" style="transform: translateX(-50%); width: 7rem;" on:click="{cont}">Submit</button>
                     </div>
                 </div>
             {/if}

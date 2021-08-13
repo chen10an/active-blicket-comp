@@ -63,7 +63,7 @@ class BlockGetter {
         this.used_ids_lessthan = 0;
 
         // start with the entire alphabet as the available letters
-        this.available_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        this.available_letters = Array(26).fill("&nbsp");  // don't use any letters for the teaching validation micro experiment
     }
 
     get(num_blocks) {

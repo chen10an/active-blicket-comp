@@ -11,13 +11,11 @@ export const min_time_seconds_l1 = 30;
 export const min_time_seconds_l2 = 60;
 
 export const qa_dict = {
-    "color": {"question": "A block’s <em>color</em> tells you whether it’s a blicket.", "correct_answer": false},
-    "letter": {"question": "A block’s <em>letter</em> tells you whether it’s a blicket.", "correct_answer": false},
-    "position": {"question": "When a block is on the machine, its <em>position</em> can influence whether the machine activates.", "correct_answer": false},
-    "machine": {"question": "Only the blicket machine can help you figure out which blocks are blickets.", "correct_answer": true},
-    "intervention_limit": {"question": `You have a limited number of tries to test the blicket machine and figure out which blocks are blickets.`, "correct_answer": true},
-    "min_time": {"question": `There is a minimum amount of time you must spend on the blicket game.`, "correct_answer": true},
-    "quiz": {"question": "After each blicket game, you will be quizzed and scored on your understanding of blickets and the blicket machine.", "correct_answer": true}
+    "blicket": {"question": `Blickets are marked with a star, while plain blocks are not.`, "correct_answer": true},
+    "position": {"question": "When a blicket or plain block is on the blicket machine, its <em>position</em> can influence whether the machine activates.", "correct_answer": false},
+    "rule": {"question": "Every blicket machine uses the <i>same</i> rule for activating in response to blickets and/or plain blocks.", "correct_answer": false},
+    "know": {"question": "You will know the activation rule for each blicket machine.", "correct_answer": true},
+    "teaching": {"question": `When you make examples for teaching others, it is up to you to choose and show others whether the blicket machine should activate or do nothing.`, "correct_answer": true},
 };
 
 // level 1: 3 blocks, 1 blicket for disjunctive and 2 blickets for conjunctive

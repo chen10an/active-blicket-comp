@@ -97,7 +97,7 @@
 {/if}
 
 <h3>Please give 5 examples to teach other people about how blicket machine {machine_name} works:</h3>
-<p>Here <b>you can choose</b> whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
+<p>Here <b>it is up to you</b> to choose and show others whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
 
 <div class="qa-container">
     {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
