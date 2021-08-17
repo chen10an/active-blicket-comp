@@ -41,7 +41,7 @@
 			      component: ExperimentController,
 			      props: {
 				        component_sequence: ALL_SEQ[i],
-				        experiment_id: "active_blicket_comp_20x-mturk-micro",
+				        experiment_id: "act_blicket_comp_20x-mturk-micro",
 				        condition_name: ALL_SEQ_NAMES[i],
 				        bonus_val_per_q: 0,  // value for questions that can be scored automatically; there are only manual scoring questions in this experiment
 				        set_dev_mode: false
