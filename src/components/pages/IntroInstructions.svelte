@@ -147,10 +147,10 @@
 
         <p>When you encounter a <b>real blicket machine</b>, it will have a <button>Test the blicket machine</button> button that shows how the machine responds to blickets and/or plain blocks: <span style="background: var(--active-color); padding: 0 0.3rem;">activating with a green color</span> or doing nothing. It doesn’t matter where blickets and/or plain blocks are placed on the machine.</p>
 
-        <p>This study will show you <b>{ordered_fform_keys.length} different blicket machines, each with its own rule for activating</b>. The rule will be revealed to you so that you can teach it to other people.</p>
+        <p>This study will show you <b>{ordered_fform_keys.length} different blicket machines, each working in a different way</b>. You will be told how it works so that you can teach it to other people.</p>
 
         <h3>Teaching Other People about How the Blicket Machine Works</h3>
-        <p>For each blicket machine you see, you be given its rule for activating. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
+        <p>For each blicket machine you see, you will be told how it works. We then ask you to give <b>5 examples</b> to teach other people about this machine. You can make each example with this setup:</p>
 
         <div class="col-centering-container" style="padding: 0;">
             <div class="qa">
@@ -163,7 +163,7 @@
         
         <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
 
-        <p>Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
+        <p>Your bonus will be calculated based on whether they learn how the blicket machine works from your examples (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
             <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>).
 
             This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>

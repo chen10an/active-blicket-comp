@@ -69,10 +69,10 @@
 
 {#if is_participant_fform}
     <!-- let the participant create their own rule/form -->
-    <p>This is blicket machine {machine_name}. <b>Now is your chance to come up with a rule that's different from the ones you've seen before!</b> Your rule can be anything, as long as you can teach it to others by making examples below.</p>
-    <p><i>Your rule and examples will not affect your bonus, but we hope you'll help us learn about what rules you find interesting.</i></p>
+    <p>This is blicket machine {machine_name}. <b>Now is your chance to come up with how it works!</b> Blicket machine {machine_name} can work in any way, as long as it's different from the previous machines and you can teach it to others by making examples below.</p>
+    <p><i>Your responses below will not affect your bonus, but we hope you'll help us learn about what kind of blicket machine behavior you find interesting.</i></p>
 
-    <h3>What is your rule for blicket machine {machine_name}?</h3>
+    <h3>How does blicket machine {machine_name} work?</h3>
     <textarea bind:value={$quiz_data_dict[collection_id].participant_form_response}></textarea>
 {:else}
     <p>
@@ -85,7 +85,7 @@
             <b>at least {int_to_str[num_blickets+1]} blicket{num_blickets+1 === 1 ? "" : "s"}</b>
             <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>.
         {:else}
-            It <b>always</b> activates when
+            This is blicket machine {machine_name}. It <b>always</b> activates when
             <b>at least {int_to_str[num_blickets]} blicket{num_blickets === 1 ? "" : "s"}</b>
             <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>
             {num_blickets === 1 ? "is" : "are"} on the machine.
