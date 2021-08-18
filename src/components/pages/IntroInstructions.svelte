@@ -140,7 +140,7 @@
     <div>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         
-        <p>Welcome to our research study! We're interested in understanding how you would teach others about our "blicket machine" and we hope that you have fun in the process.</p>
+        <p>Welcome to our research study! We're interested in understanding how you would teach others about our "blicket machines" and we hope that you have fun in the process.</p>
 
         <h3>Overview</h3>
         <ul>
