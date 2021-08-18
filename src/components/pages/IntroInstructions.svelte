@@ -149,7 +149,7 @@
             <li><b>You can earn a total bonus of up to {$bonus_currency_str}{roundMoney(teaching_bonus_val*(ordered_fform_keys.length-1))}.</b> The questions in this study may take some time to score because they are evaluated in detail by other people. Your bonus will be sent within <b>{long_bonus_time}</b>.</li>
         </ul>
         
-        <h3>How to use Blicket Machines</h3>
+        <h3>Blicket Machines</h3>
         <p><b>Blicket machines</b> work by activating or doing nothing in response to blocks. Some blocks have special properties that make them <b>blickets</b> <span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>; others are just plain blocks (not blickets) <span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>.
         </p>
 
@@ -189,10 +189,10 @@
         
         <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
 
-        <p>Your bonus will be calculated based on whether they learn how the blicket machine works from your examples (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
+        <p>Your bonus will be determined by whether other people learn how the blicket machine works based on your examples (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)} per blicket machine
             <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>).
 
-            This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+            This bonus calculation may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
         
         <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 500px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
             
