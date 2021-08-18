@@ -21,6 +21,7 @@
     quiz_data_dict.update(dict => {
         dict[collection_id] = {
             teaching_ex: [],
+            testable_combos: [],
             participant_form_response: is_participant_fform ? "" : null
         };
         return dict;
@@ -29,7 +30,7 @@
     // initialize 5 teaching examples
     for (let i=0; i < 5; i++) {
         quiz_data_dict.update(dict => {
-            dict[collection_id].teaching_ex.push({detector_state: null, blicket_nonblicket_combo: ""});
+            dict[collection_id].teaching_ex.push({blicket_nonblicket_combo: "", detector_state: null});
             return dict;
         });
     }
@@ -63,6 +64,25 @@
         3: "three",
         4: "four"
     }
+
+    // track the current values on the testable machine via binding
+    let current_testable_combo = "";
+    let current_testable_detector_state = false;
+    let current_testable_is_pressed = false;
+    
+    // dynamically push the current combo and detector state to quiz_data_dict whenever the test button is pressed
+    $: {
+        if(current_testable_is_pressed) {
+            quiz_data_dict.update(dict => {
+                dict[collection_id].testable_combos.push({
+                    blicket_nonblicket_combo: current_testable_combo,
+                    detector_state: current_testable_detector_state,
+                    timestamp: Date.now()
+                });
+                return dict;
+            });
+        }
+    }
 </script>
 
 <h2>Blicket Machine {machine_name}</h2>
@@ -92,8 +112,8 @@
         {/if}
         It doesn't matter whether there are plain (non-blicket) blocks <span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span> on the machine. You can test blicket machine {machine_name} to confirm how it works:
     </p>
-    <!-- TODO: record combos here -->
-    <TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" blicket_activation="{blicket_activation}" />
+    
+    <TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" blicket_activation="{blicket_activation}" bind:show_positive_detector="{current_testable_detector_state}" bind:blicket_nonblicket_combo="{current_testable_combo}" bind:test_is_pressed="{current_testable_is_pressed}" />
 {/if}
 
 <h3>Please give 5 examples to teach other people about how blicket machine {machine_name} works:</h3>

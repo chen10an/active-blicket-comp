@@ -3,6 +3,7 @@
     // parent component should bind these:
     export let show_positive_detector = null;  // whether the participant wants the detector to show a positive response, null represents the unanswered state
     export let blicket_nonblicket_combo = "";  // string for a special kind of combo that shows the blickets ("*") and nonblickets (".") currently on the detector, indexed by the order the participant placed them on the detector (rather than block id, as used in regular combos)
+    export let test_is_pressed = false;  // whether the test button is currently pressed on the testable blicket machine (i.e., when blicket_activation is a lambda function)
     
     // input
     export let collection_id;  // components with the same collection id will use the same block objects from block_dict in module/experiment_stores.js
@@ -154,23 +155,19 @@
         
         is_disabled = true;
 
+        // set to true only after blicket_nonblicket_combo and show_positive_detector reflect their most current values; this is so that a parent component can bind these values and use them when test_is_pressed=true
+        test_is_pressed = true;
+
         // wait before returning everything to their default state
         await new Promise(r => setTimeout(r, ACTIVATION_TIMEOUT_MS));
 
-        // create the bitstring representation where character i corresponds to the block with id=i
-        // let bitstring = block_states.map(state => state ? "1" : "0").join("");
-        // let combo = new Combo(bitstring, activates_detector);
-        // // record block combinations (for server) on interactive task
-        // // create and store a Combo object from the current bitstring
-        // task_data_dict.update(dict => {
-        //     dict[collection_id].all_combos.push(combo);
-        //     return dict;
-        // });
+        // set back to false before resetting/changing blicket_nonblicket_combo and show_positive_detector values; this is so that these values are stable whenever test_is_pressed=true
+        test_is_pressed = false;
 
         // revert to the default detector background color
         show_positive_detector = false;
         show_negative_detector = false;
-
+        
         // return all block states back to false
         combined_reset();
 
@@ -219,9 +216,6 @@
     <p class:hide="{hide_limit_warning}" style="color: red; margin: 0; font-size: 0.8rem;">You've reached the max number ({num_on_blocks_limit}) of blickets and plain blocks. You can press "Reset" to start over.</p>
 </div>
 
-<!-- 
-TODO: might need to make this responsive so that the piles and detector are always visible together on the screen
--->
 <style>
     .row-container {
         width: 100%;

@@ -5,7 +5,7 @@
     import { dev_mode } from '../../modules/experiment_stores.js';
     if ($dev_mode) {
         if (ordered_fform_keys === undefined) {
-            ordered_fform_keys = ["participant"];  // make sure these correspond with actual keys in the fform_dict
+            ordered_fform_keys = ["disj", "participant"];  // make sure these correspond with actual keys in the fform_dict
         }
     }
     
@@ -129,7 +129,6 @@
         ret = ret.replaceAll("'", "\\'");
         return ret;
     }
-
 </script>
 
 <CenteredCard is_large={true} has_button={false}>
