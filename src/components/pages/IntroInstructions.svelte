@@ -145,8 +145,8 @@
         <h3>Overview</h3>
         <ul>
             <li>Our study lasts around {$duration_str} in total. You will be introduced to {ordered_fform_keys.length} different "blicket machines" and asked to teach others about how each machine works.</li>
-            <!-- Notice bonus is only for 6 questions because 7th one is just "make your own rule" -->
-            <li><b>You can earn a total bonus of up to {$bonus_currency_str}{roundMoney(teaching_bonus_val*6)}.</b> The questions in this study may take some time to score because they are evaluated in detail by other people. Your bonus will be sent within <b>{long_bonus_time}</b>.</li>
+            <!-- Notice bonus is only for length-1 questions because the last one is just "make your own rule" -->
+            <li><b>You can earn a total bonus of up to {$bonus_currency_str}{roundMoney(teaching_bonus_val*(ordered_fform_keys.length-1))}.</b> The questions in this study may take some time to score because they are evaluated in detail by other people. Your bonus will be sent within <b>{long_bonus_time}</b>.</li>
         </ul>
         
         <h3>How to use Blicket Machines</h3>
