@@ -15,7 +15,7 @@
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, bonus_currency_str, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str, feedback } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, bonus_currency_str, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, MAX_NUM_BLOCKS, duration_str, feedback, quiz_data_dict } from '../../modules/experiment_stores.js';
     import TwoPilesAndDetector from '../partials/TwoPilesAndDetector.svelte';
     import TeachingValidation from '../partials/TeachingValidation.svelte';
 
@@ -71,6 +71,10 @@
     async function cont() {
         if (page_dex === ordered_fform_keys.length) {
             // go to next component after the subpage that asks for participant feedback; don't need to check that the participant has filled out the feedback
+
+            // escape quotes in feedback
+            feedback.set(escape_quotes($feedback));
+
             dispatch("continue");
 
             if ($dev_mode) {
@@ -79,8 +83,16 @@
             
         } else if (can_cont) {
             // check if we can continue when page_dex < ordered_fform_keys.length
-            page_dex += 1;
+
+            if (page_dex >= 0) {
+                // if we're on a page with teaching examples, escape quotes for its text responses
+                quiz_data_dict.update(dict => {
+                    dict[ordered_fform_keys[page_dex]].participant_form_response = escape_quotes(dict[ordered_fform_keys[page_dex]].participant_form_response);
+                    return dict;
+                });
+            }
             
+            page_dex += 1;
             show_feedback = false;
             checking_container.scrollTop = 0;  // scroll back to top of container
             
@@ -107,6 +119,17 @@
             checking_container.scrollTop = checking_container.scrollHeight;  // scroll to bottom of container so that the participant can see the feedback
         }
     }
+
+    function escape_quotes(response) {
+        if (response === null) {
+            return null
+        }
+        
+        let ret = response.replaceAll('"', '\\"');
+        ret = ret.replaceAll("'", "\\'");
+        return ret;
+    }
+
 </script>
 
 <CenteredCard is_large={true} has_button={false}>
