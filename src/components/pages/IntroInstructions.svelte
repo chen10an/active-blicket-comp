@@ -30,15 +30,13 @@
     const MAX_CLICKS = 10;  // total number of _unsuccessful_ continue clicks allowed on the comprehension checks / captchas before forcing the end of the experiment
     const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVXYZ";  // for naming blicket machines (the names always aappear in alphabetical order while the order of the underlying forms are suffled between conditions)
 
+    let checking_container;  // bind to div that contains the subpages
+    let show_feedback = false;  // whether to show feedback on the current page
+    
     // Comprehension checks and captchas
     let page_dex = -2;  // multipage checks
     let all_correct = false;  // whether all understanding/captcha questions are correct on the current page
-    let answered_all = false;  // whether all teaching examples have been filled out
-    
-    let show_feedback = false;  // whether to show feedback on the current page
     let passed_captcha = false;  // bind to CoolWarmCaptcha
-    let checking_container;  // bind to div that contains the checking pages
-
     intro_incorrect_clicks.update(dict => {
         // initialize all possible keys for comprehension/captcha checks
         dict["checking_page_-2"] = 0;
@@ -63,8 +61,14 @@
         }
     }
 
+    // Teaching examples
+    let answered_combos = false;  // whether participant has used at least one blicket/nonblicket in all examples
+    let answered_detector_states = false;  // whether the participant has chosen a detector state (true/false, not null) for all examples
+    let answered_participant_form = false;  // whether the participant has given a free text response describing their choice of form
+    $: answered_all_teaching = answered_combos && answered_detector_states && answered_participant_form;  // derive whether the teaching examples have been completely filled out
+
     // dynamically update whether participant can continue to next subpage
-    $: can_cont = page_dex < 0 ? all_correct : answered_all
+    $: can_cont = page_dex < 0 ? all_correct : answered_all_teaching 
     // negative page numbers need all correct answers (for comprehension/captcha checks) while positive page numbers just need all questions to be answered (for teaching questions)
 
     // Click handler    
@@ -235,7 +239,7 @@
             {:else if page_dex < ordered_fform_keys.length}
                 {#key page_dex}
                     <div in:fade="{{delay: FADE_IN_DELAY_MS, duration: FADE_DURATION_MS}}" out:fade="{{duration: FADE_DURATION_MS}}">
-                        <TeachingValidation bind:answered_all="{answered_all}" collection_id="{ordered_fform_keys[page_dex]}" blicket_activation="{fform_dict[ordered_fform_keys[page_dex]].blicket_activation}" machine_name="{ALPHABET[page_dex]}"  has_noise="{fform_dict[ordered_fform_keys[page_dex]].has_noise}" num_blickets="{fform_dict[ordered_fform_keys[page_dex]].num_blickets}" />
+                        <TeachingValidation bind:answered_combos="{answered_combos}" bind:answered_detector_states="{answered_detector_states}" bind:answered_participant_form="{answered_participant_form}" collection_id="{ordered_fform_keys[page_dex]}" blicket_activation="{fform_dict[ordered_fform_keys[page_dex]].blicket_activation}" machine_name="{ALPHABET[page_dex]}"  has_noise="{fform_dict[ordered_fform_keys[page_dex]].has_noise}" num_blickets="{fform_dict[ordered_fform_keys[page_dex]].num_blickets}" />
                     </div>
                 {/key}
 
@@ -245,16 +249,21 @@
                         <button class="abs" style="transform: translateX(-50%); width: 7rem;" on:click="{cont}">Submit</button>
                     </div>
 
-                    <div class:hide={!show_feedback} class="wrong">                        
-                        <p style="margin-bottom: 0;">Please make sure you have:</p>
-                        <ul style="margin: 0;">
-                            {#if ordered_fform_keys[page_dex].includes("participant")}
-                                <!-- when the participant creates their own form/rule -->
-                                <li>filled out the textbox
-                            {/if}
-                            <li>added at least one blicket or plain block to the machine in every example</li>
-                            <li>chosen one of <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in every example</li>
-                        </ul>
+                    <div class:hide={!show_feedback} class="wrong">
+                        {#if !answered_all_teaching}
+                            <p style="margin-bottom: 0;">Please make sure you have:</p>
+                            <ul style="margin: 0;">
+                                {#if !answered_participant_form}
+                                    <li>filled out the textbox
+                                {/if}
+                                {#if !answered_combos}
+                                    <li>added at least one blicket or plain block to the machine in every example</li>
+                                {/if}
+                                {#if !answered_detector_states}
+                                    <li>chosen one of <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in every example</li>
+                                {/if}
+                            </ul>
+                        {/if}
                     </div>
                 </div>
             {:else if page_dex === ordered_fform_keys.length}

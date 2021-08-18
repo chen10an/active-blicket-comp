@@ -1,6 +1,8 @@
 <script>
     // bind
-    export let answered_all = false;  // check whether the participant has given an answer to all problems on the current page
+    export let answered_combos = false;  // whether participant has used at least one blicket/nonblicket in all examples
+    export let answered_detector_states = false;  // whether the participant has chosen a detector state (true/false, not null) for all examples
+    export let answered_participant_form = false;  // whether the participant has given a free text response describing their choice of form
 
     // props
     export let collection_id;
@@ -35,16 +37,23 @@
         });
     }
 
-    // dynamically update whether participant has answered all teaching examples
+    // dynamically update whether participant has answered each type of question
     $: {
         // start with true then flip to false depending on the checks below
-        answered_all = true;
+        answered_combos = true;
+        answered_detector_states = true;
+        answered_participant_form = true;
         
         let teaching_ex = $quiz_data_dict[collection_id].teaching_ex
         for (let i=0; i < teaching_ex.length; i++) {
-            if (teaching_ex[i].blicket_nonblicket_combo === "" || teaching_ex[i].detector_state === null) {
-                // one of teaching ex is empty (no blickets/nonblickets placed onto the detector) or one of the detector states have not been chosen to be true/false
-                answered_all = false;
+            if (teaching_ex[i].blicket_nonblicket_combo === "") {
+                // one of teaching ex is empty (no blickets/nonblickets placed onto the detector)
+                answered_combos = false;
+            }
+
+            if (teaching_ex[i].detector_state === null) {
+                // one of the detector states have not been chosen to be true/false
+                answered_detector_states = false;
             }
         }
 
@@ -52,7 +61,7 @@
         if (is_participant_fform) {
             if ($quiz_data_dict[collection_id].participant_form_response.length === 0) {
                 // empty free response
-                answered_all = false;
+                answered_participant_form = false;
             }
         }
     }
