@@ -1,4 +1,9 @@
 * Notes
+** Managing versions
+New branch (named <MAJOR>.x.x) --> increment major version
+New somata config (named <MAJOR>.<MINOR>.x) --> increment minor version
+Meaningful updates that share a somata config (named <MAJOR>.<MINOR>.<PATCH>) --> increment patch version
+
 ** Install from ~package-lock.json~ via ~npm ci~
 Not ~npm install~, which updates all packages and may break reproducibility.
 ** Use ~npm run <script_name>~ to do stuff
