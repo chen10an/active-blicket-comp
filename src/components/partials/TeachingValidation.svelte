@@ -125,7 +125,7 @@
     <TwoPilesAndDetector collection_id="{collection_id}_piles_testable" num_on_blocks_limit="{MAX_NUM_BLOCKS}" is_disabled="{false}" blicket_activation="{blicket_activation}" bind:show_positive_detector="{current_testable_detector_state}" bind:blicket_nonblicket_combo="{current_testable_combo}" bind:test_is_pressed="{current_testable_is_pressed}" />
 {/if}
 
-<h3>Please give 5 examples to teach other people about how blicket machine {machine_name} works:</h3>
+<h3>Please give 5 examples to teach other people about how blicket machine {machine_name} works: <i>When does it activate? When does it do nothing?</i></h3>
 <p>Here <b>it is up to you</b> to choose and show others whether the blicket machine should <span style="background: var(--active-color); padding: 0 0.3rem;">Activate</span> or "Do Nothing" in response to the blickets and/or plain blocks on the machine.</p>
 
 <div class="qa-container">
