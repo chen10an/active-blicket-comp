@@ -4,5 +4,4 @@
 
 <CenteredCard has_button={false}>
     loading...
-    <!-- TODO: css spinner -->
 </CenteredCard>

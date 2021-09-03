@@ -1,6 +1,5 @@
 // Instances of the class "ChunksIncremental" manage sending data and re-creating any closed websocket connections.
 
-// TODO: write docs for chunksincremental and example usage
 class ChunksIncremental {
     constructor(url, msg_callback, err_callback) {
         this.wso = null;

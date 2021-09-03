@@ -58,8 +58,6 @@
             },
         ]
 	});
-
-	// TODO: implement different wrapper component for different platforms: reddit sample size, mturk and prolific
 </script>
 
 <Router {routes}/>
