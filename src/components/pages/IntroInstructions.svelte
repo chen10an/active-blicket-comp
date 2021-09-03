@@ -149,8 +149,7 @@
         <p>There are two types of quiz questions:</p>
         <ol>
             <li>9 questions that award up to <b>{$bonus_currency_str}{roundMoney($max_total_bonus)}</b> bonus and are scored automatically. Your bonus will be sent <b>within {short_bonus_time}</b>.</li>
-            <li>2 questions that award up to <b>{$bonus_currency_str}{roundMoney(teaching_bonus_val*2)}</b> bonus. These questions will take longer to score because they are evaluated in detail by another person. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
-            <!-- TODO: change to plural for full exp -->
+            <li>2 questions that award up to <b>{$bonus_currency_str}{roundMoney(teaching_bonus_val*2)}</b> bonus. Your answers are evaluated in detail by other people, so it may take some time to calculate your corresponding bonus. Your bonus will be sent <b>within {long_bonus_time}</b>.</li>
         </ol>
         <p><b>In total, you can earn a bonus of {$bonus_currency_str}{roundMoney($max_total_bonus + teaching_bonus_val*2)}</b>. </p>
         

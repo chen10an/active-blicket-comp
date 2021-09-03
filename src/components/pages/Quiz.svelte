@@ -266,7 +266,7 @@
                     1
                 {:else if collection_id.toString().includes("level_2")}
                     2
-                {/if} blicket machine works, please give 5 examples to teach other people about this machine.
+                {/if} blicket machine works, please give 5 examples to teach other people about this machine: When does it activate? When does it do nothing?
             </p>
             
             <div class="qa">
@@ -275,7 +275,7 @@
             </div>
 
             <div>
-                <p>In this setup, we are given the knowledge that starred blocks (<span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are blickets and plain blocks (<span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are not blickets. With this knowledge, please make examples about the level
+                <p>In this setup, we are given the knowledge that starred blocks (<span style="display: inline-block;"><Block block={make_dummy_blicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are blickets and plain blocks (<span style="display: inline-block;"><Block block={make_dummy_nonblicket(-1, -1)} is_mini={true} use_transitions="{false}" is_disabled="{true}" /></span>) are not blickets. It doesn’t matter where blickets and/or plain blocks are placed on the machine. With this knowledge, please make examples about the level
                     {#if collection_id.toString().includes("level_1")}
                         1
                     {:else if collection_id.toString().includes("level_2")}
@@ -288,7 +288,7 @@
                     <li><button style="min-width: var(--mini-block-length);">
                         Reset
                     </button> removes everything from the machine.</li>
-                    <li>You can then show whether the level
+                    <li><b>It is up to you</b> to choose and show others whether the level
                         {#if collection_id.toString().includes("level_1")}
                             1
                         {:else if collection_id.toString().includes("level_2")}
@@ -297,18 +297,20 @@
                 </ul>
             </div>
 
-            <!-- TODO: change from singular to plural for full exp -->
-            <p style="margin-bottom: 2rem;">We will show your examples to another person after the study. They will also know which blocks are blickets (star) or not (plain). Your bonus will be calculated based on how well they understand the blicket machine (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)})
-                <span class="info-box" title="Given your examples, one other person will choose from 8 options about how the blicket machine works. If they choose the correct option, you will receive a bonus of {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>.
+            <p>We will show your examples to other people after the study. They will also know which blocks are blickets (star) or not (plain) and that it doesn't matter where blocks are placed on the machine.</p>
+            <p style="margin-bottom: 2rem;">Your bonus will be determined by whether other people learn how the blicket machine works based on your examples (up to {$bonus_currency_str}{roundMoney(teaching_bonus_val)})
+                <span class="info-box" title="Given your examples, two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}." use:tooltip>hover/tap me for details</span>.
                 <!-- two other people will choose from 8 options about how the blicket machine works. If one person chooses the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val/2)}; if both choose the correct option, your bonus is {$bonus_currency_str}{roundMoney(teaching_bonus_val)}. -->
-                This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
-            
-            {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
-                <div class="qa">
-                    <p style="margin-top: 0;"><b>Example {i+1}</b></p>
-                    <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit="{$block_dict[collection_id].length}" is_disabled="{false}" bind:show_positive_detector="{ex.detector_state}" bind:blicket_nonblicket_combo="{ex.blicket_nonblicket_combo}" />
-                </div>
-            {/each}
+                This bonus calculation may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+
+            <div class="qa-container">
+                {#each $quiz_data_dict[collection_id].teaching_ex as ex, i}
+                    <div class="qa">
+                        <p style="margin-top: 0;"><b>Example {i+1}</b></p>
+                        <TwoPilesAndDetector collection_id="{collection_id}_piles_{i}" num_on_blocks_limit="{$block_dict[collection_id].length}" is_disabled="{false}" bind:show_positive_detector="{ex.detector_state}" bind:blicket_nonblicket_combo="{ex.blicket_nonblicket_combo}" />
+                    </div>
+                {/each}
+            </div>
         </div>
 
         {:else if is_last}
@@ -330,5 +332,11 @@
     textarea {
         width: 70%;
         height: 3rem;
+    }
+
+    .qa-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 </style>

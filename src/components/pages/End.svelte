@@ -89,8 +89,7 @@
     <CenteredCard has_button={false}>
         <h3 style="margin-bottom: 0">Thank you for participating!</h3>
         <p><span style="color: green;">Your blicket ratings received a bonus of {$bonus_currency_str}{roundMoney($current_total_bonus)}</span> (scroll down for a breakdown of how bonuses were awarded). This will be sent to you <b>within {short_bonus_time}</b>.</p>
-        <!-- TODO: change to plural for full exp -->
-        <p>Your teaching examples will be shown to another person and calculated based on how well they understand the blicket machine. This process may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
+        <p>Your teaching examples will be shown to other people, and your bonus will be determined by whether they learn how the blicket machine works based on your examples. This bonus calculation may take some time: we will send you your bonus <b>within {long_bonus_time}</b>.</p>
         
         <p style="margin-top: 0;">Your MTurk completion code is: {[CODE_PREFIX, CODE_MID, code_suffix].join("-")}</p>
         <img src="/images/thankyou.jpg" alt="dog biting a thank you card">
