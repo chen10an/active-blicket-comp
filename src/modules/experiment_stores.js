@@ -26,6 +26,9 @@ export const BLICKET_ANSWER_OPTIONS = [
 // Write-able boolean indicating whether to view the app in dev mode
 export const dev_mode = writable(false);
 
+// Write-able string for the duration of the whole experiment
+export const duration_str = writable("10-15 minutes");
+
 // Write-able ints for the participant's score and bonus throughout the experiment
 // these keep track of the score/bonus that are automatically calculated and sent out shortly after completion, not score/bonus that are coded by experimenters and sent out with a longer delay
 export const max_score = writable(0);

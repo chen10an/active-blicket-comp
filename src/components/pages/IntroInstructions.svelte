@@ -11,7 +11,7 @@
     import CoolWarmCaptcha from '../partials/CoolWarmCaptcha.svelte';
     import WinnieThePooh from '../partials/WinnieThePooh.svelte';
     import Block from '../partials/Block.svelte';
-    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks } from '../../modules/experiment_stores.js';
+    import { FADE_DURATION_MS, FADE_IN_DELAY_MS, block_dict, bonus_currency_str, max_total_bonus, BLICKET_ANSWER_OPTIONS, make_dummy_blicket, make_dummy_nonblicket, intro_incorrect_clicks, duration_str } from '../../modules/experiment_stores.js';
     import { BlockGetter } from '../../modules/block_classes.js';
     import { CROSSFADE_DURATION_MS } from '../../modules/crossfade.js';
     import { roundMoney } from '../../modules/utilities.js';
@@ -144,7 +144,7 @@
         <p>Welcome to our research study! We're interested in understanding how you make judgments in our "blicket game" and we hope that you have fun in the process.
         
         <h3>Overview</h3>
-        <p>Our study has 2 levels and lasts around 10min in total. Each level includes an interactive "blicket game" followed by a quiz about the game. The game and quiz get harder from level 1 to 2.</p>
+        <p>Our study has 2 levels and lasts around {$duration_str} in total. Each level includes an interactive "blicket game" followed by a quiz about the game. The game and quiz get harder from level 1 to 2.</p>
 
         <p>There are two types of quiz questions:</p>
         <ol>
