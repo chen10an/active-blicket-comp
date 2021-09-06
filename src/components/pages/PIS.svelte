@@ -1,5 +1,5 @@
 <script>
-    export let duration_str = "10 minutes";
+    export let duration_str = "10-15 minutes";
     import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>

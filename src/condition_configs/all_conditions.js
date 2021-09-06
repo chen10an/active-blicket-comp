@@ -104,7 +104,7 @@ const conj_l2 = {
 
 // Define all 6 conditions:
 const d1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": disj_l1.Task,
     "Quiz_1": disj_l1.Quiz,
@@ -114,7 +114,7 @@ const d1_c2 = {
 };
 
 const nd1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_disj_l1.Task,
     "Quiz_1": noisy_disj_l1.Quiz,
@@ -124,7 +124,7 @@ const nd1_c2 = {
 };
 
 const c1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": conj_l1.Task,
     "Quiz_1": conj_l1.Quiz,
@@ -134,7 +134,7 @@ const c1_c2 = {
 };
 
 const nc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_conj_l1.Task,
     "Quiz_1": noisy_conj_l1.Quiz,
@@ -144,7 +144,7 @@ const nc1_c2 = {
 };
 
 const cc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": conj3_l1.Task,
     "Quiz_1": conj3_l1.Quiz,
@@ -154,7 +154,7 @@ const cc1_c2 = {
 };
 
 const ncc1_c2 = {
-    "PIS": {duration_str: "10 minutes"},
+    "PIS": {},
     "IntroInstructions": {collection_id: "intro"},
     "Task_1": noisy_conj3_l1.Task,
     "Quiz_1": noisy_conj3_l1.Quiz,
