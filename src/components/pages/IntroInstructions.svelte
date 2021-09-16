@@ -175,6 +175,7 @@
         <div bind:this={checking_container} style="border-radius: var(--container-border-radius); box-shadow: var(--container-box-shadow); width=100%; height: 400px; overflow-y: scroll; padding: 10px; margin-top: 3rem;">
             <h3 style="margin: 0">Checking Your Understanding (Part {checking_page_num}/3)</h3>
             <p style="margin: 0;">(This box is scrollable.)</p>
+            <p style="font-size: 0.9rem;"><i>Please answer these questions carefully. Too many unsuccessful presses on the "continue"/"begin" button may prevent you from completing the study and the HIT.</i></p>
             <hr>
             {#if checking_page_num === 1}
                 {#each Object.keys(qa_dict) as key}

@@ -7,7 +7,7 @@
     
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
-        // If they don't exist, create some artificial data for level 1 and 2
+        // If they don't exist, create some artificial data for level 1 and 2 and for the intro
         
         if (!("level_1" in $block_dict)) {
             block_dict.update(dict => {
@@ -43,6 +43,13 @@
             });
         }
 
+        if (!("intro" in $block_dict)) {
+            block_dict.update(dict => {
+                dict["intro"] = $task_getter.get(3);
+                return dict;
+            });
+        }
+
         if ($bonus_val === 0) {
             // set artificial bonus amount
             bonus_val.set(0.1);
@@ -54,7 +61,7 @@
     import { short_bonus_time, long_bonus_time } from '../../condition_configs/all_conditions.js';
     import { roundMoney } from '../../modules/utilities.js';
     
-    const CODE_PREFIX = "K3SHW";  // generated with www.random.org
+    const CODE_PREFIX = "5U3uu";  // generated with www.random.org
     const CODE_MID = ["CS", $current_score.toString().replace(".", "D"), "-", "BV", $bonus_val.toString().replace(".", "D")].join("");
 
     // get blocks for revealing blicket rating answers and bonuses
@@ -73,9 +80,9 @@
 
 {#if is_trouble}
     <CenteredCard has_button={false} is_large={true}>
-        <h3 style="color: red;">It looks like there was some trouble with the study.</h3>
+        <h3 style="color: red;">We're sorry that the study can no longer be completed. Please return this HIT, thank you.</h3>
 
-        <p>We're sorry that the study cannot be completed at this time. Feel free to <a href="mailto:cocosci_support@mlist.is.ed.ac.uk">email us</a> and we will do our best to help you with this issue.</p>
+        <p>This is because too many unsuccessful "continue"/"begin" button presses were attempted on the "checking your understanding" part of the instructions page. But please feel free to <a href="mailto:cocosci_support@mlist.is.ed.ac.uk">email us</a> if you feel we have mischaracterized your button presses and we will do our best to help you.</p>
     </CenteredCard>
 {:else if chunk_error}
     <CenteredCard has_button={false} is_large={true}>
