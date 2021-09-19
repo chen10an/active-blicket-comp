@@ -5,10 +5,10 @@
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
     <h2>Participant Information from the University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if}</h2>
     <p style="color: green;"><b>Before we begin the research study, please read the following ethics information for participants.</b></p>
-    <p>This study was certified according to the Informatics Research Ethics Process, RT number 2019/58792. Please take time to read the following information carefully. You should keep this page for your records.</p>
+    <p>This study was certified according to the {#if $demo_mode}[ANONYMIZED]{:else }Informatics Research Ethics Process, RT number 2019/58792{/if}. Please take time to read the following information carefully. You should keep this page for your records.</p>
 
     <h3>Who are the researchers?</h3>
-    <p>The researchers are from the Informatics department at the University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if}: {#if $demo_mode}[ANONYMIZED]{:else }Christopher G. Lucas and Chentian Jiang{/if}.</p>
+    <p>The researchers are from {#if $demo_mode}[ANONYMIZED]{:else }the Informatics department at the University of Edinburgh: Christopher G. Lucas and Chentian Jiang{/if}.</p>
 
     <h3>What is the purpose of the study?</h3>
     <p>The purpose of this study is to understand how people learn and make decisions in the face of uncertainty and ambiguity.</p>
@@ -39,7 +39,7 @@
 
     <h3>Data protection and confidentiality.</h3>
     <p>Your data will be processed in accordance with Data Protection Law.  All identifiable information collected about you will be kept strictly confidential. Your data will be referred to by a unique participant number rather than by name. All identifiable data will only be viewed by the research team (listed above).</p>
-    <p>All identifiable electronic data will be stored on a password-protected encrypted computer, on the School of Informatics’ secure file servers, or on the University’s secure encrypted cloud storage services (DataShare, ownCloud, or Sharepoint) and all paper records will be stored in a locked filing cabinet in the Principal Investigator’s office. Your consent information will be kept separately from your responses in order to minimize risk.</p>
+    <p>All identifiable electronic data will be stored on a password-protected encrypted computer, on the {#if $demo_mode}[ANONYMIZED]{:else }School of Informatics’{/if} secure file servers, or on the University’s secure encrypted cloud storage services (DataShare, ownCloud, or Sharepoint) and all paper records will be stored in a locked filing cabinet in the Principal Investigator’s office. Your consent information will be kept separately from your responses in order to minimize risk.</p>
 
     <h3>What are my data protection rights?</h3>
     <p>The University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if} is a Data Controller for the information you provide. You have the right to access information held about you. Your right of access can be exercised in accordance with Data Protection Law. You also have other rights including rights of correction, erasure and objection. However, for fully anonymized data, it may be impossible to find, edit, and/or delete information about any individual. For more details, including the right to lodge a complaint with the Information Commissioner’s Office, please visit www.ico.org.uk. Questions, comments and requests about your personal data can also be sent to the University Data Protection Officer at {#if $demo_mode}[ANONYMIZED]{:else }dpo@ed.ac.uk{/if}.</p>
