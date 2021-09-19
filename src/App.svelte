@@ -3,7 +3,7 @@
 	import {wrap} from 'svelte-spa-router/wrap';
 
 	import ExperimentController from './routes/ExperimentController.svelte';
-	import TestComponent from './components/pages/Quiz.svelte';
+	import TestComponent from './components/pages/End.svelte';
 	import { bonus_currency_str, dev_mode } from './modules/experiment_stores.js';
 
 	import {
@@ -46,10 +46,25 @@
 				set_dev_mode: true
 			}
 		});
-	}
 
-	routes["/test"] = wrap({
-		component: TestComponent,
+    routes[`/demo/conditions/${i}`] = wrap({
+			component: ExperimentController,
+			props: {
+				component_sequence: ALL_SEQ[i],
+				experiment_id: "active_blicket_comp_20x-demo",
+				condition_name: ALL_SEQ_NAMES[i],
+				bonus_val_per_q: bonus_val_arr[i],
+				set_demo_mode: true
+			}
+		});
+        
+	  }
+
+	  routes["/test"] = wrap({
+		    component: TestComponent,
+        props: {
+            is_trouble: true
+        },
 		conditions: [
             // hack: use pre-condition to activate dev_mode
             (detail) => {

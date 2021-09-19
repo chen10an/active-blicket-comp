@@ -3,7 +3,7 @@
     export let chunk_error = null;
     export let code_suffix = "";
 
-    import { current_score, bonus_val, bonus_currency_str, current_total_bonus, quiz_data_dict, block_dict, dev_mode, task_getter } from '../../modules/experiment_stores.js';
+    import { current_score, bonus_val, bonus_currency_str, current_total_bonus, quiz_data_dict, block_dict, dev_mode, demo_mode, task_getter } from '../../modules/experiment_stores.js';
     
     // set some default values for convenience during testing, but do this only in dev mode
     if ($dev_mode) {
@@ -82,13 +82,13 @@
     <CenteredCard has_button={false} is_large={true}>
         <h3 style="color: red;">We're sorry that the study can no longer be completed. Please return this HIT, thank you.</h3>
 
-        <p>This is because too many unsuccessful "continue"/"begin" button presses were attempted on the "checking your understanding" part of the instructions page. But please feel free to <a href="mailto:cocosci_support@mlist.is.ed.ac.uk">email us</a> if you feel we have mischaracterized your button presses and we will do our best to help you.</p>
+        <p>This is because too many unsuccessful "continue"/"begin" button presses were attempted on the "checking your understanding" part of the instructions page. But please feel free to {#if $demo_mode}[ANONYMIZED]{:else }<a href="mailto:cocosci_support@mlist.is.ed.ac.uk">email us</a>{/if} if you feel we have mischaracterized your button presses and we will do our best to help you.</p>
     </CenteredCard>
 {:else if chunk_error}
     <CenteredCard has_button={false} is_large={true}>
         <h3 style="color: red;">It looks like we are unable to collect your participation data. Please email us about this issue.</h3>
 
-        <p>Thank you for participating! Unfortunately, we're having some technical issues that are preventing us from collecting your participation data. This is detrimental to our research, so we would be very grateful if you could let us know by <b>sending an email to <a href="mailto:cocosci_support@mlist.is.ed.ac.uk">cocosci_support@mlist.is.ed.ac.uk</a> with the following error message:</b></p>
+        <p>Thank you for participating! Unfortunately, we're having some technical issues that are preventing us from collecting your participation data. This is detrimental to our research, so we would be very grateful if you could let us know by {#if $demo_mode}[ANONYMIZED]{:else }<b>sending an email to <a href="mailto:cocosci_support@mlist.is.ed.ac.uk">cocosci_support@mlist.is.ed.ac.uk</a>{/if} with the following error message:</b></p>
         <p>{@html chunk_error}</p>
         <p>Thank you in advance!</p>
     </CenteredCard>

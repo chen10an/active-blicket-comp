@@ -1,5 +1,5 @@
 <script>
-    import { dev_mode } from '../../modules/experiment_stores.js';
+    import { dev_mode, demo_mode } from '../../modules/experiment_stores.js';
     // dev_mode.set(true);
 
     export let collection_id = "intro";
@@ -137,7 +137,7 @@
 </script>
 
 <CenteredCard is_large={true} has_button={false}>
-    <h2 style="margin: 0;">Welcome to a Research Study by the University of Edinburgh</h2>
+    <h2 style="margin: 0;">Welcome to a Research Study by the University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if}</h2>
     <div>
         <p style="color: red;"><b>Please do NOT reload the page. You will be unable to complete the study.</b></p>
         

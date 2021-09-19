@@ -1,14 +1,14 @@
 <script>
-    import { duration_str } from '../../modules/experiment_stores.js';
+    import { duration_str, demo_mode } from '../../modules/experiment_stores.js';
     import CenteredCard from '../partials/CenteredCard.svelte';
 </script>
 <CenteredCard has_button={true} is_large={true} button_text="I agree" on:continue>
-    <h2>Participant Information from the University of Edinburgh</h2>
+    <h2>Participant Information from the University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if}</h2>
     <p style="color: green;"><b>Before we begin the research study, please read the following ethics information for participants.</b></p>
     <p>This study was certified according to the Informatics Research Ethics Process, RT number 2019/58792. Please take time to read the following information carefully. You should keep this page for your records.</p>
 
     <h3>Who are the researchers?</h3>
-    <p>The researchers are from the Informatics department at the University of Edinburgh: Christopher G. Lucas and Chentian Jiang.</p>
+    <p>The researchers are from the Informatics department at the University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if}: {#if $demo_mode}[ANONYMIZED]{:else }Christopher G. Lucas and Chentian Jiang{/if}.</p>
 
     <h3>What is the purpose of the study?</h3>
     <p>The purpose of this study is to understand how people learn and make decisions in the face of uncertainty and ambiguity.</p>
@@ -42,13 +42,13 @@
     <p>All identifiable electronic data will be stored on a password-protected encrypted computer, on the School of Informatics’ secure file servers, or on the University’s secure encrypted cloud storage services (DataShare, ownCloud, or Sharepoint) and all paper records will be stored in a locked filing cabinet in the Principal Investigator’s office. Your consent information will be kept separately from your responses in order to minimize risk.</p>
 
     <h3>What are my data protection rights?</h3>
-    <p>The University of Edinburgh is a Data Controller for the information you provide. You have the right to access information held about you. Your right of access can be exercised in accordance with Data Protection Law. You also have other rights including rights of correction, erasure and objection. However, for fully anonymized data, it may be impossible to find, edit, and/or delete information about any individual. For more details, including the right to lodge a complaint with the Information Commissioner’s Office, please visit www.ico.org.uk. Questions, comments and requests about your personal data can also be sent to the University Data Protection Officer at dpo@ed.ac.uk.</p>
+    <p>The University of {#if $demo_mode}[ANONYMIZED]{:else }Edinburgh{/if} is a Data Controller for the information you provide. You have the right to access information held about you. Your right of access can be exercised in accordance with Data Protection Law. You also have other rights including rights of correction, erasure and objection. However, for fully anonymized data, it may be impossible to find, edit, and/or delete information about any individual. For more details, including the right to lodge a complaint with the Information Commissioner’s Office, please visit www.ico.org.uk. Questions, comments and requests about your personal data can also be sent to the University Data Protection Officer at {#if $demo_mode}[ANONYMIZED]{:else }dpo@ed.ac.uk{/if}.</p>
 
-    <p>For general information about how we use your data, go to: edin.ac/privacy-research</p>
+    <p>For general information about how we use your data, go to: {#if $demo_mode}[ANONYMIZED]{:else }edin.ac/privacy-research{/if}</p>
 
     <h3>Who can I contact?</h3>
-    <p>If you have any further questions about the study, please contact the Principal Investigator: Christopher G. Lucas, cocosci_support@mlist.is.ed.ac.uk.</p>
-    <p>If you have a complaint that the research team (cocosci_support@mlist.is.ed.ac.uk) cannot resolve, please contact inf-ethics@inf.ed.ac.uk. When you contact us, please provide the study title and detail the nature of your complaint.</p>
+    <p>If you have any further questions about the study, please contact the Principal Investigator: {#if $demo_mode}[ANONYMIZED]{:else }Christopher G. Lucas{/if}, {#if $demo_mode}[ANONYMIZED]{:else }cocosci_support@mlist.is.ed.ac.uk{/if}.</p>
+    <p>If you have a complaint that the research team ({#if $demo_mode}[ANONYMIZED]{:else }cocosci_support@mlist.is.ed.ac.uk{/if}) cannot resolve, please contact {#if $demo_mode}[ANONYMIZED]{:else }inf-ethics@inf.ed.ac.uk{/if}. When you contact us, please provide the study title and detail the nature of your complaint.</p>
 
     <h3>Consent</h3>
     <p>By proceeding with the study, I agree to all of the following statements:</p>

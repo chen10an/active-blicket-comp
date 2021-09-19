@@ -26,6 +26,9 @@ export const BLICKET_ANSWER_OPTIONS = [
 // Write-able boolean indicating whether to view the app in dev mode
 export const dev_mode = writable(false);
 
+// Write-able boolean indicating whether to view the app in demo mode: looks just like prod but without any data collection and without localstorage repeat blocking
+export const demo_mode = writable(false);
+
 // Write-able string for the duration of the whole experiment
 export const duration_str = writable("10-15 minutes");
 

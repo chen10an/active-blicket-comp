@@ -5,6 +5,7 @@
 	export let bonus_val_per_q;
 
 	export let set_dev_mode = false;
+  export let set_demo_mode = false;  
 
 	import IntroInstructions from '../components/pages/IntroInstructions.svelte';
 	import Task from '../components/pages/Task.svelte';
@@ -22,6 +23,7 @@
 		max_score,
 		bonus_val,
 		dev_mode,
+    demo_mode,    
 		feedback,
 		honeypot_responses,
 		intro_incorrect_clicks,
@@ -37,11 +39,13 @@
 	import { location, querystring } from 'svelte-spa-router';
 
 	dev_mode.set(set_dev_mode);
+  demo_mode.set(set_demo_mode);
+
 	bonus_val.set(bonus_val_per_q);
 
-	// get the route (which contains the experiment condition) and the workerId
-	// note that this code only supports a query string with the regex pattern specified in query_re
-	let route = $location;
+  // get the route (which contains the experiment condition) and the workerId
+  // note that this code only supports a query string with the regex pattern specified in query_re
+  let route = $location;
 	let query_re = /sessionId\=(.*)/
 	let query_match = query_re.exec($querystring);
 	let session_id = query_match[1];
@@ -153,7 +157,7 @@
 	let is_trouble = false;
 	let passed_intro = false;
 
-	if (!$dev_mode) {
+	if (!$dev_mode && !$demo_mode) {
 		// use local storage to prevent repeated visits to the experiment website
 		if (localStorage.getItem("visited")) {  // true and not null
 			current_component = DontRepeat;
@@ -180,7 +184,7 @@
 			next_props = component_sequence[next_key];
 		}
 
-		if (!$dev_mode) {  // send data only in prod
+		if (!$dev_mode && !$demo_mode) {  // send data only in prod
 			if (next_key.split("_")[0] === "End") {
 				// send data in prod at the end of the experiment
 				let message = {
