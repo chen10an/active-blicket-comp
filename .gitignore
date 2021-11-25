@@ -1,13 +1,3 @@
-/node_modules/
-/public/build/
-/public/prefixed_*
 ignore/
-.vscode/
 
 .DS_Store
-*.ipynb
-/analysis/scripts/__pycache__/
-/analysis/scripts/*.html
-__pycache__/
-
-.Rhistory
